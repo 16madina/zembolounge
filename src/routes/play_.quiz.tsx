@@ -138,7 +138,7 @@ function Quiz() {
         {/* Chrono par-dessus l'anneau dessiné */}
         <div
           className="pointer-events-none absolute flex items-center justify-center rounded-full bg-[oklch(0.04_0_0)]"
-          style={{ left: "2.1%", width: "14.9%", top: "60.7%", aspectRatio: "1 / 1" }}
+          style={{ left: "2.1%", width: "14.9%", top: "56.2%", aspectRatio: "1 / 1" }}
         >
           <Countdown value={seconds} />
           <span className="absolute text-center leading-[1] font-extrabold text-gold">
