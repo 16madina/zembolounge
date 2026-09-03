@@ -68,8 +68,10 @@ export function CreateSheet({ open, onClose }: { open: boolean; onClose: () => v
             key={o.id}
             onClick={() => {
               onClose();
-              navigate({ to: o.to, params: { id: o.id } });
+              if (o.to === "/play") navigate({ to: "/play" });
+              else navigate({ to: o.to, params: { id: o.id } });
             }}
+
             className="card-surface relative overflow-hidden rounded-2xl p-2.5 text-left"
             style={{ borderColor: `color-mix(in oklab, ${o.accent} 40%, transparent)` }}
           >
