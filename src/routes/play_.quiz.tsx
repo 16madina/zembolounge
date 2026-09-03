@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Crown, Eye, Gift, Info, Lock, MoreVertical, Send, Timer } from "lucide-react";
-import { BrainZIcon, PodiumBase } from "@/components/zembo/GameIcons";
+import { BrainZIcon } from "@/components/zembo/GameIcons";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { Pressable } from "@/components/zembo/ui";
 
