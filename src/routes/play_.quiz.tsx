@@ -1,7 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Crown, Eye, Gift, Info, Lock, MoreVertical, Send, Timer } from "lucide-react";
-import { BrainZIcon } from "@/components/zembo/GameIcons";
-import { photoUrl } from "@/components/zembo/PhotoAvatar";
+import { createFileRoute } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { Send } from "lucide-react";
+import stage from "@/assets/zembo-quiz-stage.png";
+import { BottomSheet } from "@/components/zembo/Sheet";
 import { Pressable } from "@/components/zembo/ui";
 
 export const Route = createFileRoute("/play_/quiz")({
@@ -25,323 +27,227 @@ export const Route = createFileRoute("/play_/quiz")({
   component: Quiz,
 });
 
-const PLAYERS = [
-  { name: "Deena", host: true },
-  { name: "Moussa", host: false },
-  { name: "Sarah", host: false },
-  { name: "Karim", host: false },
-  { name: "Ami", host: false },
-  { name: "Yao", host: false },
-  { name: "Nadège", host: false },
-  { name: "Ibrahim", host: false },
+/** Zones des pastilles A/B/C dessinées dans l'image (en % de l'image) */
+const ANSWER_ZONES = [
+  { k: "A", label: "Accra", left: 24.2, width: 22.2 },
+  { k: "B", label: "Lagos", left: 46.8, width: 22.3 },
+  { k: "C", label: "Nairobi", left: 69.6, width: 22.4 },
+];
+const ANSWER_TOP = 60.6;
+const ANSWER_HEIGHT = 6.3;
+const CORRECT = "A";
+
+const INITIAL_CHAT = [
+  { id: 1, name: "Fatou", text: "Allez Deena ! 🔥", color: "oklch(0.72 0.2 320)" },
+  { id: 2, name: "Momo", text: "Je pense que c'est Accra 🤔", color: "oklch(0.7 0.17 250)" },
+  { id: 3, name: "Emma", text: "Bonne chance à tous ! 🎉", color: "oklch(0.75 0.15 155)" },
+  { id: 4, name: "Koffi", text: "Zembo Quiz le meilleur ! 💪", color: "oklch(0.85 0.13 85)" },
 ];
 
-const ANSWERS = [
-  { k: "A", label: "Accra", tint: "oklch(0.7 0.18 150)" },
-  { k: "B", label: "Lagos", tint: "oklch(0.66 0.19 250)" },
-  { k: "C", label: "Nairobi", tint: "oklch(0.68 0.2 320)" },
-];
-
-const RANKING = [
-  { n: 1, name: "Deena", score: "4 / 5", time: "21.4s", out: false },
-  { n: 2, name: "Moussa", score: "4 / 5", time: "28.7s", out: false },
-  { n: 3, name: "Sarah", score: "3 / 5", time: "18.2s", out: false },
-  { n: 4, name: "Ami", score: "3 / 5", time: "24.6s", out: false },
-  { n: 5, name: "Yao", score: "2 / 5", time: "30.1s", out: false },
-  { n: 6, name: "Karim", score: "1 / 5", time: "29.3s", out: true },
-  { n: 7, name: "Ibrahim", score: "1 / 5", time: "35.7s", out: true },
-  { n: 8, name: "Nadège", score: "0 / 5", time: "–", out: true },
-];
-
-const CHAT = [
-  { name: "Fatou", text: "Allez Deena ! 🔥", color: "oklch(0.72 0.2 320)" },
-  { name: "Momo", text: "Je pense que c'est Accra 🤔", color: "oklch(0.7 0.17 250)" },
-  { name: "Emma", text: "Bonne chance à tous ! 🎉", color: "oklch(0.75 0.15 155)" },
-  { name: "Koffi", text: "Zembo Quiz le meilleur ! 💪", color: "oklch(0.85 0.13 85)" },
-];
-
-/** Un candidat derrière son pupitre lumineux */
-function Desk({ name, host }: { name: string; host: boolean }) {
-  const ring = host ? "oklch(0.82 0.13 85)" : "oklch(0.68 0.16 158)";
+function Countdown({ value }: { value: number }) {
+  const r = 44;
+  const c = 2 * Math.PI * r;
   return (
-    <div className="relative flex min-w-0 flex-col items-center pb-2">
-      {/* halo du spot sur le candidat */}
-      <div className="pointer-events-none absolute -top-1 left-1/2 h-16 w-16 -translate-x-1/2 rounded-full bg-azure/25 blur-2xl" />
-
-      {host && <Crown size={12} className="relative z-10 text-gold" />}
-      {!host && <span className="h-3" />}
-      <img
-        src={photoUrl(name, 160)}
-        alt={name}
-        loading="lazy"
-        className="relative z-10 mt-0.5 h-[46px] w-[46px] rounded-full object-cover"
-        style={{ border: `2px solid ${ring}`, boxShadow: `0 0 12px -3px ${ring}` }}
+    <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+      <circle cx="50" cy="50" r={r} fill="none" stroke="oklch(0.22 0.01 60)" strokeWidth="7" />
+      <motion.circle
+        cx="50"
+        cy="50"
+        r={r}
+        fill="none"
+        stroke="oklch(0.84 0.14 85)"
+        strokeWidth="7"
+        strokeLinecap="round"
+        strokeDasharray={c}
+        animate={{ strokeDashoffset: c * (1 - value / 10) }}
+        transition={{ duration: 0.4, ease: "linear" }}
       />
-
-      {/* plaque nom */}
-      <span className="relative z-10 mt-1 max-w-full truncate rounded-md border border-gold/55 bg-black/75 px-1.5 py-0.5 text-[9px] font-bold text-gold">
-        {name}
-      </span>
-      {host ? (
-        <span className="relative z-10 mt-0.5 text-[7px] font-extrabold tracking-[0.14em] text-gold">
-          HÔTE
-        </span>
-      ) : (
-        <span className="relative z-10 mt-0.5 rounded-full bg-emerald/20 px-1.5 py-[1px] text-[7px] font-bold tracking-wide text-emerald">
-          PRÊT ✓
-        </span>
-      )}
-
-      {/* pupitre en perspective */}
-      <div className="relative z-10 mt-1 h-[46px] w-full max-w-[82px]">
-        <div
-          className="absolute inset-x-0 top-0 h-[40px] overflow-hidden"
-          style={{
-            transform: "perspective(240px) rotateX(16deg)",
-            background:
-              "linear-gradient(180deg, oklch(0.19 0.014 70), oklch(0.09 0.008 60))",
-            borderTop: "2px solid oklch(0.88 0.12 90)",
-            borderLeft: "1px solid oklch(0.82 0.13 85 / 55%)",
-            borderRight: "1px solid oklch(0.82 0.13 85 / 55%)",
-            borderRadius: "5px 5px 3px 3px",
-            boxShadow:
-              "0 -6px 18px -8px oklch(0.88 0.12 90 / 60%), inset 0 -12px 24px -14px oklch(0.82 0.13 85 / 45%)",
-          }}
-        >
-          <span className="flex h-full items-center justify-center pt-0.5 text-[22px] leading-none font-extrabold text-gold-gradient">
-            Z
-          </span>
-        </div>
-        {/* reflet au sol */}
-        <div className="absolute bottom-0 left-1/2 h-3 w-[64px] -translate-x-1/2 rounded-[100%] bg-gold/30 blur-md" />
-      </div>
-    </div>
+    </svg>
   );
 }
-
-/** Rangée de 4 pupitres visibles d'un coup (plateau) */
-function DeskRow({ players }: { players: { name: string; host: boolean }[] }) {
-  return (
-    <div className="relative z-10 grid grid-cols-4 gap-1 px-2">
-      {players.map((p) => (
-        <Desk key={p.name} name={p.name} host={p.host} />
-      ))}
-    </div>
-  );
-}
-
-
 
 function Quiz() {
-  const navigate = useNavigate();
+  const [picked, setPicked] = useState<string | null>(null);
+  const [seconds, setSeconds] = useState(10);
+  const [revealed, setRevealed] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const [chat, setChat] = useState(INITIAL_CHAT);
+  const [draft, setDraft] = useState("");
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (revealed) {
+      const t = setTimeout(() => {
+        setRevealed(false);
+        setPicked(null);
+        setSeconds(10);
+      }, 2000);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => {
+      if (seconds <= 1) {
+        setSeconds(0);
+        setRevealed(true);
+      } else {
+        setSeconds((s) => s - 1);
+      }
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [seconds, revealed]);
+
+  useEffect(() => {
+    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+  }, [chat]);
+
+  const pick = (k: string) => {
+    if (revealed) return;
+    setPicked(k);
+    navigator.vibrate?.(15);
+  };
+
+  const send = () => {
+    const text = draft.trim();
+    if (!text) return;
+    setChat((c) => [...c, { id: Date.now(), name: "Deena", text, color: "oklch(0.85 0.13 85)" }]);
+    setDraft("");
+  };
 
   return (
-    <div className="pb-6">
-      {/* Barre haute */}
-      <div className="flex items-center gap-2 px-4 pt-[max(env(safe-area-inset-top),12px)]">
-        <Pressable onClick={() => navigate({ to: "/play" })} aria-label="Retour">
-          <ChevronLeft size={22} className="text-gold" />
-        </Pressable>
-        <BrainZIcon size={22} />
-        <h1 className="text-[15px] font-extrabold tracking-tight">ZEMBO QUIZ</h1>
-        <span className="ml-auto flex items-center gap-1 text-[12px] text-foreground/75">
-          <Eye size={13} /> 128
-        </span>
-        <Pressable aria-label="Plus">
-          <MoreVertical size={17} className="text-foreground/70" />
-        </Pressable>
-      </div>
-      <p className="mt-2 px-4">
-        <span className="inline-block rounded-full bg-gold-gradient px-3 py-1.5 text-[10.5px] font-extrabold tracking-wide text-[oklch(0.16_0.02_60)]">
-          ROUND 2 — 8 JOUEURS EN JEU
-        </span>
-      </p>
+    <div className="flex h-full flex-col bg-[oklch(0.03_0_0)]">
+      {/* Décor du plateau + overlays interactifs */}
+      <div className="relative shrink-0 select-none">
+        <img src={stage} alt="Plateau Zembo Quiz — 8 joueurs derrière leurs pupitres" className="block w-full" />
+        {/* fondu vers le noir en bas pour une jointure invisible */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[6%] bg-[linear-gradient(180deg,transparent,oklch(0.03_0_0))]" />
 
-      {/* Sous-barre */}
-      <div className="mt-2.5 flex items-center justify-between gap-2 px-4">
-        <span className="min-w-0 truncate rounded-full border border-border px-2.5 py-1.5 text-[10.5px] font-semibold text-foreground/80">
-          SÉRIE 1 / 5 QUESTIONS — Question 2/5
-        </span>
-        <span className="flex shrink-0 items-center gap-1 text-[10.5px] font-bold tracking-wide text-gold">
-          RÈGLES <Info size={12} />
-        </span>
-      </div>
+        {/* ⋯ */}
+        <Pressable
+          aria-label="Plus d'options"
+          onClick={() => setRulesOpen(true)}
+          className="absolute rounded-full"
+          style={{ left: "90.9%", width: "6.9%", top: "2.4%", height: "4.8%" }}
+        />
+        {/* RÈGLES */}
+        <Pressable
+          aria-label="Règles du Zembo Quiz"
+          onClick={() => setRulesOpen(true)}
+          className="absolute rounded-full active:bg-gold/10"
+          style={{ left: "82.9%", width: "13.3%", top: "10.7%", height: "4%" }}
+        />
 
-      {/* Scène plateau : pupitres haut / question / pupitres bas */}
-      <div className="relative mt-3 overflow-hidden py-3">
-        {/* faisceaux de spots */}
-        <div className="pointer-events-none absolute inset-0">
-          <div
-            className="absolute -top-16 left-2 h-[300px] w-[150px] opacity-70 blur-2xl"
-            style={{
-              background:
-                "linear-gradient(180deg, oklch(0.65 0.19 250 / 45%), transparent 75%)",
-              clipPath: "polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%)",
-            }}
-          />
-          <div
-            className="absolute -top-16 right-2 h-[300px] w-[150px] opacity-70 blur-2xl"
-            style={{
-              background:
-                "linear-gradient(180deg, oklch(0.62 0.24 300 / 45%), transparent 75%)",
-              clipPath: "polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%)",
-            }}
-          />
-          <div className="absolute top-[42%] left-0 h-[2px] w-full bg-gold/20 blur-[2px]" />
-          <div className="absolute bottom-[18%] left-0 h-[2px] w-full bg-gold/15 blur-[2px]" />
-          {/* sol réfléchissant */}
-          <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(0deg,oklch(0.16_0.02_70/45%),transparent)]" />
-        </div>
-
-        <DeskRow players={PLAYERS.slice(0, 4)} />
-
-        {/* Question */}
-        <div className="relative z-10 mx-4 mt-4 overflow-hidden rounded-3xl border border-violet/35 bg-[linear-gradient(170deg,oklch(0.15_0.05_285),oklch(0.1_0.01_60))] p-4">
-          <div className="absolute -top-10 left-1/2 h-24 w-40 -translate-x-1/2 rounded-[100%] bg-violet/30 blur-2xl" />
-          <p className="relative flex justify-center">
-            <span className="rounded-full bg-violet/25 px-3 py-1 text-[10.5px] font-bold text-violet">
-              🌍 CULTURE GÉNÉRALE
-            </span>
-          </p>
-          <h2 className="relative mt-3 text-center text-[18px] leading-snug font-extrabold">
-            Quelle est la capitale du Ghana ?
-          </h2>
-          <div className="relative mt-3.5 space-y-2">
-            {ANSWERS.map((a) => (
-              <Pressable
-                key={a.k}
-                className="flex w-full items-center gap-3 rounded-2xl border border-border bg-[oklch(0.12_0.01_60)] px-3 py-2.5 text-left"
-              >
-                <span
-                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold text-white"
-                  style={{ background: a.tint }}
-                >
-                  {a.k}
-                </span>
-                <span className="text-[14px] font-semibold">{a.label}</span>
-              </Pressable>
-            ))}
-          </div>
-        </div>
-
-        {/* Chrono + éliminations */}
-        <div className="relative z-10 mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
-          <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-gold/70">
-            <span className="text-center text-[10px] leading-[1.1] font-extrabold text-gold">
-              10
-              <br />
-              SEC
-            </span>
+        {/* Chrono par-dessus l'anneau dessiné */}
+        <div
+          className="pointer-events-none absolute flex items-center justify-center rounded-full bg-[oklch(0.04_0_0)]"
+          style={{ left: "2.1%", width: "14.9%", top: "60.7%", aspectRatio: "1 / 1" }}
+        >
+          <Countdown value={seconds} />
+          <span className="absolute text-center leading-[1] font-extrabold text-gold">
+            <span className="block text-[22px]">{seconds}</span>
+            <span className="block text-[7px] tracking-[0.12em]">SECONDES</span>
           </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold tracking-wide text-gold">10 SECONDES</p>
-            <p className="mt-0.5 text-[12px] font-semibold text-gold/90">
-              7/8 joueurs ont répondu
-            </p>
-          </div>
-        </div>
-        <div className="relative z-10 mx-4 mt-2 rounded-2xl border border-live/45 bg-[oklch(0.13_0.03_25)] p-3">
-          <p className="text-[10.5px] font-extrabold tracking-wide text-live">ÉLIMINATIONS</p>
-          <p className="mt-1 text-[12px] leading-snug text-foreground/80">
-            À la fin de cette série, <span className="font-bold text-live">2 joueurs</span> seront
-            éliminés
-          </p>
         </div>
 
-        <div className="mt-4">
-          <DeskRow players={PLAYERS.slice(4)} />
-        </div>
-      </div>
+        {/* Réponses A / B / C */}
+        {ANSWER_ZONES.map((a) => {
+          const isPicked = picked === a.k;
+          const dim = picked && !isPicked && !revealed;
+          const good = revealed && a.k === CORRECT;
+          const bad = revealed && a.k !== CORRECT;
+          return (
+            <Pressable
+              key={a.k}
+              aria-label={`Répondre ${a.k} — ${a.label}`}
+              onClick={() => pick(a.k)}
+              whileTap={{ scale: 0.97 }}
+              className="absolute rounded-2xl border-2 transition-colors duration-200"
+              style={{
+                left: `${a.left}%`,
+                width: `${a.width}%`,
+                top: `${ANSWER_TOP}%`,
+                height: `${ANSWER_HEIGHT}%`,
+                borderColor: good
+                  ? "oklch(0.72 0.18 150)"
+                  : bad
+                    ? "oklch(0.55 0.16 25 / 70%)"
+                    : isPicked
+                      ? "oklch(0.86 0.14 88)"
+                      : "transparent",
+                background: good
+                  ? "oklch(0.72 0.18 150 / 22%)"
+                  : bad
+                    ? "oklch(0.5 0.16 25 / 16%)"
+                    : isPicked
+                      ? "oklch(0.86 0.14 88 / 16%)"
+                      : "transparent",
+                boxShadow: isPicked && !revealed ? "0 0 14px -2px oklch(0.86 0.14 88 / 70%)" : undefined,
+                opacity: dim ? 0.45 : 1,
+              }}
+            />
+          );
+        })}
 
-
-      {/* Réponses verrouillées */}
-      <div className="mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3.5">
-        <Lock size={18} className="shrink-0 text-gold" />
-        <div>
-          <p className="text-[12.5px] font-extrabold tracking-wide">RÉPONSES VERROUILLÉES 🔒</p>
-          <p className="mt-0.5 text-[11.5px] text-muted-foreground">
-            La réponse sera révélée à la fin du chrono
-          </p>
-        </div>
-      </div>
-
-      {/* Classement */}
-      <div className="mx-4 mt-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
-        <p className="text-[12.5px] font-extrabold tracking-wide">CLASSEMENT SÉRIE 1</p>
-        <div className="mt-2.5 space-y-2">
-          {RANKING.map((r) => (
-            <div key={r.n} className="flex items-center gap-2.5">
-              <span
-                className={`w-4 shrink-0 text-[12px] font-extrabold ${r.n <= 3 ? "text-gold" : "text-muted-foreground"}`}
-              >
-                {r.n}
-              </span>
-              <img
-                src={photoUrl(r.name, 64)}
-                alt=""
-                loading="lazy"
-                className="h-7 w-7 shrink-0 rounded-full object-cover"
-              />
-              <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">{r.name}</span>
-              <span
-                className={`shrink-0 text-[12px] font-bold ${r.out ? "text-live" : "text-foreground/85"}`}
-              >
-                {r.score}
-              </span>
-              <span className="w-11 shrink-0 text-right text-[11px] text-muted-foreground">
-                {r.time}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Réactions */}
-      <div className="snap-row mt-3 gap-2 px-4">
-        {["❤️ 48", "🔥 36", "👏 22"].map((r) => (
+        {/* Ligne d'état sous les réponses */}
+        <div
+          className="pointer-events-none absolute flex items-center justify-center bg-[oklch(0.045_0.002_280)]"
+          style={{ left: "20%", width: "72%", top: "68.6%", height: "3.4%" }}
+        >
           <span
-            key={r}
-            className="rounded-full border border-border bg-surface/60 px-3 py-1.5 text-[12px] font-semibold"
+            className="text-[11px] font-semibold"
+            style={{ color: revealed ? "oklch(0.75 0.16 152)" : "oklch(0.85 0.13 85)" }}
           >
-            {r}
+            {revealed ? "Réponse : Accra ✅" : "ⓘ 7 / 8 joueurs ont répondu"}
           </span>
-        ))}
-        <Pressable className="flex items-center gap-1.5 rounded-full border border-gold/60 px-3 py-1.5 text-[11px] font-bold tracking-wide text-gold">
-          <Gift size={13} /> CADEAUX
-        </Pressable>
+        </div>
       </div>
 
       {/* Chat spectateurs */}
-      <div className="mx-4 mt-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
-        <div className="flex items-center justify-between">
-          <p className="text-[12.5px] font-extrabold tracking-wide">CHAT SPECTATEURS</p>
-          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Timer size={12} /> en direct
-          </span>
-        </div>
-        <div className="mt-2.5 space-y-2">
-          {CHAT.map((c) => (
-            <p key={c.name} className="text-[12.5px]">
+      <div className="flex min-h-0 flex-1 flex-col border-t border-violet/25 bg-[oklch(0.03_0_0)] px-4 pt-3">
+        <p className="text-[12px] font-extrabold tracking-[0.14em] text-violet uppercase">
+          Chat spectateurs
+        </p>
+        <div ref={listRef} className="app-scroll mt-2 min-h-0 flex-1 space-y-2 pr-1">
+          {chat.map((c) => (
+            <p key={c.id} className="text-[12.5px] leading-snug">
               <span className="font-semibold" style={{ color: c.color }}>
-                {c.name}
+                {c.name} :
               </span>{" "}
-              <span className="text-foreground/85">{c.text}</span>
+              <span className="text-foreground/90">{c.text}</span>
             </p>
           ))}
         </div>
-        <div className="mt-3 flex items-center gap-2">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            send();
+          }}
+          className="flex items-center gap-2 py-3 pb-[max(env(safe-area-inset-bottom),12px)]"
+        >
           <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
             placeholder="Écrire un message…"
             className="min-w-0 flex-1 rounded-full border border-border bg-surface-2/60 px-3.5 py-2.5 text-[13px] outline-none placeholder:text-muted-foreground"
           />
           <Pressable
+            type="submit"
             aria-label="Envoyer"
+            whileTap={{ scale: 0.96 }}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-gradient"
           >
             <Send size={16} className="text-[oklch(0.16_0.02_60)]" />
           </Pressable>
-        </div>
+        </form>
       </div>
+
+      <BottomSheet open={rulesOpen} onClose={() => setRulesOpen(false)}>
+        <div className="px-5 pt-2 pb-4">
+          <h2 className="text-[16px] font-extrabold tracking-wide text-gold">RÈGLES DU ZEMBO QUIZ</h2>
+          <p className="mt-3 text-[13.5px] leading-relaxed text-foreground/85">
+            Série de 5 questions. À la fin de chaque série, les 2 moins bons sont éliminés. Les
+            spectateurs réagissent et envoient des cadeaux.
+          </p>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
