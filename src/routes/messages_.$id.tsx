@@ -5,7 +5,7 @@ import { Pressable } from "@/components/zembo/ui";
 import { PhotoAvatar } from "@/components/zembo/PhotoAvatar";
 import { conversations, threadMessages } from "@/lib/zembo-data";
 
-export const Route = createFileRoute("/messages/$id")({
+export const Route = createFileRoute("/messages_/$id")({
   head: () => ({
     meta: [
       { title: "Conversation — Zembo" },

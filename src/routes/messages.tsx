@@ -111,7 +111,7 @@ function Messages() {
           {list.map((c) => (
             <Pressable
               key={c.id}
-              onClick={() => navigate({ to: "/messages/$id", params: { id: c.id } })}
+              onClick={() => navigate({ to: "/messages_/$id", params: { id: c.id } })}
               className="flex w-full items-start gap-3 rounded-[18px] border border-border/70 bg-[oklch(0.115_0.008_60)] p-3.5 text-left"
             >
               {c.kind === "group" ? (
