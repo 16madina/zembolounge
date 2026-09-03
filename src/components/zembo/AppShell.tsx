@@ -1,6 +1,7 @@
 import { useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 import { TabBar } from "./TabBar";
 import { CreateSheet } from "./CreateSheet";
 
@@ -10,6 +11,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [createOpen, setCreateOpen] = useState(false);
   const isTab = TABS.includes(pathname);
+  const isThread = pathname.startsWith("/messages/");
 
   return (
     <div className="flex min-h-[100dvh] justify-center bg-[oklch(0.05_0_0)]">
@@ -22,13 +24,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               animate={{ opacity: 1, y: 0, x: 0 }}
               exit={isTab ? { opacity: 0, y: -6 } : { opacity: 0, x: 40 }}
               transition={{ duration: 0.24, ease: [0.32, 0.72, 0, 1] }}
-              className="app-scroll h-full pb-[112px]"
+              className={cn("h-full", isThread ? "overflow-hidden" : "app-scroll pb-[112px]")}
             >
               {children}
             </motion.main>
           </AnimatePresence>
 
-          <TabBar onCreate={() => setCreateOpen(true)} />
+          {!isThread && <TabBar onCreate={() => setCreateOpen(true)} />}
           <CreateSheet open={createOpen} onClose={() => setCreateOpen(false)} />
         </div>
       </div>

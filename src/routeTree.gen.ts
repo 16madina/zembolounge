@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as MessagesIdRouteImport } from './routes/messages.$id'
 import { Route as TableIdRouteImport } from './routes/table.$id'
 import { Route as TalkShowIdRouteImport } from './routes/talk-show.$id'
 
@@ -36,6 +37,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MessagesIdRoute = MessagesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MessagesRoute,
+} as any)
 const TableIdRoute = TableIdRouteImport.update({
   id: '/table/$id',
   path: '/table/$id',
@@ -50,16 +56,18 @@ const TalkShowIdRoute = TalkShowIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/live': typeof LiveRoute
-  '/messages': typeof MessagesRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/live': typeof LiveRoute
-  '/messages': typeof MessagesRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
@@ -67,23 +75,38 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/live': typeof LiveRoute
-  '/messages': typeof MessagesRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/live' | '/messages' | '/profile' | '/table/$id' | '/talk-show/$id'
+    | '/'
+    | '/live'
+    | '/messages'
+    | '/profile'
+    | '/messages/$id'
+    | '/table/$id'
+    | '/talk-show/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/live' | '/messages' | '/profile' | '/table/$id' | '/talk-show/$id'
+  to:
+    | '/'
+    | '/live'
+    | '/messages'
+    | '/profile'
+    | '/messages/$id'
+    | '/table/$id'
+    | '/talk-show/$id'
   id:
     | '__root__'
     | '/'
     | '/live'
     | '/messages'
     | '/profile'
+    | '/messages/$id'
     | '/table/$id'
     | '/talk-show/$id'
   fileRoutesById: FileRoutesById
@@ -91,7 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LiveRoute: typeof LiveRoute
-  MessagesRoute: typeof MessagesRoute
+  MessagesRoute: typeof MessagesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   TableIdRoute: typeof TableIdRoute
   TalkShowIdRoute: typeof TalkShowIdRoute
@@ -127,6 +150,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/messages/$id': {
+      id: '/messages/$id'
+      path: '/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof MessagesIdRouteImport
+      parentRoute: typeof MessagesRoute
+    }
     '/table/$id': {
       id: '/table/$id'
       path: '/table/$id'
@@ -144,10 +174,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface MessagesRouteChildren {
+  MessagesIdRoute: typeof MessagesIdRoute
+}
+
+const MessagesRouteChildren: MessagesRouteChildren = {
+  MessagesIdRoute: MessagesIdRoute,
+}
+
+const MessagesRouteWithChildren = MessagesRoute._addFileChildren(
+  MessagesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LiveRoute: LiveRoute,
-  MessagesRoute: MessagesRoute,
+  MessagesRoute: MessagesRouteWithChildren,
   ProfileRoute: ProfileRoute,
   TableIdRoute: TableIdRoute,
   TalkShowIdRoute: TalkShowIdRoute,
