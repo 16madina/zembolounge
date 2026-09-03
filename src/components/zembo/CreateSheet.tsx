@@ -28,11 +28,12 @@ const OPTIONS = [
     id: "play",
     title: "Play & Fun",
     desc: "Lance un jeu et défie ta communauté.",
-    chips: ["Quiz", "Défis", "Tu préfères ?"],
+    chips: ["Quiz", "Hot Seat", "Face à Face"],
     image: IMG.play,
     accent: "oklch(0.68 0.16 158)",
-    to: "/table/$id",
+    to: "/play",
   },
+
   {
     id: "world",
     title: "World Room",
@@ -67,8 +68,10 @@ export function CreateSheet({ open, onClose }: { open: boolean; onClose: () => v
             key={o.id}
             onClick={() => {
               onClose();
-              navigate({ to: o.to, params: { id: o.id } });
+              if (o.to === "/play") navigate({ to: "/play" });
+              else navigate({ to: o.to, params: { id: o.id } });
             }}
+
             className="card-surface relative overflow-hidden rounded-2xl p-2.5 text-left"
             style={{ borderColor: `color-mix(in oklab, ${o.accent} 40%, transparent)` }}
           >
