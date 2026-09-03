@@ -11,7 +11,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [createOpen, setCreateOpen] = useState(false);
   const isTab = TABS.includes(pathname);
-  const isThread = pathname.startsWith("/messages/");
+  const isThread = pathname.startsWith("/messages/") || pathname.startsWith("/play/");
+
 
   return (
     <div className="flex min-h-[100dvh] justify-center bg-[oklch(0.05_0_0)]">
