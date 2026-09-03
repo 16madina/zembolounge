@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as TableIdRouteImport } from './routes/table.$id'
 import { Route as TalkShowIdRouteImport } from './routes/talk-show.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TableIdRoute = TableIdRouteImport.update({
+  id: '/table/$id',
+  path: '/table/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalkShowIdRoute = TalkShowIdRouteImport.update({
   id: '/talk-show/$id',
   path: '/talk-show/$id',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/live': typeof LiveRoute
   '/messages': typeof MessagesRoute
   '/profile': typeof ProfileRoute
+  '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/live': typeof LiveRoute
   '/messages': typeof MessagesRoute
   '/profile': typeof ProfileRoute
+  '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,23 @@ export interface FileRoutesById {
   '/live': typeof LiveRoute
   '/messages': typeof MessagesRoute
   '/profile': typeof ProfileRoute
+  '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/live' | '/messages' | '/profile' | '/talk-show/$id'
+  fullPaths:
+    '/' | '/live' | '/messages' | '/profile' | '/table/$id' | '/talk-show/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/live' | '/messages' | '/profile' | '/talk-show/$id'
-  id: '__root__' | '/' | '/live' | '/messages' | '/profile' | '/talk-show/$id'
+  to: '/' | '/live' | '/messages' | '/profile' | '/table/$id' | '/talk-show/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/live'
+    | '/messages'
+    | '/profile'
+    | '/table/$id'
+    | '/talk-show/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +93,7 @@ export interface RootRouteChildren {
   LiveRoute: typeof LiveRoute
   MessagesRoute: typeof MessagesRoute
   ProfileRoute: typeof ProfileRoute
+  TableIdRoute: typeof TableIdRoute
   TalkShowIdRoute: typeof TalkShowIdRoute
 }
 
@@ -109,6 +127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/table/$id': {
+      id: '/table/$id'
+      path: '/table/$id'
+      fullPath: '/table/$id'
+      preLoaderRoute: typeof TableIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/talk-show/$id': {
       id: '/talk-show/$id'
       path: '/talk-show/$id'
@@ -124,6 +149,7 @@ const rootRouteChildren: RootRouteChildren = {
   LiveRoute: LiveRoute,
   MessagesRoute: MessagesRoute,
   ProfileRoute: ProfileRoute,
+  TableIdRoute: TableIdRoute,
   TalkShowIdRoute: TalkShowIdRoute,
 }
 export const routeTree = rootRouteImport
