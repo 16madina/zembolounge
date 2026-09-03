@@ -11,8 +11,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [createOpen, setCreateOpen] = useState(false);
   const isTab = TABS.includes(pathname);
-  const isThread = pathname.startsWith("/messages/") || pathname.startsWith("/play/");
-
+  const isThread = pathname.startsWith("/messages/");
+  const isGame = pathname.startsWith("/play/");
+  const noDock = isThread || isGame;
 
   return (
     <div className="flex min-h-[100dvh] justify-center bg-[oklch(0.05_0_0)]">
@@ -25,13 +26,17 @@ export function AppShell({ children }: { children: ReactNode }) {
               animate={{ opacity: 1, y: 0, x: 0 }}
               exit={isTab ? { opacity: 0, y: -6 } : { opacity: 0, x: 40 }}
               transition={{ duration: 0.24, ease: [0.32, 0.72, 0, 1] }}
-              className={cn("h-full", isThread ? "overflow-hidden" : "app-scroll pb-[112px]")}
+              className={cn(
+                "h-full",
+                isThread ? "overflow-hidden" : isGame ? "app-scroll pb-6" : "app-scroll pb-[112px]",
+              )}
             >
               {children}
             </motion.main>
           </AnimatePresence>
 
-          {!isThread && <TabBar onCreate={() => setCreateOpen(true)} />}
+          {!noDock && <TabBar onCreate={() => setCreateOpen(true)} />}
+
           <CreateSheet open={createOpen} onClose={() => setCreateOpen(false)} />
         </div>
       </div>
