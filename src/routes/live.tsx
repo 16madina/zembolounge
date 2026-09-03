@@ -65,7 +65,7 @@ function LivePage() {
 
       <div className="snap-row mt-4 gap-2 px-4">
         {categories.map((c, i) => {
-          const Icon = ICONS[i % ICONS.length];
+          const Icon = ICONS[i % ICONS.length]!;
           return (
             <Pressable
               key={c.id}
