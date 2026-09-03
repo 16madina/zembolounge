@@ -1,9 +1,22 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ChevronLeft, Info, Lock, MoreVertical, Send, Smile, Video } from "lucide-react";
+import {
+  BarChart3,
+  ChevronLeft,
+  Info,
+  Lock,
+  MoreVertical,
+  Send,
+  Star,
+  Target,
+  Timer,
+  Video,
+} from "lucide-react";
+import { NeonFacesIcon } from "@/components/zembo/GameIcons";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { Pressable } from "@/components/zembo/ui";
 import { ZemboIcon } from "@/components/zembo/ZemboMark";
+import { IMG } from "@/lib/zembo-data";
 
 export const Route = createFileRoute("/play_/face-a-face")({
   head: () => ({
@@ -12,7 +25,7 @@ export const Route = createFileRoute("/play_/face-a-face")({
       {
         name: "description",
         content:
-          "Face à Face : affronte un autre joueur sur 20 questions et découvre votre compatibilité en temps réel.",
+          "Face à Face : affronte un autre joueur sur les mêmes questions et découvre votre compatibilité en temps réel.",
       },
       { property: "og:title", content: "Face à Face — Zembo" },
       {
@@ -33,42 +46,44 @@ const CHOICES = [
   { k: "D", label: "La passion" },
 ];
 
-function PlayerCard({
+const BLUE = "oklch(0.66 0.19 250)";
+const PINK = "oklch(0.68 0.22 350)";
+
+function PlayerPanel({
   role,
   name,
   color,
-  border,
+  glow,
 }: {
   role: string;
   name: string;
   color: string;
-  border: string;
+  glow: string;
 }) {
   return (
-    <div
-      className="relative flex-1 overflow-hidden rounded-2xl border"
-      style={{ borderColor: border }}
-    >
-      <img
-        src={photoUrl(name, 300)}
-        alt={name}
-        loading="lazy"
-        className="h-[168px] w-full object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/60" />
-      <div className="absolute left-2.5 top-2">
-        <p className="text-[11px] font-extrabold tracking-wide" style={{ color }}>
-          {role}
-        </p>
-        <p className="text-[12.5px] text-white/85">{name}</p>
+    <div className="relative min-w-0 flex-1 overflow-hidden rounded-2xl border border-border bg-surface">
+      <div className="absolute inset-x-0 -top-6 h-16 blur-2xl" style={{ background: glow }} />
+      <p
+        className="relative pt-1.5 text-center text-[9.5px] font-extrabold tracking-[0.16em]"
+        style={{ color }}
+      >
+        {role}
+      </p>
+      <div className="relative mt-1.5">
+        <img
+          src={photoUrl(name, 300)}
+          alt={name}
+          loading="lazy"
+          className="h-[132px] w-full object-cover"
+        />
+        <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-md bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-emerald">
+          <Video size={10} /> ON
+        </span>
+        <span className="absolute bottom-1.5 left-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+          {name}
+        </span>
       </div>
-      <span className="absolute right-2 top-2 flex items-center gap-1 rounded-md bg-black/60 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald">
-        <Video size={10} /> ON
-      </span>
-      <div className="absolute bottom-2 left-2.5">
-        <p className="text-[16px] font-extrabold text-white">❤️ 10</p>
-        <p className="text-[9.5px] tracking-wide text-white/70">POINTS</p>
-      </div>
+      <p className="relative py-1.5 text-center text-[10px] font-bold text-gold">❤️ 10 POINTS</p>
     </div>
   );
 }
@@ -78,25 +93,25 @@ function FaceAFace() {
 
   return (
     <div className="pb-6">
-      {/* Header */}
+      {/* Barre haute */}
       <div className="flex items-center gap-2 px-4 pt-[max(env(safe-area-inset-top),12px)]">
         <Pressable
           onClick={() => navigate({ to: "/play" })}
-          className="flex items-center gap-1 text-[13px] font-semibold text-gold"
+          className="flex items-center gap-0.5 text-[12.5px] font-semibold text-gold"
         >
-          <ChevronLeft size={20} /> Quitter
+          <ChevronLeft size={18} /> Quitter
         </Pressable>
-        <Pressable className="ml-auto flex items-center gap-1.5 rounded-full border border-gold/60 px-2.5 py-1.5 text-[11px] font-semibold text-gold">
+        <span className="ml-auto flex items-center gap-1.5 rounded-full border border-gold/55 px-2.5 py-1 text-[10.5px] font-bold text-gold">
           <Info size={12} /> Règles
-        </Pressable>
-        <Pressable aria-label="Plus" className="flex h-8 w-8 items-center justify-center rounded-full border border-border">
-          <MoreVertical size={16} className="text-foreground/70" />
+        </span>
+        <Pressable aria-label="Plus">
+          <MoreVertical size={17} className="text-foreground/70" />
         </Pressable>
       </div>
 
-      <div className="mt-2 text-center">
-        <p className="text-[16px]">🔵 ⚡ 🔴</p>
-        <h1 className="mt-1 text-[30px] leading-none font-extrabold tracking-tight">
+      <div className="mt-2 flex flex-col items-center">
+        <NeonFacesIcon size={54} />
+        <h1 className="mt-1 text-[24px] leading-none font-extrabold tracking-tight">
           FACE <span className="text-gold-gradient">À FACE</span>
         </h1>
         <p className="mt-1.5 text-[12.5px] text-muted-foreground">
@@ -104,41 +119,44 @@ function FaceAFace() {
         </p>
       </div>
 
-      {/* Duel */}
-      <div className="relative mx-4 mt-4">
-        <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-full border border-gold/70 bg-background px-3 py-1 text-[10.5px] font-bold text-gold">
-          QUESTION 1 / 20
-        </span>
-        <div className="flex gap-2">
-          <PlayerCard
-            role="VOUS"
-            name="Deena"
-            color="oklch(0.72 0.16 245)"
-            border="oklch(0.6 0.16 245 / 60%)"
-          />
-          <PlayerCard
-            role="ADVERSAIRE"
-            name="Moussa"
-            color="oklch(0.72 0.2 340)"
-            border="oklch(0.6 0.2 340 / 60%)"
-          />
-        </div>
+      {/* Deux panneaux vidéo */}
+      <div
+        className="mx-4 mt-3 flex gap-2 rounded-3xl p-2"
+        style={{
+          background: `linear-gradient(120deg, color-mix(in oklab, ${BLUE} 22%, transparent), color-mix(in oklab, ${PINK} 22%, transparent))`,
+        }}
+      >
+        <PlayerPanel
+          role="VOUS"
+          name="Deena"
+          color={BLUE}
+          glow="radial-gradient(circle, oklch(0.62 0.24 300 / 45%), transparent 70%)"
+        />
+        <PlayerPanel
+          role="ADVERSAIRE"
+          name="Moussa"
+          color={PINK}
+          glow="radial-gradient(circle, oklch(0.66 0.19 250 / 45%), transparent 70%)"
+        />
       </div>
 
-      {/* Compatibilité */}
-      <div className="mx-4 mt-2.5 flex items-center gap-2.5 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] px-3 py-2.5">
-        <span className="text-[16px]">💞</span>
-        <div>
-          <p className="text-[9.5px] tracking-wide text-muted-foreground">COMPATIBILITÉ ACTUELLE</p>
-          <p className="text-[14px] font-extrabold">– – %</p>
+      {/* Barre compatibilité */}
+      <div className="mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold tracking-wide text-foreground/70">
+            ❤️ COMPATIBILITÉ ACTUELLE
+          </p>
+          <p className="text-[17px] font-extrabold text-gold">–– %</p>
         </div>
-        <span className="mx-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gold/60">
-          <ZemboIcon size={16} />
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gold/55">
+          <ZemboIcon size={18} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[9.5px] tracking-wide text-muted-foreground">OBJECTIF MATCH : 85%+</p>
-          <div className="mt-1 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[oklch(0.25_0.01_60)]">
+          <p className="text-right text-[10px] font-bold tracking-wide text-foreground/70">
+            OBJECTIF MATCH : 85%+
+          </p>
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-[oklch(0.2_0.014_70)]">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: "85%" }}
@@ -146,105 +164,121 @@ function FaceAFace() {
                 className="h-full rounded-full bg-gold-gradient"
               />
             </div>
-            <span className="text-[11.5px] font-bold">85%</span>
+            <Star size={11} className="shrink-0 text-gold" />
+            <span className="shrink-0 text-[10.5px] font-bold text-gold">85%</span>
           </div>
         </div>
       </div>
 
-      {/* Question */}
-      <div className="relative mx-4 mt-4 rounded-3xl border border-gold/50 bg-[oklch(0.1_0.008_60)] p-3.5">
-        <span className="absolute -top-3.5 left-1/2 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full border border-gold/60 bg-background text-[13px] text-gold">
-          ❝
-        </span>
-        <h2 className="mt-1 text-center text-[16px] leading-snug font-bold">
+      {/* Scène table */}
+      <div className="relative mx-4 mt-3 overflow-hidden rounded-2xl border border-border">
+        <img
+          src={IMG.table}
+          alt="Table Zembo avec deux tasses"
+          width={768}
+          height={512}
+          className="h-[120px] w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[oklch(0.09_0.008_60)]/35" />
+      </div>
+
+      {/* Carte question */}
+      <div
+        className="mx-4 mt-3 rounded-3xl border border-gold/45 bg-[oklch(0.115_0.01_60)] p-4"
+        style={{ boxShadow: "0 12px 34px -20px oklch(0.82 0.13 85 / 60%)" }}
+      >
+        <p className="text-[22px] leading-none text-gold">“</p>
+        <h2 className="mt-1 text-center text-[15.5px] leading-snug font-bold">
           Dans une relation, qu'est-ce qui compte le plus pour toi ?
         </h2>
         <div className="mt-3 space-y-2">
           {CHOICES.map((c) => (
             <Pressable
               key={c.k}
-              className="flex w-full items-center gap-2.5 rounded-2xl border border-gold/25 bg-surface-2/50 px-3 py-2.5 text-left"
+              className="flex w-full items-center gap-3 rounded-2xl border border-gold/40 bg-[oklch(0.13_0.012_65)] px-3 py-2.5 text-left"
             >
-              <span className="flex h-6 w-6 items-center justify-center rounded-full border border-gold/70 text-[11px] font-bold text-gold">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold-gradient text-[12px] font-extrabold text-[oklch(0.16_0.02_60)]">
                 {c.k}
               </span>
-              <span className="text-[13.5px] font-medium">{c.label}</span>
+              <span className="text-[14px] font-semibold">{c.label}</span>
             </Pressable>
           ))}
         </div>
       </div>
 
       {/* Réponses + chrono */}
-      <div className="mx-4 mt-3 flex items-center gap-2">
-        <div className="flex-1 rounded-2xl border border-[oklch(0.6_0.16_245_/_50%)] bg-[oklch(0.11_0.01_245)] p-2.5 text-center">
-          <p className="text-[10px] font-bold tracking-wide text-[oklch(0.72_0.16_245)]">
+      <div className="mx-4 mt-3 grid grid-cols-2 gap-2">
+        <div
+          className="rounded-2xl border p-3 text-center"
+          style={{ borderColor: `color-mix(in oklab, ${BLUE} 55%, transparent)` }}
+        >
+          <p className="text-[10px] font-bold tracking-wide" style={{ color: BLUE }}>
             VOTRE RÉPONSE
           </p>
-          <p className="mt-1 flex items-center justify-center gap-1 text-[11.5px] text-foreground/80">
-            <Lock size={11} /> En attente…
-          </p>
+          <Lock size={15} className="mx-auto mt-1.5 text-foreground/70" />
+          <p className="mt-1 text-[11.5px] text-muted-foreground">En attente…</p>
         </div>
-        <div className="flex h-[68px] w-[68px] shrink-0 flex-col items-center justify-center rounded-full border-[3px] border-gold/80">
-          <p className="text-[22px] leading-none font-extrabold">15</p>
-          <p className="text-[9px] text-muted-foreground">s</p>
-        </div>
-        <div className="flex-1 rounded-2xl border border-[oklch(0.6_0.2_340_/_50%)] bg-[oklch(0.11_0.01_340)] p-2.5 text-center">
-          <p className="text-[10px] font-bold tracking-wide text-[oklch(0.72_0.2_340)]">
+        <div
+          className="rounded-2xl border p-3 text-center"
+          style={{ borderColor: `color-mix(in oklab, ${PINK} 55%, transparent)` }}
+        >
+          <p className="text-[10px] font-bold tracking-wide" style={{ color: PINK }}>
             RÉPONSE ADVERSAIRE
           </p>
-          <p className="mt-1 flex items-center justify-center gap-1 text-[11.5px] text-foreground/80">
-            <Lock size={11} /> En attente…
-          </p>
+          <Lock size={15} className="mx-auto mt-1.5 text-foreground/70" />
+          <p className="mt-1 text-[11.5px] text-muted-foreground">En attente…</p>
         </div>
+      </div>
+      <div className="mt-2 flex justify-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-gold/70 text-[13px] font-extrabold text-gold">
+          15 S
+        </span>
       </div>
 
       {/* Stats */}
-      <div className="mx-4 mt-3 grid grid-cols-3 divide-x divide-border rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] py-3">
+      <div className="mx-4 mt-3 grid grid-cols-3 gap-2">
         {[
-          { e: "📊", t: "COMPATIBILITÉ ACTUELLE", v: "– – %", s: "" },
-          { e: "🎯", t: "OBJECTIF MATCH", v: "85%+", s: "pour un match" },
-          { e: "⏱️", t: "TEMPS RESTANT", v: "18:25", s: "min" },
-        ].map((c) => (
-          <div key={c.t} className="px-2 text-center">
-            <p className="text-[15px]">{c.e}</p>
-            <p className="mt-1 text-[9px] leading-tight tracking-wide text-muted-foreground">{c.t}</p>
-            <p className="mt-0.5 text-[13px] font-extrabold">{c.v}</p>
-            {c.s && <p className="text-[9.5px] text-muted-foreground">{c.s}</p>}
+          { icon: <BarChart3 size={14} className="text-gold" />, t: "COMPATIBILITÉ ACTUELLE", v: "–– %" },
+          { icon: <Target size={14} className="text-gold" />, t: "OBJECTIF MATCH", v: "85%+ pour un match" },
+          { icon: <Timer size={14} className="text-gold" />, t: "TEMPS RESTANT", v: "18:25 min" },
+        ].map((s) => (
+          <div key={s.t} className="rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-2.5">
+            {s.icon}
+            <p className="mt-1.5 text-[8.5px] leading-tight font-bold tracking-wide text-muted-foreground">
+              {s.t}
+            </p>
+            <p className="mt-1 text-[11px] leading-tight font-bold">{s.v}</p>
           </div>
         ))}
       </div>
 
-      {/* Bot + saisie */}
-      <div className="mx-4 mt-3 flex items-start gap-2.5 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gold/50 bg-black">
-          <ZemboIcon size={18} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-2 text-[12.5px] font-bold">
-            Zembo
-            <span className="rounded-md bg-violet/25 px-1.5 py-0.5 text-[9px] font-bold text-violet">
+      {/* Chat */}
+      <div className="mx-4 mt-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
+        <div className="flex items-start gap-2">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-gold/55">
+            <ZemboIcon size={14} />
+          </span>
+          <p className="min-w-0 flex-1 text-[12.5px]">
+            <span className="font-semibold text-gold">Zembo</span>{" "}
+            <span className="rounded-full border border-gold/50 px-1.5 py-[1px] text-[8.5px] font-bold text-gold">
               BOT
-            </span>
-            <span className="ml-auto text-[10.5px] font-normal text-muted-foreground">21:30</span>
+            </span>{" "}
+            <span className="text-foreground/85">Répondez sincèrement et bonne chance !</span>
           </p>
-          <p className="mt-0.5 text-[12px] text-foreground/85">
-            Répondez sincèrement et bonne chance !
-          </p>
+          <span className="shrink-0 text-[10.5px] text-muted-foreground">21:30</span>
         </div>
-      </div>
-
-      <div className="mx-4 mt-2.5 flex items-center gap-2">
-        <Smile size={20} className="shrink-0 text-muted-foreground" />
-        <input
-          placeholder="Écrire un message…"
-          className="min-w-0 flex-1 rounded-full border border-border bg-surface-2/60 px-3.5 py-2.5 text-[13px] outline-none placeholder:text-muted-foreground"
-        />
-        <Pressable
-          aria-label="Envoyer"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/60"
-        >
-          <Send size={16} className="text-gold" />
-        </Pressable>
+        <div className="mt-3 flex items-center gap-2">
+          <input
+            placeholder="Écrire un message…"
+            className="min-w-0 flex-1 rounded-full border border-border bg-surface-2/60 px-3.5 py-2.5 text-[13px] outline-none placeholder:text-muted-foreground"
+          />
+          <Pressable
+            aria-label="Envoyer"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-gradient"
+          >
+            <Send size={16} className="text-[oklch(0.16_0.02_60)]" />
+          </Pressable>
+        </div>
       </div>
     </div>
   );

@@ -127,7 +127,7 @@ export const trends = [
 export const forYou = [
   { id: "1", tag: "LIVE", title: "Red Flags ? On en parle !", views: 740, image: mic },
   { id: "2", tag: "Hot Topic", title: "Secrets inavoués", views: 620, image: tableImg },
-  { id: "3", tag: "Fun Game", title: "Qui est le plus drôle ?", views: 580, image: play },
+  { id: "3", tag: "Fun Game", title: "Face à Face : compatibilité", views: 580, image: play },
   { id: "4", tag: "Conseils Love", title: "Attirer ce que tu mérites", views: 915, image: world },
 ];
 

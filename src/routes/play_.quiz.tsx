@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Eye, Info, Lock, MoreVertical, Send } from "lucide-react";
-import { PhotoAvatar, photoUrl } from "@/components/zembo/PhotoAvatar";
+import { ChevronLeft, Crown, Eye, Gift, Info, Lock, MoreVertical, Send, Timer } from "lucide-react";
+import { BrainZIcon, PodiumBase } from "@/components/zembo/GameIcons";
+import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { Pressable } from "@/components/zembo/ui";
 
 export const Route = createFileRoute("/play_/quiz")({
@@ -25,20 +26,20 @@ export const Route = createFileRoute("/play_/quiz")({
 });
 
 const PLAYERS = [
-  { name: "Deena", role: "HÔTE", host: true },
-  { name: "Moussa", role: "PRÊT ✓", host: false },
-  { name: "Sarah", role: "PRÊT ✓", host: false },
-  { name: "Karim", role: "PRÊT ✓", host: false },
-  { name: "Ami", role: "PRÊT ✓", host: false },
-  { name: "Yao", role: "PRÊT ✓", host: false },
-  { name: "Nadège", role: "PRÊT ✓", host: false },
-  { name: "Ibrahim", role: "PRÊT ✓", host: false },
+  { name: "Deena", host: true },
+  { name: "Moussa", host: false },
+  { name: "Sarah", host: false },
+  { name: "Karim", host: false },
+  { name: "Ami", host: false },
+  { name: "Yao", host: false },
+  { name: "Nadège", host: false },
+  { name: "Ibrahim", host: false },
 ];
 
 const ANSWERS = [
-  { k: "A", label: "Accra" },
-  { k: "B", label: "Lagos" },
-  { k: "C", label: "Nairobi" },
+  { k: "A", label: "Accra", tint: "oklch(0.7 0.18 150)" },
+  { k: "B", label: "Lagos", tint: "oklch(0.66 0.19 250)" },
+  { k: "C", label: "Nairobi", tint: "oklch(0.68 0.2 320)" },
 ];
 
 const RANKING = [
@@ -53,36 +54,37 @@ const RANKING = [
 ];
 
 const CHAT = [
-  { name: "Fatou", text: "Allez Deena ! 🔥" },
-  { name: "Momo", text: "Je pense que c'est Accra 🤔" },
-  { name: "Emma", text: "Bonne chance à tous ! 🎉" },
-  { name: "Koffi", text: "Zembo Quiz le meilleur ! 💪" },
+  { name: "Fatou", text: "Allez Deena ! 🔥", color: "oklch(0.72 0.2 320)" },
+  { name: "Momo", text: "Je pense que c'est Accra 🤔", color: "oklch(0.7 0.17 250)" },
+  { name: "Emma", text: "Bonne chance à tous ! 🎉", color: "oklch(0.75 0.15 155)" },
+  { name: "Koffi", text: "Zembo Quiz le meilleur ! 💪", color: "oklch(0.85 0.13 85)" },
 ];
 
-const FEATURES = [
-  { emoji: "🎥", title: "VIDÉO EN DIRECT", desc: "Caméra activée par le joueur. Avatar par défaut." },
-  { emoji: "🔒", title: "RÉPONSES SECRÈTES", desc: "Personne ne voit vos choix jusqu'à la révélation." },
-  { emoji: "☰", title: "SÉRIES DE 5 QUESTIONS", desc: "À la fin de chaque série, les 2 moins bons sont éliminés." },
-  { emoji: "👥", title: "SPECTATEURS ACTIFS", desc: "Ils voient tout, commentent, envoient des cadeaux." },
-  { emoji: "🏆", title: "RÉCOMPENSE", desc: "Le gagnant remporte des Z Points et une victoire." },
-];
-
-function Podium({ name, role, host }: { name: string; role: string; host: boolean }) {
+function Podium({ name, host }: { name: string; host: boolean }) {
   return (
-    <div className="flex w-[92px] flex-col items-center">
-      {host && <span className="text-[13px] leading-none">👑</span>}
-      <PhotoAvatar name={name} size={62} status="none" />
-      <div className="-mt-2 w-full rounded-2xl border border-gold/35 bg-[oklch(0.11_0.01_60)] px-1.5 py-1.5 text-center">
-        <p className="text-[10.5px] font-extrabold tracking-wide">{name.toUpperCase()}</p>
-        {host ? (
-          <p className="text-[9px] font-bold text-gold">HÔTE</p>
-        ) : (
-          <p className="mt-0.5 rounded-full bg-emerald/20 text-[8.5px] font-bold text-emerald">{role}</p>
-        )}
-      </div>
-      <div className="mt-0.5 flex h-7 w-[52px] items-center justify-center rounded-b-lg border-x border-b border-gold/30 bg-gradient-to-b from-[oklch(0.16_0.02_70)] to-[oklch(0.1_0.01_60)] text-[15px] font-extrabold text-gold">
-        Z
-      </div>
+    <div className="relative flex flex-col items-center overflow-hidden rounded-2xl border border-border bg-[linear-gradient(180deg,oklch(0.16_0.05_270),oklch(0.09_0.008_60))] px-2 pt-3">
+      <div className="absolute inset-x-3 top-2 h-14 rounded-[100%] bg-azure/22 blur-xl" />
+      {host && <Crown size={14} className="relative z-10 text-gold" />}
+      <span className="relative z-10 mt-1">
+        <img
+          src={photoUrl(name, 160)}
+          alt={name}
+          loading="lazy"
+          className="h-[54px] w-[54px] rounded-full object-cover"
+          style={{
+            border: `2px solid ${host ? "oklch(0.82 0.13 85)" : "oklch(0.68 0.16 158)"}`,
+          }}
+        />
+      </span>
+      <span className="relative z-10 mt-2 rounded-md border border-gold/45 bg-black/60 px-2 py-0.5 text-[10.5px] font-bold text-gold">
+        {name}
+      </span>
+      <span className="relative z-10 mt-1 text-[8.5px] font-bold tracking-wide text-foreground/70">
+        {host ? "HÔTE" : "PRÊT ✓"}
+      </span>
+      <span className="relative z-10 mt-1 -mb-1">
+        <PodiumBase width={120} />
+      </span>
     </div>
   );
 }
@@ -92,166 +94,172 @@ function Quiz() {
 
   return (
     <div className="pb-6">
-      {/* Header */}
+      {/* Barre haute */}
       <div className="flex items-center gap-2 px-4 pt-[max(env(safe-area-inset-top),12px)]">
         <Pressable onClick={() => navigate({ to: "/play" })} aria-label="Retour">
           <ChevronLeft size={22} className="text-gold" />
         </Pressable>
-        <span className="text-[19px]">🧠</span>
-        <p className="text-[15px] font-extrabold">
-          ZEMBO <span className="text-gold-gradient">QUIZ</span>
-        </p>
-        <span className="ml-auto flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-[10px] text-muted-foreground">
-          <Eye size={12} /> 128 SPECTATEURS
+        <BrainZIcon size={22} />
+        <h1 className="text-[15px] font-extrabold tracking-tight">ZEMBO QUIZ</h1>
+        <span className="ml-auto flex items-center gap-1 text-[12px] text-foreground/75">
+          <Eye size={13} /> 128
         </span>
         <Pressable aria-label="Plus">
-          <MoreVertical size={18} className="text-foreground/70" />
+          <MoreVertical size={17} className="text-foreground/70" />
         </Pressable>
       </div>
+      <p className="mt-2 px-4">
+        <span className="inline-block rounded-full bg-gold-gradient px-3 py-1.5 text-[10.5px] font-extrabold tracking-wide text-[oklch(0.16_0.02_60)]">
+          ROUND 2 — 8 JOUEURS EN JEU
+        </span>
+      </p>
 
-      <div className="mt-3 flex items-center gap-2 px-4">
-        <div className="rounded-full border border-gold/70 px-3 py-1.5 text-center">
-          <p className="text-[12px] font-extrabold text-gold">ROUND 2</p>
-          <p className="text-[9.5px] text-muted-foreground">8 JOUEURS EN JEU</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-[oklch(0.115_0.008_60)] px-2.5 py-1.5">
-          <p className="text-[10px] font-bold tracking-wide">SÉRIE 1 / 5 QUESTIONS</p>
-          <p className="text-[10px] text-muted-foreground">Question 2 / 5</p>
-        </div>
-        <Pressable className="ml-auto flex shrink-0 items-center gap-1 rounded-full border border-gold/60 px-2.5 py-1.5 text-[10px] font-bold text-gold">
+      {/* Sous-barre */}
+      <div className="mt-2.5 flex items-center justify-between gap-2 px-4">
+        <span className="min-w-0 truncate rounded-full border border-border px-2.5 py-1.5 text-[10.5px] font-semibold text-foreground/80">
+          SÉRIE 1 / 5 QUESTIONS — Question 2/5
+        </span>
+        <span className="flex shrink-0 items-center gap-1 text-[10.5px] font-bold tracking-wide text-gold">
           RÈGLES <Info size={12} />
-        </Pressable>
-      </div>
-
-      {/* Podiums haut */}
-      <div className="snap-row mt-4 gap-2 px-4">
-        {PLAYERS.slice(0, 4).map((p) => (
-          <Podium key={p.name} {...p} />
-        ))}
+        </span>
       </div>
 
       {/* Question */}
-      <div className="mx-4 mt-4 rounded-3xl border border-gold/45 bg-[oklch(0.1_0.008_60)] p-3.5">
-        <p className="text-center text-[10.5px] font-bold tracking-wide text-violet">
-          🌍 CULTURE GÉNÉRALE
+      <div className="relative mx-4 mt-3 overflow-hidden rounded-3xl border border-violet/35 bg-[linear-gradient(170deg,oklch(0.15_0.05_285),oklch(0.1_0.01_60))] p-4">
+        <div className="absolute -top-10 left-1/2 h-24 w-40 -translate-x-1/2 rounded-[100%] bg-violet/30 blur-2xl" />
+        <p className="relative flex justify-center">
+          <span className="rounded-full bg-violet/25 px-3 py-1 text-[10.5px] font-bold text-violet">
+            🌍 CULTURE GÉNÉRALE
+          </span>
         </p>
-        <h1 className="mt-2 text-center text-[19px] leading-snug font-extrabold">
+        <h2 className="relative mt-3 text-center text-[18px] leading-snug font-extrabold">
           Quelle est la capitale du Ghana ?
-        </h1>
-        <div className="mt-3 space-y-2">
+        </h2>
+        <div className="relative mt-3.5 space-y-2">
           {ANSWERS.map((a) => (
             <Pressable
               key={a.k}
-              className="flex w-full items-center gap-2.5 rounded-2xl border border-border bg-surface-2/60 px-3 py-2.5 text-left"
+              className="flex w-full items-center gap-3 rounded-2xl border border-border bg-[oklch(0.12_0.01_60)] px-3 py-2.5 text-left"
             >
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold-gradient text-[11px] font-bold text-[oklch(0.16_0.02_60)]">
+              <span
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold text-white"
+                style={{ background: a.tint }}
+              >
                 {a.k}
               </span>
-              <span className="text-[14px] font-medium">{a.label}</span>
+              <span className="text-[14px] font-semibold">{a.label}</span>
             </Pressable>
           ))}
         </div>
-        <p className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-gold">
-          <Info size={12} /> 7 / 8 joueurs ont répondu
-        </p>
       </div>
 
-      {/* Chrono + série */}
-      <div className="mt-3 flex items-center gap-3 px-4">
-        <div className="flex h-[74px] w-[74px] shrink-0 flex-col items-center justify-center rounded-full border-[3px] border-gold/80">
-          <p className="text-[24px] leading-none font-extrabold">10</p>
-          <p className="text-[8px] tracking-wide text-muted-foreground">SECONDES</p>
-        </div>
-        <div className="flex-1 rounded-2xl border border-border bg-[oklch(0.115_0.008_60)] p-3">
-          <p className="text-[11px] font-bold tracking-wide text-gold">SÉRIE 1</p>
-          <p className="text-[11px] text-muted-foreground">5 QUESTIONS</p>
-          <p className="mt-2 text-[11px] font-bold tracking-wide text-gold">ÉLIMINATIONS</p>
-          <p className="text-[11px] text-muted-foreground">
-            À la fin de cette série <span className="text-live">2 joueurs</span> seront éliminés
+      {/* Chrono + réponses + éliminations */}
+      <div className="mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
+        <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-gold/70">
+          <span className="text-center text-[10px] leading-[1.1] font-extrabold text-gold">
+            10
+            <br />
+            SEC
+          </span>
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-bold tracking-wide text-gold">10 SECONDES</p>
+          <p className="mt-0.5 text-[12px] font-semibold text-gold/90">
+            7/8 joueurs ont répondu
           </p>
         </div>
       </div>
+      <div className="mx-4 mt-2 rounded-2xl border border-live/45 bg-[oklch(0.13_0.03_25)] p-3">
+        <p className="text-[10.5px] font-extrabold tracking-wide text-live">ÉLIMINATIONS</p>
+        <p className="mt-1 text-[12px] leading-snug text-foreground/80">
+          À la fin de cette série, <span className="font-bold text-live">2 joueurs</span> seront
+          éliminés
+        </p>
+      </div>
 
-      {/* Podiums bas */}
-      <div className="snap-row mt-4 gap-2 px-4">
-        {PLAYERS.slice(4).map((p) => (
-          <Podium key={p.name} {...p} />
+      {/* Podiums */}
+      <div className="mt-3 grid grid-cols-2 gap-2.5 px-4">
+        {PLAYERS.map((p) => (
+          <Podium key={p.name} name={p.name} host={p.host} />
         ))}
       </div>
 
       {/* Réponses verrouillées */}
-      <div className="mx-4 mt-4 rounded-2xl border border-border bg-[oklch(0.115_0.008_60)] p-4 text-center">
-        <p className="flex items-center justify-center gap-2 text-[14px] font-extrabold tracking-wide">
-          <Lock size={15} className="text-gold" /> RÉPONSES VERROUILLÉES
-        </p>
-        <p className="mt-1 text-[11.5px] text-muted-foreground">
-          La réponse sera révélée à la fin du chrono.
-        </p>
-      </div>
-
-      {/* Réactions */}
-      <div className="snap-row mt-3 gap-2 px-4">
-        {[
-          { e: "❤️", v: "48" },
-          { e: "🔥", v: "36" },
-          { e: "👏", v: "22" },
-          { e: "🎁", v: "CADEAUX" },
-        ].map((r) => (
-          <Pressable
-            key={r.e}
-            className="flex items-center gap-1.5 rounded-full border border-border bg-[oklch(0.13_0.01_60)] px-3.5 py-2 text-[12px] font-semibold"
-          >
-            <span>{r.e}</span> {r.v}
-          </Pressable>
-        ))}
+      <div className="mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3.5">
+        <Lock size={18} className="shrink-0 text-gold" />
+        <div>
+          <p className="text-[12.5px] font-extrabold tracking-wide">RÉPONSES VERROUILLÉES 🔒</p>
+          <p className="mt-0.5 text-[11.5px] text-muted-foreground">
+            La réponse sera révélée à la fin du chrono
+          </p>
+        </div>
       </div>
 
       {/* Classement */}
-      <div className="mx-4 mt-4 rounded-2xl border border-gold/25 bg-[oklch(0.115_0.008_60)] p-3">
-        <p className="text-[12px] font-extrabold tracking-wide text-gold">CLASSEMENT SÉRIE 1</p>
-        <div className="mt-2 space-y-1.5">
+      <div className="mx-4 mt-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
+        <p className="text-[12.5px] font-extrabold tracking-wide">CLASSEMENT SÉRIE 1</p>
+        <div className="mt-2.5 space-y-2">
           {RANKING.map((r) => (
-            <div
-              key={r.n}
-              className={`flex items-center gap-2 text-[12px] ${r.out ? "text-live" : "text-foreground/85"}`}
-            >
-              <span className="w-3 text-[11px]">{r.n}</span>
+            <div key={r.n} className="flex items-center gap-2.5">
+              <span
+                className={`w-4 shrink-0 text-[12px] font-extrabold ${r.n <= 3 ? "text-gold" : "text-muted-foreground"}`}
+              >
+                {r.n}
+              </span>
               <img
                 src={photoUrl(r.name, 64)}
                 alt=""
                 loading="lazy"
-                className="h-6 w-6 rounded-full object-cover"
+                className="h-7 w-7 shrink-0 rounded-full object-cover"
               />
-              <span className="flex-1 truncate font-medium">{r.name}</span>
-              <span className="w-12 text-right">{r.score}</span>
-              <span className="w-12 text-right text-muted-foreground">{r.time}</span>
+              <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">{r.name}</span>
+              <span
+                className={`shrink-0 text-[12px] font-bold ${r.out ? "text-live" : "text-foreground/85"}`}
+              >
+                {r.score}
+              </span>
+              <span className="w-11 shrink-0 text-right text-[11px] text-muted-foreground">
+                {r.time}
+              </span>
             </div>
           ))}
         </div>
-        <p className="mt-2 text-[10.5px] text-muted-foreground">
-          2 joueurs seront éliminés à la fin de cette série.
-        </p>
+      </div>
+
+      {/* Réactions */}
+      <div className="snap-row mt-3 gap-2 px-4">
+        {["❤️ 48", "🔥 36", "👏 22"].map((r) => (
+          <span
+            key={r}
+            className="rounded-full border border-border bg-surface/60 px-3 py-1.5 text-[12px] font-semibold"
+          >
+            {r}
+          </span>
+        ))}
+        <Pressable className="flex items-center gap-1.5 rounded-full border border-gold/60 px-3 py-1.5 text-[11px] font-bold tracking-wide text-gold">
+          <Gift size={13} /> CADEAUX
+        </Pressable>
       </div>
 
       {/* Chat spectateurs */}
-      <div className="mx-4 mt-3 rounded-2xl border border-border bg-[oklch(0.115_0.008_60)] p-3">
-        <p className="text-[11.5px] font-extrabold tracking-wide text-violet">CHAT SPECTATEURS</p>
-        <div className="mt-2 space-y-2">
+      <div className="mx-4 mt-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
+        <div className="flex items-center justify-between">
+          <p className="text-[12.5px] font-extrabold tracking-wide">CHAT SPECTATEURS</p>
+          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <Timer size={12} /> en direct
+          </span>
+        </div>
+        <div className="mt-2.5 space-y-2">
           {CHAT.map((c) => (
-            <div key={c.name} className="flex items-center gap-2">
-              <img
-                src={photoUrl(c.name, 64)}
-                alt=""
-                loading="lazy"
-                className="h-6 w-6 rounded-full object-cover"
-              />
-              <p className="text-[12px] text-foreground/85">
-                <span className="font-semibold">{c.name}:</span> {c.text}
-              </p>
-            </div>
+            <p key={c.name} className="text-[12.5px]">
+              <span className="font-semibold" style={{ color: c.color }}>
+                {c.name}
+              </span>{" "}
+              <span className="text-foreground/85">{c.text}</span>
+            </p>
           ))}
         </div>
-        <div className="mt-2.5 flex items-center gap-2">
+        <div className="mt-3 flex items-center gap-2">
           <input
             placeholder="Écrire un message…"
             className="min-w-0 flex-1 rounded-full border border-border bg-surface-2/60 px-3.5 py-2.5 text-[13px] outline-none placeholder:text-muted-foreground"
@@ -262,24 +270,6 @@ function Quiz() {
           >
             <Send size={16} className="text-[oklch(0.16_0.02_60)]" />
           </Pressable>
-        </div>
-      </div>
-
-      {/* Fonctionnalités clés */}
-      <div className="mx-4 mt-3 rounded-2xl border border-gold/25 bg-[oklch(0.1_0.008_60)] p-3">
-        <p className="text-center text-[11px] font-extrabold tracking-wide text-violet">
-          FONCTIONNALITÉS CLÉS
-        </p>
-        <div className="mt-2.5 space-y-2.5">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="flex gap-2.5">
-              <span className="text-[16px]">{f.emoji}</span>
-              <div className="min-w-0">
-                <p className="text-[11px] font-bold tracking-wide text-gold">{f.title}</p>
-                <p className="text-[11px] leading-snug text-muted-foreground">{f.desc}</p>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>
