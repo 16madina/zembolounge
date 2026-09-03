@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, HelpCircle, MicOff, MoreVertical, Send, Smile, Timer, Users } from "lucide-react";
+import { HelpCircle, MicOff, MoreVertical, Send, Smile, Timer, Users } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { Pressable } from "@/components/zembo/ui";
 import { ZemboIcon } from "@/components/zembo/ZemboMark";
@@ -26,14 +27,7 @@ export const Route = createFileRoute("/play_/hot-seat")({
   component: HotSeat,
 });
 
-const SIDE = [
-  { name: "Moussa", tint: "oklch(0.6 0.16 250)" },
-  { name: "Karim", tint: "oklch(0.6 0.14 240)" },
-  { name: "Sarah", tint: "oklch(0.6 0.16 30)" },
-  { name: "Aïcha", tint: "oklch(0.6 0.2 320)" },
-  { name: "Yann", tint: "oklch(0.6 0.17 260)" },
-  { name: "Djeneba", tint: "oklch(0.6 0.2 330)" },
-];
+const PLAYERS = ["Moussa", "Sarah", "Yann", "Karim", "Aïcha", "Djeneba"];
 
 const CHAT = [
   { name: "FanZembo", text: "Deena toujours cash 🤣🔥", color: "oklch(0.7 0.2 300)", time: "21:45" },
@@ -48,23 +42,23 @@ function HotSeat() {
 
   return (
     <div className="pb-6">
-      {/* Header */}
+      {/* Barre haute */}
       <div className="flex items-center gap-2 px-4 pt-[max(env(safe-area-inset-top),12px)]">
         <Pressable onClick={() => navigate({ to: "/play" })} aria-label="Retour">
           <ChevronLeft size={22} className="text-gold" />
         </Pressable>
         <ZemboIcon size={20} />
-        <h1 className="text-[19px] font-extrabold tracking-tight">
-          🔥 <span className="text-[oklch(0.68_0.2_38)]">HOT</span> SEAT
+        <h1 className="flex-1 text-center text-[19px] font-extrabold tracking-tight">
+          🔥 <span className="text-[oklch(0.7_0.2_45)]">HOT</span> SEAT
         </h1>
-        <Pressable aria-label="Plus" className="ml-auto">
+        <Pressable aria-label="Plus">
           <MoreVertical size={18} className="text-foreground/70" />
         </Pressable>
       </div>
 
       <div className="snap-row mt-3 gap-2 px-4">
-        <span className="flex items-center gap-1.5 rounded-full bg-violet/25 px-3 py-1.5 text-[11px] font-bold text-violet">
-          ROUND <span className="text-foreground">1 / 3</span>
+        <span className="rounded-full bg-violet/25 px-3 py-1.5 text-[11px] font-bold text-violet">
+          ROUND 1/3
         </span>
         <span className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[11px] text-foreground/80">
           <Users size={12} /> Joueurs : 7
@@ -77,9 +71,12 @@ function HotSeat() {
         </span>
       </div>
 
-      {/* Scène chaise chaude */}
-      <div className="mx-4 mt-3 overflow-hidden rounded-3xl border border-[oklch(0.6_0.2_35_/_45%)]">
-        <p className="bg-[oklch(0.14_0.03_35)] py-2 text-center text-[12.5px] font-extrabold tracking-wide">
+      {/* Grand encart central */}
+      <div
+        className="mx-4 mt-3 overflow-hidden rounded-[20px] border border-[oklch(0.62_0.22_28_/_50%)]"
+        style={{ boxShadow: "0 14px 40px -22px oklch(0.62 0.22 28 / 70%)" }}
+      >
+        <p className="bg-[oklch(0.15_0.05_28)] py-2 text-center text-[12.5px] font-extrabold tracking-wide">
           🔥 DEENA EST SUR LA CHAISE CHAUDE 🔥
         </p>
         <div className="relative">
@@ -88,53 +85,52 @@ function HotSeat() {
             alt="Deena sur la chaise chaude"
             width={768}
             height={512}
-            className="h-[220px] w-full object-cover"
+            className="h-[230px] w-full object-cover"
           />
-          <div className="absolute inset-0 bg-[oklch(0.5_0.2_35)]/20" />
+          <div className="absolute inset-0 bg-[oklch(0.5_0.22_28)]/22" />
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[oklch(0.09_0.008_60)] to-transparent" />
-          <p className="absolute left-4 top-3 text-[15px] font-extrabold tracking-[0.2em] text-[oklch(0.7_0.22_35)]">
-            HOT
+          <p className="absolute left-1/2 top-3 -translate-x-1/2 text-[15px] font-extrabold tracking-[0.32em] text-[oklch(0.72_0.22_30)] drop-shadow-[0_0_14px_oklch(0.65_0.24_28_/_80%)]">
+            HOT SEAT
           </p>
-          <p className="absolute right-4 top-3 text-[15px] font-extrabold tracking-[0.2em] text-[oklch(0.7_0.22_35)]">
-            SEAT
+          <p className="absolute bottom-3 left-4 rounded-md bg-black/60 px-2 py-1 text-[11px] font-bold text-white">
+            Deena
           </p>
-        </div>
-
-        {/* Question */}
-        <div className="border-t border-violet/25 bg-[oklch(0.1_0.01_290)] p-3.5">
-          <div className="flex items-center justify-between">
-            <span className="rounded-full bg-violet/25 px-2.5 py-1 text-[10.5px] font-bold text-violet">
-              QUESTION <span className="text-foreground">2 / 3</span>
-            </span>
-            <span className="flex items-center gap-1.5 rounded-full border border-gold/60 px-2.5 py-1 text-[11px] font-bold text-gold">
-              <Timer size={12} /> 00:30
-            </span>
-          </div>
-          <h2 className="mt-3 text-center text-[15.5px] leading-snug font-bold">
-            Quelle est la chose que tu ne pardonnerais jamais dans une relation ?
-          </h2>
-          <Pressable className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-gold/60 py-2.5 text-[11.5px] font-bold tracking-wide text-gold">
-            🃏 UTILISER MON JOKER <span className="text-muted-foreground">1 / 1</span>
-          </Pressable>
         </div>
       </div>
 
-      {/* Joueurs */}
-      <div className="snap-row mt-3 gap-2 px-4">
-        {SIDE.map((s) => (
+      {/* Carte question */}
+      <div className="mx-4 mt-3 rounded-[20px] border border-violet/30 bg-[oklch(0.1_0.015_290)] p-3.5">
+        <div className="flex items-center justify-between">
+          <span className="rounded-full bg-violet/25 px-2.5 py-1 text-[10.5px] font-bold text-violet">
+            QUESTION 2/3
+          </span>
+          <span className="flex items-center gap-1.5 rounded-full border border-[oklch(0.7_0.2_45_/_60%)] px-2.5 py-1 text-[11px] font-bold text-[oklch(0.75_0.19_50)]">
+            <Timer size={12} /> 00:30
+          </span>
+        </div>
+        <h2 className="mt-3 text-center text-[15.5px] leading-snug font-bold">
+          Quelle est la chose que tu ne pardonnerais jamais dans une relation ?
+        </h2>
+        <Pressable className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-gold/60 py-2.5 text-[11.5px] font-bold tracking-wide text-gold">
+          🃏 UTILISER MON JOKER <span className="text-muted-foreground">1/1</span>
+        </Pressable>
+      </div>
+
+      {/* Les 6 autres joueurs */}
+      <div className="mt-3 grid grid-cols-3 gap-2 px-4">
+        {PLAYERS.map((name) => (
           <div
-            key={s.name}
-            className="relative h-[124px] w-[104px] overflow-hidden rounded-2xl border border-border"
-            style={{ background: `linear-gradient(180deg, ${s.tint}, oklch(0.1 0.008 60))` }}
+            key={name}
+            className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-surface"
           >
             <img
-              src={photoUrl(s.name, 200)}
-              alt={s.name}
+              src={photoUrl(name, 200)}
+              alt={name}
               loading="lazy"
               className="h-full w-full object-cover opacity-90"
             />
-            <span className="absolute left-1.5 top-1.5 rounded-md bg-black/55 px-1.5 py-0.5 text-[10.5px] font-semibold text-white">
-              {s.name}
+            <span className="absolute left-1.5 top-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+              {name}
             </span>
             <span className="absolute right-1.5 top-2 h-2 w-2 rounded-full bg-emerald" />
             <MicOff size={13} className="absolute bottom-1.5 left-1.5 text-live" />
