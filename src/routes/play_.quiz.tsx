@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Crown, Eye, Gift, Info, Lock, MoreVertical, Send, Timer } from "lucide-react";
-import { BrainZIcon, PodiumBase } from "@/components/zembo/GameIcons";
+import { BrainZIcon } from "@/components/zembo/GameIcons";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { Pressable } from "@/components/zembo/ui";
 
@@ -165,65 +165,92 @@ function Quiz() {
         </span>
       </div>
 
-      {/* Question */}
-      <div className="relative mx-4 mt-3 overflow-hidden rounded-3xl border border-violet/35 bg-[linear-gradient(170deg,oklch(0.15_0.05_285),oklch(0.1_0.01_60))] p-4">
-        <div className="absolute -top-10 left-1/2 h-24 w-40 -translate-x-1/2 rounded-[100%] bg-violet/30 blur-2xl" />
-        <p className="relative flex justify-center">
-          <span className="rounded-full bg-violet/25 px-3 py-1 text-[10.5px] font-bold text-violet">
-            🌍 CULTURE GÉNÉRALE
-          </span>
-        </p>
-        <h2 className="relative mt-3 text-center text-[18px] leading-snug font-extrabold">
-          Quelle est la capitale du Ghana ?
-        </h2>
-        <div className="relative mt-3.5 space-y-2">
-          {ANSWERS.map((a) => (
-            <Pressable
-              key={a.k}
-              className="flex w-full items-center gap-3 rounded-2xl border border-border bg-[oklch(0.12_0.01_60)] px-3 py-2.5 text-left"
-            >
-              <span
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold text-white"
-                style={{ background: a.tint }}
-              >
-                {a.k}
-              </span>
-              <span className="text-[14px] font-semibold">{a.label}</span>
-            </Pressable>
-          ))}
+      {/* Scène plateau : pupitres haut / question / pupitres bas */}
+      <div className="relative mt-3 overflow-hidden py-3">
+        {/* faisceaux de spots */}
+        <div className="pointer-events-none absolute inset-0">
+          <div
+            className="absolute -top-16 left-2 h-[300px] w-[150px] opacity-70 blur-2xl"
+            style={{
+              background:
+                "linear-gradient(180deg, oklch(0.65 0.19 250 / 45%), transparent 75%)",
+              clipPath: "polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%)",
+            }}
+          />
+          <div
+            className="absolute -top-16 right-2 h-[300px] w-[150px] opacity-70 blur-2xl"
+            style={{
+              background:
+                "linear-gradient(180deg, oklch(0.62 0.24 300 / 45%), transparent 75%)",
+              clipPath: "polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%)",
+            }}
+          />
+          <div className="absolute top-[42%] left-0 h-[2px] w-full bg-gold/20 blur-[2px]" />
+          <div className="absolute bottom-[18%] left-0 h-[2px] w-full bg-gold/15 blur-[2px]" />
+          {/* sol réfléchissant */}
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(0deg,oklch(0.16_0.02_70/45%),transparent)]" />
         </div>
-      </div>
 
-      {/* Chrono + réponses + éliminations */}
-      <div className="mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
-        <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-gold/70">
-          <span className="text-center text-[10px] leading-[1.1] font-extrabold text-gold">
-            10
-            <br />
-            SEC
+        <DeskRow players={PLAYERS.slice(0, 4)} />
+
+        {/* Question */}
+        <div className="relative z-10 mx-4 mt-4 overflow-hidden rounded-3xl border border-violet/35 bg-[linear-gradient(170deg,oklch(0.15_0.05_285),oklch(0.1_0.01_60))] p-4">
+          <div className="absolute -top-10 left-1/2 h-24 w-40 -translate-x-1/2 rounded-[100%] bg-violet/30 blur-2xl" />
+          <p className="relative flex justify-center">
+            <span className="rounded-full bg-violet/25 px-3 py-1 text-[10.5px] font-bold text-violet">
+              🌍 CULTURE GÉNÉRALE
+            </span>
+          </p>
+          <h2 className="relative mt-3 text-center text-[18px] leading-snug font-extrabold">
+            Quelle est la capitale du Ghana ?
+          </h2>
+          <div className="relative mt-3.5 space-y-2">
+            {ANSWERS.map((a) => (
+              <Pressable
+                key={a.k}
+                className="flex w-full items-center gap-3 rounded-2xl border border-border bg-[oklch(0.12_0.01_60)] px-3 py-2.5 text-left"
+              >
+                <span
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold text-white"
+                  style={{ background: a.tint }}
+                >
+                  {a.k}
+                </span>
+                <span className="text-[14px] font-semibold">{a.label}</span>
+              </Pressable>
+            ))}
+          </div>
+        </div>
+
+        {/* Chrono + éliminations */}
+        <div className="relative z-10 mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3">
+          <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-gold/70">
+            <span className="text-center text-[10px] leading-[1.1] font-extrabold text-gold">
+              10
+              <br />
+              SEC
+            </span>
           </span>
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-bold tracking-wide text-gold">10 SECONDES</p>
-          <p className="mt-0.5 text-[12px] font-semibold text-gold/90">
-            7/8 joueurs ont répondu
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-bold tracking-wide text-gold">10 SECONDES</p>
+            <p className="mt-0.5 text-[12px] font-semibold text-gold/90">
+              7/8 joueurs ont répondu
+            </p>
+          </div>
+        </div>
+        <div className="relative z-10 mx-4 mt-2 rounded-2xl border border-live/45 bg-[oklch(0.13_0.03_25)] p-3">
+          <p className="text-[10.5px] font-extrabold tracking-wide text-live">ÉLIMINATIONS</p>
+          <p className="mt-1 text-[12px] leading-snug text-foreground/80">
+            À la fin de cette série, <span className="font-bold text-live">2 joueurs</span> seront
+            éliminés
           </p>
         </div>
-      </div>
-      <div className="mx-4 mt-2 rounded-2xl border border-live/45 bg-[oklch(0.13_0.03_25)] p-3">
-        <p className="text-[10.5px] font-extrabold tracking-wide text-live">ÉLIMINATIONS</p>
-        <p className="mt-1 text-[12px] leading-snug text-foreground/80">
-          À la fin de cette série, <span className="font-bold text-live">2 joueurs</span> seront
-          éliminés
-        </p>
+
+        <div className="mt-4">
+          <DeskRow players={PLAYERS.slice(4)} />
+        </div>
       </div>
 
-      {/* Podiums */}
-      <div className="mt-3 grid grid-cols-2 gap-2.5 px-4">
-        {PLAYERS.map((p) => (
-          <Podium key={p.name} name={p.name} host={p.host} />
-        ))}
-      </div>
 
       {/* Réponses verrouillées */}
       <div className="mx-4 mt-3 flex items-center gap-3 rounded-2xl border border-border bg-[oklch(0.11_0.008_60)] p-3.5">
