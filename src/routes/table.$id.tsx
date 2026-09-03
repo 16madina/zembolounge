@@ -87,15 +87,15 @@ function TableRoom() {
 
       {/* Table */}
       <div className="relative mx-4 mt-4 overflow-hidden rounded-3xl border border-gold/25">
-        <img src={IMG.table} alt="Table Zembo" loading="lazy" className="h-[280px] w-full object-cover" />
+        <img src={IMG.table} alt="Table Zembo" loading="lazy" className="h-[340px] w-full object-cover" />
         <div className="absolute inset-0 bg-black/45" />
 
         <div className="absolute inset-0 p-3">
           <div className="relative h-full w-full">
             {tableSeats.map((s, i) => {
               const angle = (i / tableSeats.length) * Math.PI * 2 - Math.PI / 2;
-              const left = 50 + Math.cos(angle) * 36;
-              const top = 50 + Math.sin(angle) * 36;
+              const left = 50 + Math.cos(angle) * 38;
+              const top = 50 + Math.sin(angle) * 39;
               return (
                 <div
                   key={s.n}
@@ -123,9 +123,9 @@ function TableRoom() {
               );
             })}
 
-            <div className="absolute top-1/2 left-1/2 w-[132px] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-gold/50 bg-black/80 p-2.5 text-center">
+            <div className="absolute top-1/2 left-1/2 w-[120px] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-gold/50 bg-black/85 p-2 text-center">
               <p className="text-[9px] tracking-widest text-gold uppercase">Question</p>
-              <p className="mt-1.5 text-[11px] leading-snug text-white/90">
+              <p className="mt-1 text-[10.5px] leading-snug text-white/90">
                 Quelle est la chose que tu as déjà pardonnée en amour et que tu ne pardonnerais plus jamais ?
               </p>
             </div>
