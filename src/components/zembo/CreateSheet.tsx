@@ -28,11 +28,12 @@ const OPTIONS = [
     id: "play",
     title: "Play & Fun",
     desc: "Lance un jeu et défie ta communauté.",
-    chips: ["Quiz", "Défis", "Tu préfères ?"],
+    chips: ["Quiz", "Hot Seat", "Face à Face"],
     image: IMG.play,
     accent: "oklch(0.68 0.16 158)",
-    to: "/table/$id",
+    to: "/play",
   },
+
   {
     id: "world",
     title: "World Room",

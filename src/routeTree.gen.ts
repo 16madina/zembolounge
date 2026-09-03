@@ -15,6 +15,7 @@ import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as MessagesIdRouteImport } from './routes/messages_.$id'
+import { Route as PlayFaceAFaceRouteImport } from './routes/play_.face-a-face'
 import { Route as PlayHotSeatRouteImport } from './routes/play_.hot-seat'
 import { Route as PlayQuizRouteImport } from './routes/play_.quiz'
 import { Route as TableIdRouteImport } from './routes/table.$id'
@@ -50,6 +51,11 @@ const MessagesIdRoute = MessagesIdRouteImport.update({
   path: '/messages/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayFaceAFaceRoute = PlayFaceAFaceRouteImport.update({
+  id: '/play_/face-a-face',
+  path: '/play/face-a-face',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlayHotSeatRoute = PlayHotSeatRouteImport.update({
   id: '/play_/hot-seat',
   path: '/play/hot-seat',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/play/face-a-face': typeof PlayFaceAFaceRoute
   '/play/hot-seat': typeof PlayHotSeatRoute
   '/play/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/play/face-a-face': typeof PlayFaceAFaceRoute
   '/play/hot-seat': typeof PlayHotSeatRoute
   '/play/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
   '/messages_/$id': typeof MessagesIdRoute
+  '/play_/face-a-face': typeof PlayFaceAFaceRoute
   '/play_/hot-seat': typeof PlayHotSeatRoute
   '/play_/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/profile'
     | '/messages/$id'
+    | '/play/face-a-face'
     | '/play/hot-seat'
     | '/play/quiz'
     | '/table/$id'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/profile'
     | '/messages/$id'
+    | '/play/face-a-face'
     | '/play/hot-seat'
     | '/play/quiz'
     | '/table/$id'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/profile'
     | '/messages_/$id'
+    | '/play_/face-a-face'
     | '/play_/hot-seat'
     | '/play_/quiz'
     | '/table/$id'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   PlayRoute: typeof PlayRoute
   ProfileRoute: typeof ProfileRoute
   MessagesIdRoute: typeof MessagesIdRoute
+  PlayFaceAFaceRoute: typeof PlayFaceAFaceRoute
   PlayHotSeatRoute: typeof PlayHotSeatRoute
   PlayQuizRoute: typeof PlayQuizRoute
   TableIdRoute: typeof TableIdRoute
@@ -204,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/play_/face-a-face': {
+      id: '/play_/face-a-face'
+      path: '/play/face-a-face'
+      fullPath: '/play/face-a-face'
+      preLoaderRoute: typeof PlayFaceAFaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/play_/hot-seat': {
       id: '/play_/hot-seat'
       path: '/play/hot-seat'
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlayRoute: PlayRoute,
   ProfileRoute: ProfileRoute,
   MessagesIdRoute: MessagesIdRoute,
+  PlayFaceAFaceRoute: PlayFaceAFaceRoute,
   PlayHotSeatRoute: PlayHotSeatRoute,
   PlayQuizRoute: PlayQuizRoute,
   TableIdRoute: TableIdRoute,
