@@ -29,7 +29,7 @@ export function SegmentedTabs({
             key={t.id}
             type="button"
             onClick={() => onChange(t.id)}
-            className="relative min-w-0 flex-1 rounded-xl px-1 py-2 outline-none"
+            className="relative min-w-0 flex-1 rounded-xl px-0.5 py-2 outline-none"
           >
             {active && (
               <motion.span
@@ -40,14 +40,14 @@ export function SegmentedTabs({
             )}
             <span
               className={cn(
-                "relative flex items-center justify-center gap-1",
+                "relative flex items-center justify-center gap-[3px]",
                 active ? "text-[oklch(0.16_0.02_60)]" : "text-foreground/80",
               )}
             >
-              <t.icon size={13} strokeWidth={active ? 2.6 : 2} />
+              <t.icon size={12} strokeWidth={active ? 2.6 : 2} />
               <span
                 className={cn(
-                  "truncate text-[11px]",
+                  "truncate text-[10px]",
                   active ? "font-bold" : "font-medium",
                 )}
               >
