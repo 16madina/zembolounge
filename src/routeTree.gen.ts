@@ -15,6 +15,7 @@ import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as MessagesIdRouteImport } from './routes/messages_.$id'
+import { Route as PlayQuizRouteImport } from './routes/play_.quiz'
 import { Route as TableIdRouteImport } from './routes/table.$id'
 import { Route as TalkShowIdRouteImport } from './routes/talk-show.$id'
 
@@ -48,6 +49,11 @@ const MessagesIdRoute = MessagesIdRouteImport.update({
   path: '/messages/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayQuizRoute = PlayQuizRouteImport.update({
+  id: '/play_/quiz',
+  path: '/play/quiz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TableIdRoute = TableIdRouteImport.update({
   id: '/table/$id',
   path: '/table/$id',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/play/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/play/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
   '/messages_/$id': typeof MessagesIdRoute
+  '/play_/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/profile'
     | '/messages/$id'
+    | '/play/quiz'
     | '/table/$id'
     | '/talk-show/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/profile'
     | '/messages/$id'
+    | '/play/quiz'
     | '/table/$id'
     | '/talk-show/$id'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/profile'
     | '/messages_/$id'
+    | '/play_/quiz'
     | '/table/$id'
     | '/talk-show/$id'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   PlayRoute: typeof PlayRoute
   ProfileRoute: typeof ProfileRoute
   MessagesIdRoute: typeof MessagesIdRoute
+  PlayQuizRoute: typeof PlayQuizRoute
   TableIdRoute: typeof TableIdRoute
   TalkShowIdRoute: typeof TalkShowIdRoute
 }
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/play_/quiz': {
+      id: '/play_/quiz'
+      path: '/play/quiz'
+      fullPath: '/play/quiz'
+      preLoaderRoute: typeof PlayQuizRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/table/$id': {
       id: '/table/$id'
       path: '/table/$id'
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlayRoute: PlayRoute,
   ProfileRoute: ProfileRoute,
   MessagesIdRoute: MessagesIdRoute,
+  PlayQuizRoute: PlayQuizRoute,
   TableIdRoute: TableIdRoute,
   TalkShowIdRoute: TalkShowIdRoute,
 }
