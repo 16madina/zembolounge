@@ -64,70 +64,72 @@ const CHAT = [
 function Desk({ name, host }: { name: string; host: boolean }) {
   const ring = host ? "oklch(0.82 0.13 85)" : "oklch(0.68 0.16 158)";
   return (
-    <div className="relative flex w-[150px] flex-col items-center pb-4">
+    <div className="relative flex min-w-0 flex-col items-center pb-2">
       {/* halo du spot sur le candidat */}
-      <div className="pointer-events-none absolute -top-2 left-1/2 h-24 w-24 -translate-x-1/2 rounded-full bg-azure/25 blur-2xl" />
+      <div className="pointer-events-none absolute -top-1 left-1/2 h-16 w-16 -translate-x-1/2 rounded-full bg-azure/25 blur-2xl" />
 
-      {host && <Crown size={15} className="relative z-10 text-gold" />}
+      {host && <Crown size={12} className="relative z-10 text-gold" />}
+      {!host && <span className="h-3" />}
       <img
-        src={photoUrl(name, 180)}
+        src={photoUrl(name, 160)}
         alt={name}
         loading="lazy"
-        className="relative z-10 mt-1 h-[60px] w-[60px] rounded-full object-cover"
-        style={{ border: `2.5px solid ${ring}`, boxShadow: `0 0 16px -4px ${ring}` }}
+        className="relative z-10 mt-0.5 h-[46px] w-[46px] rounded-full object-cover"
+        style={{ border: `2px solid ${ring}`, boxShadow: `0 0 12px -3px ${ring}` }}
       />
 
       {/* plaque nom */}
-      <span className="relative z-10 mt-2 rounded-md border border-gold/55 bg-black/75 px-2.5 py-0.5 text-[11px] font-bold text-gold">
+      <span className="relative z-10 mt-1 max-w-full truncate rounded-md border border-gold/55 bg-black/75 px-1.5 py-0.5 text-[9px] font-bold text-gold">
         {name}
       </span>
       {host ? (
-        <span className="relative z-10 mt-1 text-[9px] font-extrabold tracking-[0.18em] text-gold">
+        <span className="relative z-10 mt-0.5 text-[7px] font-extrabold tracking-[0.14em] text-gold">
           HÔTE
         </span>
       ) : (
-        <span className="relative z-10 mt-1 rounded-full bg-emerald/20 px-2 py-[2px] text-[9px] font-bold tracking-wide text-emerald">
+        <span className="relative z-10 mt-0.5 rounded-full bg-emerald/20 px-1.5 py-[1px] text-[7px] font-bold tracking-wide text-emerald">
           PRÊT ✓
         </span>
       )}
 
       {/* pupitre en perspective */}
-      <div className="relative z-10 mt-1.5 h-[62px] w-[136px]">
+      <div className="relative z-10 mt-1 h-[46px] w-full max-w-[82px]">
         <div
-          className="absolute inset-x-0 top-0 h-[54px] overflow-hidden"
+          className="absolute inset-x-0 top-0 h-[40px] overflow-hidden"
           style={{
-            transform: "perspective(320px) rotateX(16deg)",
+            transform: "perspective(240px) rotateX(16deg)",
             background:
               "linear-gradient(180deg, oklch(0.19 0.014 70), oklch(0.09 0.008 60))",
             borderTop: "2px solid oklch(0.88 0.12 90)",
             borderLeft: "1px solid oklch(0.82 0.13 85 / 55%)",
             borderRight: "1px solid oklch(0.82 0.13 85 / 55%)",
-            borderRadius: "6px 6px 3px 3px",
+            borderRadius: "5px 5px 3px 3px",
             boxShadow:
               "0 -6px 18px -8px oklch(0.88 0.12 90 / 60%), inset 0 -12px 24px -14px oklch(0.82 0.13 85 / 45%)",
           }}
         >
-          <span className="flex h-full items-center justify-center pt-1 text-[30px] leading-none font-extrabold text-gold-gradient">
+          <span className="flex h-full items-center justify-center pt-0.5 text-[22px] leading-none font-extrabold text-gold-gradient">
             Z
           </span>
         </div>
         {/* reflet au sol */}
-        <div className="absolute bottom-0 left-1/2 h-4 w-[110px] -translate-x-1/2 rounded-[100%] bg-gold/30 blur-md" />
+        <div className="absolute bottom-0 left-1/2 h-3 w-[64px] -translate-x-1/2 rounded-[100%] bg-gold/30 blur-md" />
       </div>
     </div>
   );
 }
 
-/** Rangée de pupitres qui défile (lineup de plateau) */
+/** Rangée de 4 pupitres visibles d'un coup (plateau) */
 function DeskRow({ players }: { players: { name: string; host: boolean }[] }) {
   return (
-    <div className="snap-row relative z-10 gap-3 px-4">
+    <div className="relative z-10 grid grid-cols-4 gap-1 px-2">
       {players.map((p) => (
         <Desk key={p.name} name={p.name} host={p.host} />
       ))}
     </div>
   );
 }
+
 
 
 function Quiz() {
