@@ -131,7 +131,20 @@ export const forYou = [
   { id: "4", tag: "Conseils Love", title: "Attirer ce que tu mérites", views: 915, image: world },
 ];
 
-export const conversations = [
+export type Conversation = {
+  id: string;
+  name: string;
+  badge?: string;
+  group?: string;
+  lines: string[];
+  time: string;
+  unread?: number;
+  dot?: boolean;
+  muted?: boolean;
+  kind?: "person" | "group" | "official";
+};
+
+export const conversations: Conversation[] = [
   {
     id: "1",
     name: "Sarah",
@@ -145,7 +158,6 @@ export const conversations = [
     name: "Yann",
     lines: ["C'était un débat incroyable 🔥", "À refaire bientôt !"],
     time: "21:15",
-    unread: 0,
     dot: true,
   },
   {
@@ -159,31 +171,45 @@ export const conversations = [
     id: "4",
     name: "Red Flags Table",
     group: "Groupe · 8 membres",
-    lines: ["Marc : 😂😂 trop fort !"],
+    lines: ["Marc : 😂😂😂 trop fort !"],
     time: "20:34",
-    unread: 0,
     muted: true,
+    kind: "group",
   },
-  {
-    id: "5",
-    name: "Aïcha",
-    lines: ["Merci beaucoup pour ton conseil 🙏"],
-    time: "19:47",
-    unread: 0,
-  },
+  { id: "5", name: "Aïcha", lines: ["Merci beaucoup pour ton conseil 🙏"], time: "19:47" },
   {
     id: "6",
     name: "ZEMBO Team",
     badge: "OFFICIEL",
     lines: ["🎉 Bienvenue dans la communauté ZEMBO !", "N'hésite pas si tu as des questions."],
     time: "18:30",
-    unread: 0,
     dot: true,
+    kind: "official",
   },
-  { id: "7", name: "Kader", lines: ["À demain sur le Live alors !"], time: "Hier", unread: 0 },
+  { id: "7", name: "Kader", lines: ["À demain sur le Live alors !"], time: "Hier" },
 ];
 
 export const people = ["Sarah", "Yann", "Leila", "Marc", "Aïcha", "Kader"];
+
+export const contacts = [
+  { name: "Sarah", status: "online" as const },
+  { name: "Yann", status: "online" as const },
+  { name: "Leila", status: "online" as const },
+  { name: "Marc", status: "away" as const },
+  { name: "Aïcha", status: "online" as const },
+  { name: "Kader", status: "online" as const },
+];
+
+export const threadMessages = [
+  { id: "1", mine: false, text: "Hey Deena ! Ton débat de ce soir était incroyable 🙌", time: "21:12" },
+  { id: "2", mine: true, text: "Merci Sarah ! Le public était vraiment à fond ce soir 🔥", time: "21:14" },
+  { id: "3", mine: false, text: "On devrait continuer la discussion sur une Zembo Table.", time: "21:20" },
+  { id: "4", mine: true, text: "Bonne idée. Demain 20h, thème « L'argent et l'amour » ?", time: "21:24" },
+  { id: "5", mine: false, text: "Parfait pour moi. J'invite Leila et Yann ?", time: "21:31" },
+  { id: "6", mine: true, text: "Oui, et on garde 6 places max pour que ça reste intime.", time: "21:35" },
+  { id: "7", mine: false, text: "Merci pour ta réponse tout à l'heure 🙌 À demain alors !", time: "21:42" },
+];
+
 
 export const creations = [
   {
