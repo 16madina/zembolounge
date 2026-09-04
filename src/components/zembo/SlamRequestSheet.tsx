@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Mic, Pause, Play, X } from "lucide-react";
+import { Check, Mic, Pause, Play, X } from "lucide-react";
 import { useState } from "react";
 import { Pressable } from "@/components/zembo/ui";
+import { useSoundPreview } from "@/lib/use-sound-preview";
 import { MOODS, type SlamDuration, type Sound, moodOf, soundsFor } from "@/lib/zembo-sounds";
 
 export type SlamRequest = {
