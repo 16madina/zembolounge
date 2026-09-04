@@ -153,10 +153,11 @@ export function TalkShowConfigScreen({ format }: { format: FormatId }) {
       <SetupHeader
         onBack={() => navigate({ to: "/talk-show" })}
         right={
-          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface/60">
-            <HelpCircle size={17} className="text-foreground/70" />
+          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/55 bg-gold/10">
+            <HelpCircle size={17} className="text-gold" />
           </span>
         }
+
       />
 
       <section className="flex items-center gap-3 px-4 pt-5">
