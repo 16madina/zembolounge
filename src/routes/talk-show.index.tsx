@@ -107,7 +107,7 @@ function TalkShowSelector() {
   const navigate = useNavigate();
 
   return (
-    <div className="app-scroll no-scrollbar pb-[112px]">
+    <div className="app-scroll no-scrollbar h-full pb-[132px]">
       {/* En-tête */}
       <header className="sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-border/50 bg-background/85 px-4 pt-[max(env(safe-area-inset-top),12px)] pb-3 backdrop-blur-xl">
         <Pressable onClick={() => navigate({ to: "/" })} aria-label="Retour" className="-ml-1">
