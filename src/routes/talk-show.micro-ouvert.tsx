@@ -343,10 +343,10 @@ function MicroOuvertLive() {
         </div>
 
         {/* 3) Sujet du moment */}
-        <div className="absolute top-[24%] right-2.5 z-10 w-[52%] rounded-2xl border border-gold/35 bg-black/62 p-2 backdrop-blur-md">
+        <div className="absolute top-[23%] right-2.5 z-10 w-[50%] rounded-2xl border border-gold/35 bg-black/62 p-2 backdrop-blur-md">
           <p className="text-[10px] font-bold text-gold">🔥 Sujet du moment</p>
           <p className="mt-0.5 text-[10.5px] leading-snug font-semibold text-white/92">
-            {liveTitle || "Amour, amitié ou argent : qu'est-ce qui rend vraiment heureux ?"}
+            Amour, amitié ou argent : qu'est-ce qui rend vraiment heureux ?
           </p>
         </div>
 
@@ -429,7 +429,7 @@ function MicroOuvertLive() {
         })}
 
         {/* ══ COLONNE DROITE ══ */}
-        <div className="absolute right-2 bottom-[28%] z-30 flex flex-col items-center gap-2">
+        <div className="absolute right-1.5 bottom-[30%] z-40 flex flex-col items-center gap-1.5">
           <div className="relative flex flex-col items-center">
             <AnimatePresence>
               {hearts.map((h) => (
@@ -480,7 +480,7 @@ function MicroOuvertLive() {
             >
               <Share2 size={17} className="text-white" />
             </Pressable>
-            <span className="text-[9px] font-semibold text-white/80">Partager</span>
+            
           </div>
           <div className="flex flex-col items-center">
             <Pressable
@@ -493,7 +493,7 @@ function MicroOuvertLive() {
             >
               <Gift size={17} className="text-gold" />
             </Pressable>
-            <span className="text-[9px] font-semibold text-white/80">Cadeau</span>
+            
           </div>
           <div className="flex flex-col items-center">
             <Pressable
