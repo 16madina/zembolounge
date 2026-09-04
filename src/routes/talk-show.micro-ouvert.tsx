@@ -22,7 +22,6 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheet } from "@/components/zembo/Sheet";
 import { Avatar, Pressable } from "@/components/zembo/ui";
-import { useLiveConfig } from "@/lib/talk-show-config";
 import stage from "@/assets/zembo-micro-ouvert-stage.png";
 
 export const Route = createFileRoute("/talk-show/micro-ouvert")({
@@ -125,7 +124,6 @@ function fmt(s: number) {
 
 function MicroOuvertLive() {
   const navigate = useNavigate();
-  const liveTitle = useLiveConfig().title;
   const [role, setRole] = useState<"host" | "guest">("host");
   const [guests, setGuests] = useState<Guest[]>([
     { slot: 1, name: "Malik", mic: true, hand: false, speaking: true },
@@ -517,7 +515,7 @@ function MicroOuvertLive() {
       </div>
 
       {/* ══ CHAT LIVE ══ */}
-      <div className="no-scrollbar relative flex min-h-0 flex-1 flex-col justify-end overflow-y-auto px-2.5 pt-2">
+      <div className="no-scrollbar relative flex min-h-0 flex-1 flex-col justify-end overflow-y-auto pt-2 pr-[56px] pl-2.5">
         <div className="flex flex-col gap-1.5">
           <AnimatePresence initial={false}>
             {msgs.slice(-30).map((m) => (
