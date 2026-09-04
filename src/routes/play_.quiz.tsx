@@ -243,7 +243,7 @@ function Quiz() {
             e.preventDefault();
             send();
           }}
-          className="sticky bottom-0 z-10 mt-3 flex items-center gap-2 bg-[oklch(0.03_0_0)] py-3 pb-[max(env(safe-area-inset-bottom),12px)]"
+          className="sticky bottom-0 z-10 mt-auto flex items-center gap-2 bg-[oklch(0.03_0_0)] py-3 pb-[max(env(safe-area-inset-bottom),12px)]"
         >
           <input
             value={draft}
