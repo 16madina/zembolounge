@@ -27,15 +27,14 @@ export const Route = createFileRoute("/play_/quiz")({
   component: Quiz,
 });
 
-/** Zones des pastilles A/B/C dessinées dans l'image (en % de l'image) */
-const ANSWER_ZONES = [
-  { k: "A", label: "Accra", left: 24.2, width: 22.2 },
-  { k: "B", label: "Lagos", left: 46.8, width: 22.3 },
-  { k: "C", label: "Nairobi", left: 69.6, width: 22.4 },
+/** Vraies réponses (boutons DOM, plus des zones devinées sur l'image) */
+const ANSWERS = [
+  { k: "A", label: "Accra", tint: "oklch(0.55 0.2 262)" },
+  { k: "B", label: "Lagos", tint: "oklch(0.82 0.15 85)" },
+  { k: "C", label: "Nairobi", tint: "oklch(0.62 0.22 305)" },
 ];
-const ANSWER_TOP = 60.6;
-const ANSWER_HEIGHT = 6.3;
 const CORRECT = "A";
+
 
 const INITIAL_CHAT = [
   { id: 1, name: "Fatou", text: "Allez Deena ! 🔥", color: "oklch(0.72 0.2 320)" },
