@@ -18,7 +18,7 @@ type AuthSearch = { redirect?: "/world" };
 export const Route = createFileRoute("/login")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>): AuthSearch =>
-    search.redirect === "/world" ? { redirect: "/world" } : {},
+    search['redirect'] === "/world" ? { redirect: "/world" } : {},
   head: () => ({
     meta: [
       { title: "Se connecter — Zembo" },

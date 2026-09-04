@@ -32,7 +32,7 @@ type AuthSearch = { redirect?: "/world" };
 export const Route = createFileRoute("/signup")({
   ssr: false,
   validateSearch: (search: Record<string, unknown>): AuthSearch =>
-    search.redirect === "/world" ? { redirect: "/world" } : {},
+    search['redirect'] === "/world" ? { redirect: "/world" } : {},
   head: () => ({
     meta: [
       { title: "Créer un compte — Zembo" },
