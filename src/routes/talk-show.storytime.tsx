@@ -1,3 +1,4 @@
+import { useLiveConfig } from "@/lib/talk-show-config";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -76,6 +77,8 @@ const tap = () => navigator.vibrate?.(15);
 
 function StorytimeLive() {
   const navigate = useNavigate();
+  const liveTitle =
+    useLiveConfig().title || "Mon histoire : comment j'ai tout recommencé à zéro 🌟";
   const [msgs, setMsgs] = useState<Msg[]>(INITIAL);
   const [draft, setDraft] = useState("");
   const [follow, setFollow] = useState(false);
@@ -196,7 +199,7 @@ function StorytimeLive() {
         </div>
 
         <h1 className="mt-2.5 max-w-[240px] line-clamp-2 text-[13.5px] leading-snug font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-          Mon histoire : comment j'ai tout recommencé à zéro 🌟
+          {liveTitle}
         </h1>
       </div>
 

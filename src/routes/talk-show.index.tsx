@@ -49,7 +49,7 @@ type Format = {
   accroche: string;
   desc: string;
   pill?: string;
-  to: "/talk-show/storytime" | "/talk-show/open-mic" | "/talk-show/stand" | "/talk-show/slam";
+  format: "storytime" | "open-mic" | "stand" | "slam";
   icon: ReactNode;
 };
 
@@ -60,7 +60,7 @@ const FORMATS: Format[] = [
     accent: VIOLET,
     accroche: "Raconte ton histoire.",
     desc: "Partage une expérience, un moment marquant ou une histoire qui t'a construit.",
-    to: "/talk-show/storytime",
+    format: "storytime",
     icon: (
       <span className="relative">
         <BookOpen size={46} className="text-gold" strokeWidth={1.7} />
@@ -75,7 +75,7 @@ const FORMATS: Format[] = [
     accroche: "Anime. Partage. Échange.",
     desc: "Masterclass, concept, coachings, discussions en direct avec ta communauté.",
     pill: "👥 Pose des questions & interagis en direct",
-    to: "/talk-show/open-mic",
+    format: "open-mic",
     icon: <MicVocal size={46} className="text-gold" strokeWidth={1.7} />,
   },
   {
@@ -84,7 +84,7 @@ const FORMATS: Format[] = [
     accent: AMBER,
     accroche: "Le micro t'appartient.",
     desc: "Monte sur scène, parle de ce que tu veux : idées, opinions, talents, débats et plus encore.",
-    to: "/talk-show/stand",
+    format: "stand",
     icon: (
       <span className="relative">
         <Users size={46} className="text-gold" strokeWidth={1.7} />
@@ -98,7 +98,7 @@ const FORMATS: Format[] = [
     accent: MAGENTA,
     accroche: "Tes mots. Ta voix. Ta scène.",
     desc: "Déclame ton slam, ta poésie ou ton texte et fais vibrer la communauté.",
-    to: "/talk-show/slam",
+    format: "slam",
     icon: <Mic size={46} className="text-gold" strokeWidth={1.7} />,
   },
 ];
@@ -157,7 +157,9 @@ function TalkShowSelector() {
         {FORMATS.map((f) => (
           <Pressable
             key={f.id}
-            onClick={() => navigate({ to: f.to })}
+            onClick={() =>
+              navigate({ to: "/talk-show/config/$format", params: { format: f.format } })
+            }
             className="card-surface flex items-center gap-3 rounded-[20px] p-3"
             style={{ borderColor: `color-mix(in oklab, ${f.accent} 40%, transparent)` }}
           >
