@@ -65,7 +65,7 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="mt-4 px-4">
+    <section className="mt-3 px-4">
       <div className="rounded-[20px] border border-border/45 bg-surface/35 p-3">
         <h2 className="flex items-center gap-2 text-[13.5px] font-bold text-foreground">
           <span className="text-gold">{n}.</span>
@@ -149,7 +149,7 @@ export function TalkShowConfigScreen({ format }: { format: FormatId }) {
   const set = (patch: Partial<LiveConfig>) => setLiveConfig(patch);
 
   return (
-    <div className="app-scroll no-scrollbar pb-[130px]">
+    <div className="relative flex h-full flex-col overflow-hidden">
       <SetupHeader
         onBack={() => navigate({ to: "/talk-show" })}
         right={
@@ -160,7 +160,8 @@ export function TalkShowConfigScreen({ format }: { format: FormatId }) {
 
       />
 
-      <section className="flex items-center gap-3 px-4 pt-5">
+      <div className="app-scroll no-scrollbar min-h-0 flex-1 pb-[132px]">
+      <section className="flex items-center gap-3 px-4 pt-4">
         <span
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border"
           style={{
@@ -324,16 +325,20 @@ export function TalkShowConfigScreen({ format }: { format: FormatId }) {
         </Pressable>
       </Section>
 
-      <div className="mt-6 px-4">
-        <Pressable
-          onClick={() => {
-            tap();
-            navigate({ to: "/talk-show/preview/$format", params: { format } });
-          }}
-          className="w-full rounded-full bg-gold-gradient py-3.5 text-[14px] font-extrabold text-[oklch(0.16_0.02_60)]"
-        >
-          Suivant ›
-        </Pressable>
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-background via-background/95 to-transparent pt-8 pb-[calc(env(safe-area-inset-bottom)+92px)]">
+        <div className="pointer-events-auto px-4">
+          <Pressable
+            onClick={() => {
+              tap();
+              navigate({ to: "/talk-show/preview/$format", params: { format } });
+            }}
+            className="w-full rounded-full bg-gold-gradient py-3.5 text-[14px] font-extrabold text-[oklch(0.16_0.02_60)]"
+          >
+            Suivant ›
+          </Pressable>
+        </div>
       </div>
 
       <BottomSheet open={rulesOpen} onClose={() => setRulesOpen(false)}>
