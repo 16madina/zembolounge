@@ -250,7 +250,11 @@ function StandLive() {
   );
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-black select-none">
+    <div
+      className="relative h-full w-full overflow-hidden bg-black select-none"
+      onPointerDown={tapLike.onSceneTap}
+    >
+      {tapLike.layer}
       <img
         src={decor.url}
         alt="Deena partage ses conseils en direct sur la scène Stand de Zembo"
