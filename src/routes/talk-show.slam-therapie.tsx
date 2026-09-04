@@ -259,7 +259,7 @@ function SlamTherapieLive() {
         </div>
 
         {/* COLONNE D'ACTIONS */}
-        <div className="absolute right-2 bottom-1 flex flex-col items-center gap-2">
+        <div className="absolute right-2 top-[34%] bottom-1 flex flex-col items-center justify-end gap-2">
           <Pressable onClick={like} className="flex flex-col items-center" aria-label="J'aime">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
               <Heart size={20} className="fill-[oklch(0.6_0.23_20)] text-[oklch(0.6_0.23_20)]" />
