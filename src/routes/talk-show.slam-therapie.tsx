@@ -18,6 +18,8 @@ import {
   MoreHorizontal,
   Mic,
   Music2,
+  Pause,
+  Play,
   Send,
   Share2,
   Shield,
