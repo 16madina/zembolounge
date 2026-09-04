@@ -141,7 +141,13 @@ function Home() {
         {QUICK.map((q) => (
           <Pressable
             key={q.id}
-            onClick={() => (q.id === "talk" ? navigate({ to: "/talk-show" }) : go(q.id, q.id))}
+            onClick={() =>
+              q.id === "talk"
+                ? navigate({ to: "/talk-show" })
+                : q.id === "world"
+                  ? navigate({ to: "/world/intro" })
+                  : go(q.id, q.id)
+            }
             className="card-surface relative overflow-hidden rounded-2xl p-2.5 text-center"
           >
             <div className="absolute inset-x-0 -top-6 h-20 opacity-25 blur-2xl" style={{ background: q.accent }} />
