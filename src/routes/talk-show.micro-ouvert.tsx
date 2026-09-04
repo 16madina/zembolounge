@@ -250,7 +250,165 @@ function MicroOuvertLive() {
     if (slot === 3) setMyHand(false);
   };
 
+  const freeSlots = guests.filter((g) => !g.name).length;
+
+  // Un invité quitte la scène → il redevient spectateur, sa place se libère
+  const leaveStage = () => {
+    tap();
+    setMyHand(false);
+    setGuests((gs) =>
+      gs.map((g) =>
+        g.slot === 3 ? { ...g, name: null, mic: false, hand: false, speaking: false } : g,
+      ),
+    );
+    setRole("viewer");
+    setRiseAsked(false);
+    flash("Tu es redescendu·e 👁 Spectateur");
+  };
+
+  // L'hôte fait descendre un invité
+  const kick = (slot: number) => {
+    tap();
+    const name = guests.find((g) => g.slot === slot)?.name;
+    setGuests((gs) =>
+      gs.map((g) =>
+        g.slot === slot ? { ...g, name: null, mic: false, hand: false, speaking: false } : g,
+      ),
+    );
+    flash(`${name} est redescendu·e`);
+  };
+
+  // Un spectateur demande à MONTER
+  const askRise = () => {
+    tap();
+    setRiseAsked(true);
+    flash("Demande envoyée ⏳ En attente de l'hôte");
+  };
+
+  // L'hôte fait MONTER un spectateur sur une place libre
+  const promote = (name: string) => {
+    tap();
+    const free = guests.find((g) => !g.name);
+    if (!free) {
+      flash("Table pleine — libère une place d'abord");
+      return;
+    }
+    setGuests((gs) =>
+      gs.map((g) =>
+        g.slot === free.slot ? { ...g, name, mic: false, hand: false, speaking: false } : g,
+      ),
+    );
+    setRiseQueue((q) => q.filter((n) => n !== name));
+    flash(`${name} monte sur scène 🎤`);
+  };
+
+  const refuseRise = (name: string) => {
+    tap();
+    setRiseQueue((q) => q.filter((n) => n !== name));
+  };
+
   const centerLabel = role === "host" ? "Donner la parole" : myHand ? "Main levée" : "Demander à parler";
+
+  const moreItems: Array<{
+    emoji: string;
+    title: string;
+    sub: string;
+    badge?: number;
+    action: () => void;
+  }> =
+    role === "host"
+      ? [
+          {
+            emoji: "🙋",
+            title: "Gérer les places",
+            sub: `4 places max · ${freeSlots} libre(s)`,
+            action: () => setPlacesOpen(true),
+          },
+          {
+            emoji: "✋",
+            title: "Demandes de montée",
+            sub: "Spectateurs qui veulent une place",
+            badge: riseQueue.length || undefined,
+            action: () => setRiseOpen(true),
+          },
+          {
+            emoji: "🚫",
+            title: "Modération / Signaler",
+            sub: "Gérer un comportement inapproprié",
+            action: () => flash("Signalement transmis"),
+          },
+          {
+            emoji: "📄",
+            title: "Règles",
+            sub: "Respect • Pas de jugement • Bonne vibe ✨",
+            action: () => flash("Règles du live affichées"),
+          },
+          {
+            emoji: "⏹",
+            title: "Terminer le live",
+            sub: "Fermer le Micro Ouvert pour tout le monde",
+            action: () => navigate({ to: "/talk-show" }),
+          },
+        ]
+      : role === "guest"
+        ? [
+            {
+              emoji: "↗",
+              title: "Partager",
+              sub: "Inviter des amis à écouter",
+              action: () => setInviteOpen(true),
+            },
+            {
+              emoji: "🚪",
+              title: "Quitter la scène",
+              sub: "Redevenir spectateur et libérer ta place",
+              action: leaveStage,
+            },
+            {
+              emoji: "🚫",
+              title: "Signaler",
+              sub: "Signaler un comportement inapproprié",
+              action: () => flash("Signalement transmis"),
+            },
+            {
+              emoji: "📄",
+              title: "Règles",
+              sub: "Respect • Pas de jugement • Bonne vibe ✨",
+              action: () => flash("Règles du live affichées"),
+            },
+          ]
+        : [
+            {
+              emoji: "↗",
+              title: "Partager",
+              sub: "Inviter des amis à écouter",
+              action: () => setInviteOpen(true),
+            },
+            {
+              emoji: "🔇",
+              title: "Couper le son du live",
+              sub: "Continuer à lire le chat en silence",
+              action: () => flash("Son du live coupé"),
+            },
+            {
+              emoji: "🚫",
+              title: "Signaler le live",
+              sub: "Prévenir la modération Zembo",
+              action: () => flash("Signalement transmis"),
+            },
+            {
+              emoji: "📄",
+              title: "Règles de la communauté",
+              sub: "Respect • Pas de jugement • Bonne vibe ✨",
+              action: () => flash("Règles affichées"),
+            },
+            {
+              emoji: "🚪",
+              title: "Quitter",
+              sub: "Sortir du live",
+              action: () => navigate({ to: "/talk-show" }),
+            },
+          ];
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden bg-black">
