@@ -48,8 +48,9 @@ export type LiveConfig = {
 };
 
 const DEFAULTS: LiveConfig = {
-  title: "",
-  description: "",
+  title: "Mon pire date… et ce que j'en ai appris !",
+  description:
+    "On parle de relations, de leçons de vie et de nouveaux départs. Soyez bienveillants ! 💛",
   cover: null,
   visibility: "public",
   access: "free",
@@ -57,6 +58,7 @@ const DEFAULTS: LiveConfig = {
   comments: "all",
   rules: "Respect • Pas de jugement • Bonne vibe uniquement ! ✨",
 };
+
 
 let state: LiveConfig = { ...DEFAULTS };
 const listeners = new Set<() => void>();

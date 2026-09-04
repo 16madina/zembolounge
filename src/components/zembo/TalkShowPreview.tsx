@@ -70,12 +70,13 @@ export function TalkShowPreviewScreen({ format }: { format: FormatId }) {
         right={<span className="text-[12px] font-bold text-gold">2/2</span>}
       />
 
-      <section className="px-4 pt-5">
+      <section className="px-4 pt-5 text-center">
         <h1 className="text-[26px] leading-none font-extrabold tracking-tight">Tout est prêt !</h1>
         <p className="mt-2 text-[12.5px] text-muted-foreground">
           Vérifie les informations avant de lancer ton {meta.name}.
         </p>
       </section>
+
 
       <div className="mt-4 px-4">
         <div className="card-surface overflow-hidden rounded-[22px]">

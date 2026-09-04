@@ -65,17 +65,19 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="mt-5 px-4">
-      <h2 className="flex items-center gap-2 text-[14px] font-bold text-foreground">
-        <span className="flex h-5 w-5 items-center justify-center rounded-full border border-gold/60 text-[10px] font-extrabold text-gold">
-          {n}
-        </span>
-        {title}
-      </h2>
-      <div className="mt-2.5">{children}</div>
+    <section className="mt-4 px-4">
+      <div className="rounded-[20px] border border-border/45 bg-surface/35 p-3">
+        <h2 className="flex items-center gap-2 text-[13.5px] font-bold text-foreground">
+          <span className="text-gold">{n}.</span>
+          {title}
+        </h2>
+        <div className="mt-2.5">{children}</div>
+      </div>
     </section>
+
   );
 }
+
 
 function ChoiceCard({
   active,
@@ -151,10 +153,11 @@ export function TalkShowConfigScreen({ format }: { format: FormatId }) {
       <SetupHeader
         onBack={() => navigate({ to: "/talk-show" })}
         right={
-          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface/60">
-            <HelpCircle size={17} className="text-foreground/70" />
+          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/55 bg-gold/10">
+            <HelpCircle size={17} className="text-gold" />
           </span>
         }
+
       />
 
       <section className="flex items-center gap-3 px-4 pt-5">
