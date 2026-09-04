@@ -56,7 +56,7 @@ type Format = {
 const FORMATS: Format[] = [
   {
     id: "storytelling",
-    title: "Storytelling",
+    title: "Storytime",
     accent: VIOLET,
     accroche: "Raconte ton histoire.",
     desc: "Partage une expérience, un moment marquant ou une histoire qui t'a construit.",
@@ -70,7 +70,7 @@ const FORMATS: Format[] = [
   },
   {
     id: "open-mic",
-    title: "Open Mic",
+    title: "Micro Ouvert",
     accent: GREEN,
     accroche: "Anime. Partage. Échange.",
     desc: "Masterclass, concept, coachings, discussions en direct avec ta communauté.",
@@ -80,7 +80,7 @@ const FORMATS: Format[] = [
   },
   {
     id: "stand",
-    title: "Stand",
+    title: "Stand-Up",
     accent: AMBER,
     accroche: "Le micro t'appartient.",
     desc: "Monte sur scène, parle de ce que tu veux : idées, opinions, talents, débats et plus encore.",
@@ -94,7 +94,7 @@ const FORMATS: Format[] = [
   },
   {
     id: "slam",
-    title: "Slam",
+    title: "Slam Thérapie",
     accent: MAGENTA,
     accroche: "Tes mots. Ta voix. Ta scène.",
     desc: "Déclame ton slam, ta poésie ou ton texte et fais vibrer la communauté.",
