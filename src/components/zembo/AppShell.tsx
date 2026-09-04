@@ -34,7 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               transition={{ duration: 0.24, ease: [0.32, 0.72, 0, 1] }}
               className={cn(
                 "h-full",
-                isThread || isTable || isLiveShow || isSetup || isSlam
+                isThread || isTable || isLiveShow || isSetup || isSlam || isAdmin
                   ? "overflow-hidden"
                   : isGame
                     ? "app-scroll"
