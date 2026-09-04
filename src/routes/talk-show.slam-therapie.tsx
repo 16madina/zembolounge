@@ -153,7 +153,7 @@ function SlamTherapieLive() {
   return (
     <div className="relative flex h-full flex-col overflow-hidden bg-background">
       {/* ── SCÈNE ── */}
-      <div className="relative w-full flex-[0_0_50%] overflow-hidden">
+      <div className="relative w-full h-[50%] shrink-0 overflow-hidden">
         <img
           src={stage}
           alt="Moussa slame sur la scène Slam Thérapie de Zembo"
