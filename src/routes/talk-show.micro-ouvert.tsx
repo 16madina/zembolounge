@@ -619,86 +619,91 @@ function MicroOuvertLive() {
         </form>
       </div>
 
-      {/* ══ BARRE DU BAS ══ */}
-      <div className="shrink-0 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),8px)]">
-        <div className="flex items-end justify-between rounded-[26px] border border-white/10 bg-black/70 px-1.5 py-2 backdrop-blur-xl">
-          <BarItem
-            icon={<LogOut size={18} />}
-            label="Quitter"
-            onClick={() => {
-              tap();
-              navigate({ to: "/talk-show" });
-            }}
-          />
-          <BarItem
-            icon={micOn ? <Mic size={18} /> : <MicOff size={18} className="text-white/45" />}
-            label="Mic"
-            onClick={() => {
-              tap();
-              setMicOn((m) => !m);
-              flash(micOn ? "Micro coupé" : "Micro ouvert");
-            }}
-          />
-          <BarItem
-            icon={camOn ? <Camera size={18} /> : <CameraOff size={18} className="text-white/45" />}
-            label="Caméra"
-            onClick={() => {
-              tap();
-              setCamOn((c) => !c);
-            }}
-          />
-
-          {/* BOUTON CENTRAL */}
-          <Pressable
-            onClick={() => {
-              if (role === "host") {
+      {/* ══ BARRE DU BAS — hôte & invité seulement ══ */}
+      {role !== "viewer" && (
+        <div className="shrink-0 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),8px)]">
+          <div className="flex items-end justify-between rounded-[26px] border border-white/10 bg-black/70 px-1.5 py-2 backdrop-blur-xl">
+            <BarItem
+              icon={<LogOut size={18} />}
+              label={role === "host" ? "Quitter" : "Quitter la scène"}
+              onClick={() => {
+                if (role === "guest") leaveStage();
+                else {
+                  tap();
+                  navigate({ to: "/talk-show" });
+                }
+              }}
+            />
+            <BarItem
+              icon={micOn ? <Mic size={18} /> : <MicOff size={18} className="text-white/45" />}
+              label="Mic"
+              onClick={() => {
                 tap();
-                setRequestsOpen(true);
-              } else toggleMyHand();
-            }}
-            className="relative -mt-4 flex h-[62px] w-[62px] shrink-0 flex-col items-center justify-center rounded-full bg-gold shadow-[0_6px_20px_oklch(0.82_0.13_85_/_0.45)]"
-          >
-            {role === "host" ? (
-              <Mic size={18} className="text-black" />
-            ) : (
-              <Hand size={18} className={myHand ? "text-black/60" : "text-black"} />
-            )}
-            <span className="mt-[1px] max-w-[56px] text-center text-[8.5px] leading-[1.05] font-black text-black">
-              {centerLabel}
-            </span>
-            {role === "host" && hands.length > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-live text-[10px] font-black text-white">
-                {hands.length}
-              </span>
-            )}
-          </Pressable>
+                setMicOn((m) => !m);
+                flash(micOn ? "Micro coupé" : "Micro ouvert");
+              }}
+            />
+            <BarItem
+              icon={camOn ? <Camera size={18} /> : <CameraOff size={18} className="text-white/45" />}
+              label="Caméra"
+              onClick={() => {
+                tap();
+                setCamOn((c) => !c);
+              }}
+            />
 
-          <BarItem
-            icon={<Users size={18} />}
-            label="Inviter"
-            onClick={() => {
-              tap();
-              setInviteOpen(true);
-            }}
-          />
-          <BarItem
-            icon={<SmilePlus size={18} />}
-            label="Réactions"
-            onClick={() => {
-              tap();
-              setReactOpen(true);
-            }}
-          />
-          <BarItem
-            icon={<MoreHorizontal size={18} />}
-            label="Plus"
-            onClick={() => {
-              tap();
-              setMoreOpen(true);
-            }}
-          />
+            {/* BOUTON CENTRAL */}
+            <Pressable
+              onClick={() => {
+                if (role === "host") {
+                  tap();
+                  setRequestsOpen(true);
+                } else toggleMyHand();
+              }}
+              className="relative -mt-4 flex h-[62px] w-[62px] shrink-0 flex-col items-center justify-center rounded-full bg-gold shadow-[0_6px_20px_oklch(0.82_0.13_85_/_0.45)]"
+            >
+              {role === "host" ? (
+                <Mic size={18} className="text-black" />
+              ) : (
+                <Hand size={18} className={myHand ? "text-black/60" : "text-black"} />
+              )}
+              <span className="mt-[1px] max-w-[56px] text-center text-[8.5px] leading-[1.05] font-black text-black">
+                {centerLabel}
+              </span>
+              {role === "host" && hands.length > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-live text-[10px] font-black text-white">
+                  {hands.length}
+                </span>
+              )}
+            </Pressable>
+
+            <BarItem
+              icon={<Users size={18} />}
+              label="Inviter"
+              onClick={() => {
+                tap();
+                setInviteOpen(true);
+              }}
+            />
+            <BarItem
+              icon={<SmilePlus size={18} />}
+              label="Réactions"
+              onClick={() => {
+                tap();
+                setReactOpen(true);
+              }}
+            />
+            <BarItem
+              icon={<MoreHorizontal size={18} />}
+              label="Plus"
+              onClick={() => {
+                tap();
+                setMoreOpen(true);
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ══ DEMANDES DE PAROLE (hôte) ══ */}
       <BottomSheet open={requestsOpen} onClose={() => setRequestsOpen(false)}>
