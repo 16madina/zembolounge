@@ -272,7 +272,7 @@ function WorldDiscover() {
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black via-black/70 to-transparent" />
 
           {/* Bandeau pays */}
-          <div className="absolute top-[14%] left-[4%] w-[64%]">
+          <div className="absolute top-[13%] left-[4%] w-[60%]">
             <CountryPill card={card} />
           </div>
 
@@ -302,7 +302,7 @@ function WorldDiscover() {
           </div>
 
           {/* Points de progression */}
-          <div className="absolute top-[42%] right-[3%] flex flex-col items-center gap-1.5">
+          <div className="absolute top-[31%] right-[3%] flex flex-col items-center gap-1.5">
             {POOL.map((p, i) => (
               <span
                 key={p.id}
@@ -317,7 +317,7 @@ function WorldDiscover() {
           </div>
 
           {/* Mini-carte du monde */}
-          <div className="absolute top-[54%] right-[4%] w-[34%] rounded-2xl border border-gold/25 bg-black/45 p-2 backdrop-blur-md">
+          <div className="absolute top-[44%] right-[4%] w-[31%] rounded-2xl border border-gold/25 bg-black/45 p-2 backdrop-blur-md">
             <div className="relative h-9 overflow-hidden rounded-lg bg-[oklch(0.14_0.02_60)]">
               <div
                 className="absolute inset-0 opacity-70"
