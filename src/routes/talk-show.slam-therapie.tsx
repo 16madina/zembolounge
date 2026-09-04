@@ -88,8 +88,12 @@ function SlamTherapieLive() {
   const [toast, setToast] = useState<string | null>(null);
   const [ended, setEnded] = useState(false);
   const [drawer, setDrawer] = useState(false);
+  const [sheet, setSheet] = useState<"share" | "gift" | "zems" | "menu" | null>(null);
+  const [giftFly, setGiftFly] = useState<{ id: number; emoji: string } | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const seq = useRef(100);
+
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
