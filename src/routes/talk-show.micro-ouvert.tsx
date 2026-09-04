@@ -55,6 +55,16 @@ type Guest = {
   speaking: boolean;
 };
 
+type Role = "host" | "guest" | "viewer";
+
+const ROLE_LABEL: Record<Role, string> = {
+  host: "👑 Hôte",
+  guest: "🙋 Invité",
+  viewer: "👁 Spectateur",
+};
+
+const NEXT_ROLE: Record<Role, Role> = { host: "guest", guest: "viewer", viewer: "host" };
+
 const SLOT_POS: Record<1 | 2 | 3 | 4, { left: string; width: string }> = {
   1: { left: "4.25%", width: "23.2%" },
   2: { left: "27.6%", width: "22.3%" },
