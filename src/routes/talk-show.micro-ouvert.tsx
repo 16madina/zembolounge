@@ -313,7 +313,7 @@ function MicroOuvertLive() {
     emoji: string;
     title: string;
     sub: string;
-    badge?: number;
+    badge?: number | undefined;
     action: () => void;
   }> =
     role === "host"
