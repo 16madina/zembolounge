@@ -1309,6 +1309,16 @@ function SlamTherapieLive() {
                       {o.icon} {o.label}
                     </Pressable>
                   ))}
+                  <Link
+                    to="/admin/sounds"
+                    onClick={() => {
+                      tap();
+                      setSheet(null);
+                    }}
+                    className="mt-1 flex items-center gap-2 px-1 text-[10.5px] font-semibold text-white/35"
+                  >
+                    <Music2 size={12} /> Admin — Zembo Sounds (démo)
+                  </Link>
                 </div>
               )}
             </motion.div>
