@@ -124,7 +124,7 @@ function fmt(s: number) {
 
 function MicroOuvertLive() {
   const navigate = useNavigate();
-  const [role, setRole] = useState<"host" | "guest">("host");
+  const [role, setRole] = useState<Role>("host");
   const [guests, setGuests] = useState<Guest[]>([
     { slot: 1, name: "Malik", mic: true, hand: false, speaking: true },
     { slot: 2, name: "Aïssatou", mic: false, hand: true, speaking: false },
@@ -134,6 +134,10 @@ function MicroOuvertLive() {
   const [myHand, setMyHand] = useState(false);
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
+  const [riseQueue, setRiseQueue] = useState<string[]>(["Kevin", "Nadia"]);
+  const [riseAsked, setRiseAsked] = useState(false);
+  const [riseOpen, setRiseOpen] = useState(false);
+  const [placesOpen, setPlacesOpen] = useState(false);
   const [seconds, setSeconds] = useState(4356);
   const [viewers, setViewers] = useState(325);
   const [likes, setLikes] = useState(1800);
