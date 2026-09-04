@@ -507,7 +507,7 @@ function SlamTherapieLive() {
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={{ left: 0, right: 0.9 }}
               onDragEnd={(_, info) => {
-                if (info.offset.x > 90 || info.velocity.x > 500) setDrawer(false);
+                if (info.offset.x > 60 || info.velocity.x > 300) setDrawer(false);
               }}
               className="absolute inset-y-0 right-0 z-50 flex w-[86%] touch-pan-y flex-col bg-[oklch(0.09_0.01_60)] shadow-[-16px_0_40px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
             >
