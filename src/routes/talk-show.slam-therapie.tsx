@@ -259,9 +259,9 @@ function SlamTherapieLive() {
         </div>
 
         {/* COLONNE D'ACTIONS */}
-        <div className="absolute right-2 bottom-2 flex flex-col items-center gap-3">
+        <div className="absolute right-2 bottom-1 flex flex-col items-center gap-2">
           <Pressable onClick={like} className="flex flex-col items-center" aria-label="J'aime">
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-white/14 backdrop-blur">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
               <Heart size={20} className="fill-[oklch(0.6_0.23_20)] text-[oklch(0.6_0.23_20)]" />
             </span>
             <span className="mt-[2px] text-[9.5px] font-bold text-white/90">
@@ -273,7 +273,7 @@ function SlamTherapieLive() {
             className="flex flex-col items-center"
             aria-label="Commentaires"
           >
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-white/14 backdrop-blur">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
               <MessageCircle size={19} className="text-white" />
             </span>
             <span className="mt-[2px] text-[9.5px] font-bold text-white/90">286</span>
@@ -283,7 +283,7 @@ function SlamTherapieLive() {
             className="flex flex-col items-center"
             aria-label="Partager"
           >
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-white/14 backdrop-blur">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
               <Share2 size={18} className="text-white" />
             </span>
             <span className="mt-[2px] text-[9.5px] font-bold text-white/90">Partager</span>
@@ -293,7 +293,7 @@ function SlamTherapieLive() {
             className="flex flex-col items-center"
             aria-label="Cadeau"
           >
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-white/14 backdrop-blur">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
               <Gift size={19} className="text-gold" />
             </span>
             <span className="mt-[2px] text-[9.5px] font-bold text-white/90">Cadeau</span>
@@ -303,7 +303,7 @@ function SlamTherapieLive() {
             className="flex flex-col items-center"
             aria-label="Envoyer des Zems"
           >
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-gold font-extrabold text-black">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-gold font-extrabold text-black">
               Z
             </span>
             <span className="mt-[2px] max-w-[46px] text-center text-[8.5px] leading-tight font-bold text-white/90">
@@ -312,7 +312,7 @@ function SlamTherapieLive() {
           </button>
 
           {/* cœurs animés */}
-          <div className="pointer-events-none absolute right-3 bottom-[190px]">
+          <div className="pointer-events-none absolute right-3 bottom-[160px]">
             <AnimatePresence>
               {hearts.map((h) => (
                 <motion.span
