@@ -96,11 +96,12 @@ function Profile() {
   }, [menuOpen]);
 
   const meta = (user?.user_metadata ?? {}) as Record<string, string | undefined>;
-  const firstName = meta.first_name ?? meta.prenom ?? "";
-  const lastName = meta.last_name ?? meta.nom ?? "";
+  const firstName = meta["first_name"] ?? meta["prenom"] ?? "";
+  const lastName = meta["last_name"] ?? meta["nom"] ?? "";
   const displayName =
-    (meta.display_name ?? meta.full_name ?? `${firstName} ${lastName}`.trim()) || "Deena";
-  const handle = meta.username ?? meta.pseudo ?? (user ? user.email?.split("@")[0] : null) ?? "deena_zembo";
+    (meta["display_name"] ?? meta["full_name"] ?? `${firstName} ${lastName}`.trim()) || "Deena";
+  const handle =
+    meta["username"] ?? meta["pseudo"] ?? (user ? user.email?.split("@")[0] : null) ?? "deena_zembo";
   const contact = user?.email ?? "deena@zembo.app";
 
   const about = [
