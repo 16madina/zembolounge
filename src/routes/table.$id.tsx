@@ -5,7 +5,6 @@ import {
   ArrowDown,
   ArrowUp,
   BadgeCheck,
-  ChevronRight,
   Clock,
   Dices,
   Eye,
