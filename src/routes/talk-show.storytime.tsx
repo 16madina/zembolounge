@@ -77,6 +77,8 @@ const tap = () => navigator.vibrate?.(15);
 
 function StorytimeLive() {
   const navigate = useNavigate();
+  const liveTitle =
+    useLiveConfig().title || "Mon histoire : comment j'ai tout recommencé à zéro 🌟";
   const [msgs, setMsgs] = useState<Msg[]>(INITIAL);
   const [draft, setDraft] = useState("");
   const [follow, setFollow] = useState(false);
