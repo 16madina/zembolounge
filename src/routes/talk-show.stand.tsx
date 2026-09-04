@@ -470,7 +470,7 @@ function StandLive() {
       </div>
 
       {/* BOUTON QUESTIONS */}
-      <div className="absolute left-3 z-20 bottom-[150px]">
+      <div className="absolute left-3 z-20 bottom-[212px]">
         {host ? (
           <Pressable
             onClick={() => {
@@ -923,7 +923,7 @@ function StandLive() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute left-1/2 bottom-[210px] z-[90] -translate-x-1/2 rounded-full bg-black/85 px-3.5 py-2 text-[11.5px] font-semibold text-white ring-1 ring-white/12 backdrop-blur"
+            className="absolute left-1/2 bottom-[268px] z-[90] -translate-x-1/2 rounded-full bg-black/85 px-3.5 py-2 text-[11.5px] font-semibold text-white ring-1 ring-white/12 backdrop-blur"
           >
             {toast}
           </motion.div>
