@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
-import stage from "@/assets/zembo-quiz-stage.png";
+import stageBottom from "@/assets/zembo-quiz-bottom.png";
+import stageTop from "@/assets/zembo-quiz-top.png";
+
 import { BottomSheet } from "@/components/zembo/Sheet";
 import { Pressable } from "@/components/zembo/ui";
 
