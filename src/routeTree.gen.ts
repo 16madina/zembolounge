@@ -16,6 +16,7 @@ import { Route as LiveRouteImport } from './routes/live'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TalkShowRouteImport } from './routes/talk-show'
 import { Route as AdminSoundsRouteImport } from './routes/admin.sounds'
 import { Route as MessagesIdRouteImport } from './routes/messages_.$id'
@@ -67,6 +68,11 @@ const PlayRoute = PlayRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TalkShowRoute = TalkShowRouteImport.update({
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
   '/talk-show': typeof TalkShowRouteWithChildren
   '/admin/sounds': typeof AdminSoundsRoute
   '/messages/$id': typeof MessagesIdRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
   '/admin/sounds': typeof AdminSoundsRoute
   '/messages/$id': typeof MessagesIdRoute
   '/play/face-a-face': typeof PlayFaceAFaceRoute
@@ -215,6 +223,7 @@ export interface FileRoutesById {
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
   '/talk-show': typeof TalkShowRouteWithChildren
   '/admin/sounds': typeof AdminSoundsRoute
   '/messages_/$id': typeof MessagesIdRoute
@@ -243,6 +252,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/play'
     | '/profile'
+    | '/signup'
     | '/talk-show'
     | '/admin/sounds'
     | '/messages/$id'
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/play'
     | '/profile'
+    | '/signup'
     | '/admin/sounds'
     | '/messages/$id'
     | '/play/face-a-face'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/play'
     | '/profile'
+    | '/signup'
     | '/talk-show'
     | '/admin/sounds'
     | '/messages_/$id'
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   MessagesRoute: typeof MessagesRoute
   PlayRoute: typeof PlayRoute
   ProfileRoute: typeof ProfileRoute
+  SignupRoute: typeof SignupRoute
   TalkShowRoute: typeof TalkShowRouteWithChildren
   AdminSoundsRoute: typeof AdminSoundsRoute
   MessagesIdRoute: typeof MessagesIdRoute
@@ -379,6 +392,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/talk-show': {
@@ -541,6 +561,7 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesRoute: MessagesRoute,
   PlayRoute: PlayRoute,
   ProfileRoute: ProfileRoute,
+  SignupRoute: SignupRoute,
   TalkShowRoute: TalkShowRouteWithChildren,
   AdminSoundsRoute: AdminSoundsRoute,
   MessagesIdRoute: MessagesIdRoute,
