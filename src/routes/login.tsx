@@ -13,8 +13,12 @@ import {
 } from "@/components/zembo/AuthUI";
 import { zembo } from "@/lib/zembo-supabase";
 
+type AuthSearch = { redirect?: "/world" };
+
 export const Route = createFileRoute("/login")({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>): AuthSearch =>
+    search.redirect === "/world" ? { redirect: "/world" } : {},
   head: () => ({
     meta: [
       { title: "Se connecter — Zembo" },
@@ -33,6 +37,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginScreen() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -65,7 +70,7 @@ function LoginScreen() {
       return;
     }
 
-    navigate({ to: "/" });
+    navigate({ to: redirect ?? "/", replace: true });
   }
 
   return (
@@ -79,6 +84,12 @@ function LoginScreen() {
         Content de te revoir
       </h1>
       <p className="mt-1 text-[13.5px] text-muted-foreground">Connecte-toi à ton compte.</p>
+
+      {redirect === "/world" && (
+        <p className="mt-4 rounded-2xl border border-gold/30 bg-gold/[0.07] p-3.5 text-[12.5px] leading-relaxed text-foreground/90">
+          🌍 Crée ou connecte ton compte Zembo pour accéder à World Room.
+        </p>
+      )}
 
       <div className="mt-6 space-y-3.5">
         <AuthField label="Email" icon={<Mail size={17} />}>

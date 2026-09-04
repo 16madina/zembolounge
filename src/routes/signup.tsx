@@ -27,8 +27,12 @@ import {
 } from "@/components/zembo/AuthUI";
 import { zembo } from "@/lib/zembo-supabase";
 
+type AuthSearch = { redirect?: "/world" };
+
 export const Route = createFileRoute("/signup")({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>): AuthSearch =>
+    search.redirect === "/world" ? { redirect: "/world" } : {},
   head: () => ({
     meta: [
       { title: "Créer un compte — Zembo" },
@@ -47,6 +51,7 @@ export const Route = createFileRoute("/signup")({
 
 function SignupScreen() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
   const fileRef = useRef<HTMLInputElement>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [nom, setNom] = useState("");
@@ -110,7 +115,7 @@ function SignupScreen() {
     }
 
     setDone(true);
-    setTimeout(() => navigate({ to: "/" }), 1200);
+    setTimeout(() => navigate({ to: redirect ?? "/", replace: true }), 1200);
   }
 
   return (
@@ -122,6 +127,12 @@ function SignupScreen() {
 
       <h1 className="mt-6 text-[26px] leading-tight font-extrabold text-white">Crée ton compte</h1>
       <p className="mt-1 text-[13.5px] text-muted-foreground">Rejoins la communauté Zembo.</p>
+
+      {redirect === "/world" && (
+        <p className="mt-4 rounded-2xl border border-gold/30 bg-gold/[0.07] p-3.5 text-[12.5px] leading-relaxed text-foreground/90">
+          🌍 Crée ou connecte ton compte Zembo pour accéder à World Room.
+        </p>
+      )}
 
       {/* Photo */}
       <div className="mt-5 flex flex-col items-center">
@@ -256,7 +267,7 @@ function SignupScreen() {
 
       <p className="mt-6 text-center text-[13px] text-muted-foreground">
         Tu as déjà un compte ?{" "}
-        <Link to="/login" className="font-semibold text-gold">
+        <Link to="/login" search={redirect ? { redirect } : {}} className="font-semibold text-gold">
           Se connecter ›
         </Link>
       </p>

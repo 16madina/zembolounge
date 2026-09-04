@@ -141,7 +141,9 @@ function WorldIntro() {
         {/* Bouton principal — aucune auth World Room */}
         <Pressable
           onClick={() =>
-            connected ? navigate({ to: "/world/onboarding/1" }) : navigate({ to: "/login" })
+            connected
+              ? navigate({ to: "/world/onboarding/1" })
+              : navigate({ to: "/login", search: { redirect: "/world" } })
           }
           className="glow-gold mt-7 mb-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[15px] font-bold text-[oklch(0.16_0.02_60)]"
         >
