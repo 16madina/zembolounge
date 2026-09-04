@@ -97,7 +97,7 @@ function Quiz() {
   }, [seconds, revealed]);
 
   useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+    listRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
   }, [chat]);
 
   const pick = (k: string) => {
@@ -114,9 +114,9 @@ function Quiz() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-[oklch(0.03_0_0)]">
+    <div className="flex min-h-full flex-col bg-[oklch(0.03_0_0)]">
       {/* Décor du plateau (haut) + rangée de réponses réelle + décor (bas) */}
-      <div className="flex max-h-[62%] shrink-0 flex-col overflow-hidden bg-[oklch(0.03_0_0)] select-none">
+      <div className="flex shrink-0 flex-col bg-[oklch(0.03_0_0)] select-none">
         <div className="relative">
           <img
             src={stageTop}
@@ -223,11 +223,11 @@ function Quiz() {
       </div>
 
       {/* Chat spectateurs */}
-      <div className="flex min-h-0 flex-1 flex-col border-t border-violet/25 bg-[oklch(0.03_0_0)] px-4 pt-3">
+      <div className="flex flex-1 flex-col border-t border-violet/25 bg-[oklch(0.03_0_0)] px-4 pt-3">
         <p className="text-[12px] font-extrabold tracking-[0.14em] text-violet uppercase">
           Chat spectateurs
         </p>
-        <div ref={listRef} className="app-scroll mt-2 min-h-0 flex-1 space-y-2 pr-1">
+        <div className="mt-2 space-y-2.5 pr-1">
           {chat.map((c) => (
             <p key={c.id} className="text-[12.5px] leading-snug">
               <span className="font-semibold" style={{ color: c.color }}>
@@ -236,13 +236,14 @@ function Quiz() {
               <span className="text-foreground/90">{c.text}</span>
             </p>
           ))}
+          <div ref={listRef} />
         </div>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             send();
           }}
-          className="flex items-center gap-2 py-3 pb-[max(env(safe-area-inset-bottom),12px)]"
+          className="sticky bottom-0 z-10 mt-auto flex items-center gap-2 bg-[oklch(0.03_0_0)] py-3 pb-[max(env(safe-area-inset-bottom),12px)]"
         >
           <input
             value={draft}
@@ -260,6 +261,7 @@ function Quiz() {
           </Pressable>
         </form>
       </div>
+
 
       <BottomSheet open={rulesOpen} onClose={() => setRulesOpen(false)}>
         <div className="px-5 pt-2 pb-4">
