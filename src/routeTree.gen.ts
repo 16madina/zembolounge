@@ -33,8 +33,11 @@ import { Route as TalkShowSlamRouteImport } from './routes/talk-show.slam'
 import { Route as TalkShowSlamTherapieRouteImport } from './routes/talk-show.slam-therapie'
 import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
 import { Route as TalkShowStorytimeRouteImport } from './routes/talk-show.storytime'
+import { Route as WorldIntroRouteImport } from './routes/world.intro'
+import { Route as WorldLoginRouteImport } from './routes/world.login'
 import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.config.$format'
 import { Route as TalkShowPreviewFormatRouteImport } from './routes/talk-show.preview.$format'
+import { Route as WorldOnboarding1RouteImport } from './routes/world.onboarding.1'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -156,6 +159,16 @@ const TalkShowStorytimeRoute = TalkShowStorytimeRouteImport.update({
   path: '/storytime',
   getParentRoute: () => TalkShowRoute,
 } as any)
+const WorldIntroRoute = WorldIntroRouteImport.update({
+  id: '/world/intro',
+  path: '/world/intro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorldLoginRoute = WorldLoginRouteImport.update({
+  id: '/world/login',
+  path: '/world/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalkShowConfigFormatRoute = TalkShowConfigFormatRouteImport.update({
   id: '/config/$format',
   path: '/config/$format',
@@ -165,6 +178,11 @@ const TalkShowPreviewFormatRoute = TalkShowPreviewFormatRouteImport.update({
   id: '/preview/$format',
   path: '/preview/$format',
   getParentRoute: () => TalkShowRoute,
+} as any)
+const WorldOnboarding1Route = WorldOnboarding1RouteImport.update({
+  id: '/world/onboarding/1',
+  path: '/world/onboarding/1',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -191,9 +209,12 @@ export interface FileRoutesByFullPath {
   '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
+  '/world/intro': typeof WorldIntroRoute
+  '/world/login': typeof WorldLoginRoute
   '/talk-show/': typeof TalkShowIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
+  '/world/onboarding/1': typeof WorldOnboarding1Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -218,9 +239,12 @@ export interface FileRoutesByTo {
   '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
+  '/world/intro': typeof WorldIntroRoute
+  '/world/login': typeof WorldLoginRoute
   '/talk-show': typeof TalkShowIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
+  '/world/onboarding/1': typeof WorldOnboarding1Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -247,9 +271,12 @@ export interface FileRoutesById {
   '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
+  '/world/intro': typeof WorldIntroRoute
+  '/world/login': typeof WorldLoginRoute
   '/talk-show/': typeof TalkShowIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
+  '/world/onboarding/1': typeof WorldOnboarding1Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -277,9 +304,12 @@ export interface FileRouteTypes {
     | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
+    | '/world/intro'
+    | '/world/login'
     | '/talk-show/'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
+    | '/world/onboarding/1'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -304,9 +334,12 @@ export interface FileRouteTypes {
     | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
+    | '/world/intro'
+    | '/world/login'
     | '/talk-show'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
+    | '/world/onboarding/1'
   id:
     | '__root__'
     | '/'
@@ -332,9 +365,12 @@ export interface FileRouteTypes {
     | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
+    | '/world/intro'
+    | '/world/login'
     | '/talk-show/'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
+    | '/world/onboarding/1'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -354,6 +390,9 @@ export interface RootRouteChildren {
   PlayHotSeatRoute: typeof PlayHotSeatRoute
   PlayQuizRoute: typeof PlayQuizRoute
   TableIdRoute: typeof TableIdRoute
+  WorldIntroRoute: typeof WorldIntroRoute
+  WorldLoginRoute: typeof WorldLoginRoute
+  WorldOnboarding1Route: typeof WorldOnboarding1Route
 }
 
 declare module '@tanstack/react-router' {
@@ -526,6 +565,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalkShowStorytimeRouteImport
       parentRoute: typeof TalkShowRoute
     }
+    '/world/intro': {
+      id: '/world/intro'
+      path: '/world/intro'
+      fullPath: '/world/intro'
+      preLoaderRoute: typeof WorldIntroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/world/login': {
+      id: '/world/login'
+      path: '/world/login'
+      fullPath: '/world/login'
+      preLoaderRoute: typeof WorldLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/talk-show/config/$format': {
       id: '/talk-show/config/$format'
       path: '/config/$format'
@@ -539,6 +592,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/talk-show/preview/$format'
       preLoaderRoute: typeof TalkShowPreviewFormatRouteImport
       parentRoute: typeof TalkShowRoute
+    }
+    '/world/onboarding/1': {
+      id: '/world/onboarding/1'
+      path: '/world/onboarding/1'
+      fullPath: '/world/onboarding/1'
+      preLoaderRoute: typeof WorldOnboarding1RouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -590,6 +650,9 @@ const rootRouteChildren: RootRouteChildren = {
   PlayHotSeatRoute: PlayHotSeatRoute,
   PlayQuizRoute: PlayQuizRoute,
   TableIdRoute: TableIdRoute,
+  WorldIntroRoute: WorldIntroRoute,
+  WorldLoginRoute: WorldLoginRoute,
+  WorldOnboarding1Route: WorldOnboarding1Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
