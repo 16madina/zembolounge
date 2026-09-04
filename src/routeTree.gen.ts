@@ -33,6 +33,7 @@ import { Route as TalkShowSlamRouteImport } from './routes/talk-show.slam'
 import { Route as TalkShowSlamTherapieRouteImport } from './routes/talk-show.slam-therapie'
 import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
 import { Route as TalkShowStorytimeRouteImport } from './routes/talk-show.storytime'
+import { Route as WorldIndexRouteImport } from './routes/world.index'
 import { Route as WorldDiscoverRouteImport } from './routes/world.discover'
 import { Route as WorldIntroRouteImport } from './routes/world.intro'
 import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.config.$format'
@@ -165,6 +166,11 @@ const TalkShowStorytimeRoute = TalkShowStorytimeRouteImport.update({
   path: '/storytime',
   getParentRoute: () => TalkShowRoute,
 } as any)
+const WorldIndexRoute = WorldIndexRouteImport.update({
+  id: '/world/',
+  path: '/world/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorldDiscoverRoute = WorldDiscoverRouteImport.update({
   id: '/world/discover',
   path: '/world/discover',
@@ -248,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/world/discover': typeof WorldDiscoverRoute
   '/world/intro': typeof WorldIntroRoute
   '/talk-show/': typeof TalkShowIndexRoute
+  '/world/': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
@@ -284,6 +291,7 @@ export interface FileRoutesByTo {
   '/world/discover': typeof WorldDiscoverRoute
   '/world/intro': typeof WorldIntroRoute
   '/talk-show': typeof TalkShowIndexRoute
+  '/world': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
@@ -322,6 +330,7 @@ export interface FileRoutesById {
   '/world/discover': typeof WorldDiscoverRoute
   '/world/intro': typeof WorldIntroRoute
   '/talk-show/': typeof TalkShowIndexRoute
+  '/world/': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
@@ -361,6 +370,7 @@ export interface FileRouteTypes {
     | '/world/discover'
     | '/world/intro'
     | '/talk-show/'
+    | '/world/'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
@@ -397,6 +407,7 @@ export interface FileRouteTypes {
     | '/world/discover'
     | '/world/intro'
     | '/talk-show'
+    | '/world'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
@@ -434,6 +445,7 @@ export interface FileRouteTypes {
     | '/world/discover'
     | '/world/intro'
     | '/talk-show/'
+    | '/world/'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
@@ -464,6 +476,7 @@ export interface RootRouteChildren {
   TableIdRoute: typeof TableIdRoute
   WorldDiscoverRoute: typeof WorldDiscoverRoute
   WorldIntroRoute: typeof WorldIntroRoute
+  WorldIndexRoute: typeof WorldIndexRoute
   WorldOnboarding1Route: typeof WorldOnboarding1Route
   WorldOnboarding2Route: typeof WorldOnboarding2Route
   WorldOnboarding3Route: typeof WorldOnboarding3Route
@@ -643,6 +656,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalkShowStorytimeRouteImport
       parentRoute: typeof TalkShowRoute
     }
+    '/world/': {
+      id: '/world/'
+      path: '/world'
+      fullPath: '/world/'
+      preLoaderRoute: typeof WorldIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/world/discover': {
       id: '/world/discover'
       path: '/world/discover'
@@ -772,6 +792,7 @@ const rootRouteChildren: RootRouteChildren = {
   TableIdRoute: TableIdRoute,
   WorldDiscoverRoute: WorldDiscoverRoute,
   WorldIntroRoute: WorldIntroRoute,
+  WorldIndexRoute: WorldIndexRoute,
   WorldOnboarding1Route: WorldOnboarding1Route,
   WorldOnboarding2Route: WorldOnboarding2Route,
   WorldOnboarding3Route: WorldOnboarding3Route,
