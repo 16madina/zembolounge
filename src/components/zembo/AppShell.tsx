@@ -12,6 +12,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [createOpen, setCreateOpen] = useState(false);
   const isTab = TABS.includes(pathname);
   const isThread = pathname.startsWith("/messages/");
+  const isTable = pathname.startsWith("/table/");
   const isGame = pathname.startsWith("/play/") || pathname.startsWith("/face-a-face");
   const noDock = isThread || isGame;
 
@@ -28,9 +29,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               transition={{ duration: 0.24, ease: [0.32, 0.72, 0, 1] }}
               className={cn(
                 "h-full",
-                isThread ? "overflow-hidden" : isGame ? "app-scroll" : "app-scroll pb-[112px]",
+                isThread || isTable
+                  ? "overflow-hidden"
+                  : isGame
+                    ? "app-scroll"
+                    : "app-scroll pb-[112px]",
               )}
             >
+
               {children}
             </motion.main>
           </AnimatePresence>
