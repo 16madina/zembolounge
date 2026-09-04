@@ -406,9 +406,11 @@ function MicroOuvertLive() {
               ) : (
                 <Pressable
                   onClick={() => {
-                    tap();
-                    flash("Demande envoyée à l'hôte ✋");
-                    setMyHand(true);
+                    if (role === "viewer" && !riseAsked) askRise();
+                    else if (role === "host") {
+                      tap();
+                      setRiseOpen(true);
+                    }
                   }}
                   className="flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed border-gold/45 bg-black/45"
                 >
@@ -416,7 +418,11 @@ function MicroOuvertLive() {
                     +
                   </span>
                   <span className="mt-0.5 px-1 text-center text-[8.5px] leading-tight font-bold text-white/85">
-                    Demander à monter
+                    {role === "viewer"
+                      ? riseAsked
+                        ? "En attente…"
+                        : "Demander à monter"
+                      : "Place libre"}
                   </span>
                 </Pressable>
               )}
