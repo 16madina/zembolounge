@@ -1,4 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
+import { LogIn, LogOut } from "lucide-react";
+import { toast } from "sonner";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import {
@@ -80,6 +84,7 @@ const BOTTOM_STATS = [
 ];
 
 function Profile() {
+  const { user, signOut } = useZemboAuth();
   const [tab, setTab] = useState("creations");
   const loading = useMockLoad();
 
@@ -138,6 +143,24 @@ function Profile() {
         <Pressable className="mt-4 w-full rounded-full border border-gold/60 py-2.5 text-[13.5px] font-semibold text-gold">
           Éditer le profil
         </Pressable>
+        {user ? (
+          <Pressable
+            onClick={async () => {
+              await signOut();
+              toast("Déconnecté", { description: "À bientôt sur Zembo." });
+            }}
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-border py-2.5 text-[13.5px] font-semibold text-muted-foreground"
+          >
+            <LogOut size={15} /> Se déconnecter
+          </Pressable>
+        ) : (
+          <Link
+            to="/login"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-border py-2.5 text-[13.5px] font-semibold text-muted-foreground"
+          >
+            <LogIn size={15} /> Se connecter
+          </Link>
+        )}
       </div>
 
       {/* Stats */}

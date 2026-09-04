@@ -3,6 +3,7 @@ import { ChevronRight, Flame, Play, Sparkles, Users, Volume2 } from "lucide-reac
 import { ScreenHeader } from "@/components/zembo/Header";
 import { Avatar, AvatarStack, CountPill, LiveBadge, Pressable, SectionTitle } from "@/components/zembo/ui";
 import { IMG, forYou, lives, stories } from "@/lib/zembo-data";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,6 +32,9 @@ const QUICK = [
 
 function Home() {
   const navigate = useNavigate();
+  const { user } = useZemboAuth();
+  const meta = (user?.user_metadata ?? {}) as { prenom?: string; full_name?: string };
+  const prenom = meta.prenom || meta.full_name?.split(" ")[0] || "Deena";
   const go = (kind: string, id: string) =>
     kind === "table" || kind === "play" || kind === "world"
       ? navigate({ to: "/table/$id", params: { id } })
@@ -42,10 +46,10 @@ function Home() {
 
       {/* Salutation */}
       <section className="flex items-center gap-3 px-4 pt-4">
-        <Avatar name="Deena" size={54} ring online />
+        <Avatar name={prenom} size={54} ring online />
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-[21px] leading-tight font-extrabold">
-            Bonsoir Deena <span className="text-gold">♛</span>
+            Bonsoir {prenom} <span className="text-gold">♛</span>
           </h1>
           <p className="truncate text-[13px] text-muted-foreground">Qu'est-ce qu'on vit aujourd'hui ?</p>
         </div>

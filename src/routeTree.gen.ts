@@ -13,9 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConnexionRouteImport } from './routes/connexion'
 import { Route as FaceAFaceRouteImport } from './routes/face-a-face'
 import { Route as LiveRouteImport } from './routes/live'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as TalkShowRouteImport } from './routes/talk-show'
 import { Route as AdminSoundsRouteImport } from './routes/admin.sounds'
 import { Route as MessagesIdRouteImport } from './routes/messages_.$id'
@@ -54,6 +56,11 @@ const LiveRoute = LiveRouteImport.update({
   path: '/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MessagesRoute = MessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
@@ -67,6 +74,11 @@ const PlayRoute = PlayRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TalkShowRoute = TalkShowRouteImport.update({
@@ -160,9 +172,11 @@ export interface FileRoutesByFullPath {
   '/connexion': typeof ConnexionRoute
   '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
   '/talk-show': typeof TalkShowRouteWithChildren
   '/admin/sounds': typeof AdminSoundsRoute
   '/messages/$id': typeof MessagesIdRoute
@@ -186,9 +200,11 @@ export interface FileRoutesByTo {
   '/connexion': typeof ConnexionRoute
   '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
   '/admin/sounds': typeof AdminSoundsRoute
   '/messages/$id': typeof MessagesIdRoute
   '/play/face-a-face': typeof PlayFaceAFaceRoute
@@ -212,9 +228,11 @@ export interface FileRoutesById {
   '/connexion': typeof ConnexionRoute
   '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/signup': typeof SignupRoute
   '/talk-show': typeof TalkShowRouteWithChildren
   '/admin/sounds': typeof AdminSoundsRoute
   '/messages_/$id': typeof MessagesIdRoute
@@ -240,9 +258,11 @@ export interface FileRouteTypes {
     | '/connexion'
     | '/face-a-face'
     | '/live'
+    | '/login'
     | '/messages'
     | '/play'
     | '/profile'
+    | '/signup'
     | '/talk-show'
     | '/admin/sounds'
     | '/messages/$id'
@@ -266,9 +286,11 @@ export interface FileRouteTypes {
     | '/connexion'
     | '/face-a-face'
     | '/live'
+    | '/login'
     | '/messages'
     | '/play'
     | '/profile'
+    | '/signup'
     | '/admin/sounds'
     | '/messages/$id'
     | '/play/face-a-face'
@@ -291,9 +313,11 @@ export interface FileRouteTypes {
     | '/connexion'
     | '/face-a-face'
     | '/live'
+    | '/login'
     | '/messages'
     | '/play'
     | '/profile'
+    | '/signup'
     | '/talk-show'
     | '/admin/sounds'
     | '/messages_/$id'
@@ -318,9 +342,11 @@ export interface RootRouteChildren {
   ConnexionRoute: typeof ConnexionRoute
   FaceAFaceRoute: typeof FaceAFaceRoute
   LiveRoute: typeof LiveRoute
+  LoginRoute: typeof LoginRoute
   MessagesRoute: typeof MessagesRoute
   PlayRoute: typeof PlayRoute
   ProfileRoute: typeof ProfileRoute
+  SignupRoute: typeof SignupRoute
   TalkShowRoute: typeof TalkShowRouteWithChildren
   AdminSoundsRoute: typeof AdminSoundsRoute
   MessagesIdRoute: typeof MessagesIdRoute
@@ -360,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LiveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/messages': {
       id: '/messages'
       path: '/messages'
@@ -379,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/talk-show': {
@@ -538,9 +578,11 @@ const rootRouteChildren: RootRouteChildren = {
   ConnexionRoute: ConnexionRoute,
   FaceAFaceRoute: FaceAFaceRoute,
   LiveRoute: LiveRoute,
+  LoginRoute: LoginRoute,
   MessagesRoute: MessagesRoute,
   PlayRoute: PlayRoute,
   ProfileRoute: ProfileRoute,
+  SignupRoute: SignupRoute,
   TalkShowRoute: TalkShowRouteWithChildren,
   AdminSoundsRoute: AdminSoundsRoute,
   MessagesIdRoute: MessagesIdRoute,
