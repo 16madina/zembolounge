@@ -18,7 +18,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isSlam = pathname.startsWith("/talk-show/slam-therapie");
   const isLiveShow =
     pathname.startsWith("/talk-show/storytime") || pathname.startsWith("/talk-show/micro-ouvert");
-  const noDock = isThread || isGame || isLiveShow;
+  const noDock = isThread || isGame || isLiveShow || isSlam;
 
   return (
     <div className="flex min-h-[100dvh] justify-center bg-[oklch(0.05_0_0)]">
