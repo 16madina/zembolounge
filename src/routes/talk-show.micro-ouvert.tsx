@@ -345,6 +345,9 @@ function MicroOuvertLive() {
         {/* 3) Sujet du moment */}
         <div className="absolute top-[23%] right-2.5 z-10 w-[50%] rounded-2xl border border-gold/35 bg-black/62 p-2 backdrop-blur-md">
           <p className="text-[10px] font-bold text-gold">🔥 Sujet du moment</p>
+          {liveTitle ? (
+            <p className="truncate text-[8.5px] font-semibold text-white/55">{liveTitle}</p>
+          ) : null}
           <p className="mt-0.5 text-[10.5px] leading-snug font-semibold text-white/92">
             Amour, amitié ou argent : qu'est-ce qui rend vraiment heureux ?
           </p>
