@@ -97,7 +97,7 @@ function Quiz() {
   }, [seconds, revealed]);
 
   useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+    listRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
   }, [chat]);
 
   const pick = (k: string) => {
