@@ -32,7 +32,9 @@ function Step2() {
   const photos = draft.photos;
   const add = () =>
     setDraft((d) =>
-      d.photos.length >= 6 ? d : { ...d, photos: [...d.photos, TINTS[d.photos.length % TINTS.length]] },
+      d.photos.length >= 6
+        ? d
+        : { ...d, photos: [...d.photos, TINTS[d.photos.length % TINTS.length] ?? TINTS[0]!] },
     );
   const remove = (i: number) =>
     setDraft((d) => ({ ...d, photos: d.photos.filter((_, idx) => idx !== i) }));
