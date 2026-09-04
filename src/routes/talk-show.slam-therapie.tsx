@@ -3,7 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronRight,
   Crown,
+  Flag,
   Gift,
+  LogOut,
+
   Heart,
   ListOrdered,
   MessageCircle,
