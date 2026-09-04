@@ -259,7 +259,7 @@ function SlamTherapieLive() {
         </div>
 
         {/* COLONNE D'ACTIONS */}
-        <div className="absolute right-2 top-[34%] bottom-1 flex flex-col items-center justify-end gap-2">
+        <div className="absolute right-2 top-[36%] bottom-1 flex flex-col items-center justify-end gap-2">
           <Pressable onClick={like} className="flex flex-col items-center" aria-label="J'aime">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
               <Heart size={20} className="fill-[oklch(0.6_0.23_20)] text-[oklch(0.6_0.23_20)]" />
@@ -286,7 +286,7 @@ function SlamTherapieLive() {
             <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
               <Share2 size={18} className="text-white" />
             </span>
-            <span className="mt-[2px] text-[9.5px] font-bold text-white/90">Partager</span>
+            
           </button>
           <button
             onClick={() => showToast("Cadeau envoyé à Moussa 🌹")}
@@ -296,7 +296,7 @@ function SlamTherapieLive() {
             <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
               <Gift size={19} className="text-gold" />
             </span>
-            <span className="mt-[2px] text-[9.5px] font-bold text-white/90">Cadeau</span>
+            
           </button>
           <button
             onClick={() => showToast("Zems envoyés ✨")}
@@ -307,7 +307,7 @@ function SlamTherapieLive() {
               Z
             </span>
             <span className="mt-[2px] max-w-[46px] text-center text-[8.5px] leading-tight font-bold text-white/90">
-              Envoyer des Zems
+              Zems
             </span>
           </button>
 
