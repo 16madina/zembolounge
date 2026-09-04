@@ -35,9 +35,13 @@ import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
 import { Route as TalkShowStorytimeRouteImport } from './routes/talk-show.storytime'
 import { Route as WorldIndexRouteImport } from './routes/world.index'
 import { Route as WorldDiscoverRouteImport } from './routes/world.discover'
+import { Route as WorldHellosRouteImport } from './routes/world.hellos'
 import { Route as WorldIntroRouteImport } from './routes/world.intro'
+import { Route as WorldMessagesRouteImport } from './routes/world.messages'
 import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.config.$format'
 import { Route as TalkShowPreviewFormatRouteImport } from './routes/talk-show.preview.$format'
+import { Route as WorldHelloIdRouteImport } from './routes/world.hello.$id'
+import { Route as WorldMessagesIdRouteImport } from './routes/world.messages_.$id'
 import { Route as WorldOnboarding1RouteImport } from './routes/world.onboarding.1'
 import { Route as WorldOnboarding2RouteImport } from './routes/world.onboarding.2'
 import { Route as WorldOnboarding3RouteImport } from './routes/world.onboarding.3'
@@ -176,9 +180,19 @@ const WorldDiscoverRoute = WorldDiscoverRouteImport.update({
   path: '/world/discover',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorldHellosRoute = WorldHellosRouteImport.update({
+  id: '/world/hellos',
+  path: '/world/hellos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorldIntroRoute = WorldIntroRouteImport.update({
   id: '/world/intro',
   path: '/world/intro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorldMessagesRoute = WorldMessagesRouteImport.update({
+  id: '/world/messages',
+  path: '/world/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TalkShowConfigFormatRoute = TalkShowConfigFormatRouteImport.update({
@@ -190,6 +204,16 @@ const TalkShowPreviewFormatRoute = TalkShowPreviewFormatRouteImport.update({
   id: '/preview/$format',
   path: '/preview/$format',
   getParentRoute: () => TalkShowRoute,
+} as any)
+const WorldHelloIdRoute = WorldHelloIdRouteImport.update({
+  id: '/world/hello/$id',
+  path: '/world/hello/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorldMessagesIdRoute = WorldMessagesIdRouteImport.update({
+  id: '/world/messages_/$id',
+  path: '/world/messages/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const WorldOnboarding1Route = WorldOnboarding1RouteImport.update({
   id: '/world/onboarding/1',
@@ -252,11 +276,15 @@ export interface FileRoutesByFullPath {
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/world/discover': typeof WorldDiscoverRoute
+  '/world/hellos': typeof WorldHellosRoute
   '/world/intro': typeof WorldIntroRoute
+  '/world/messages': typeof WorldMessagesRoute
   '/talk-show/': typeof TalkShowIndexRoute
   '/world/': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
+  '/world/hello/$id': typeof WorldHelloIdRoute
+  '/world/messages/$id': typeof WorldMessagesIdRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
   '/world/onboarding/3': typeof WorldOnboarding3Route
@@ -289,11 +317,15 @@ export interface FileRoutesByTo {
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/world/discover': typeof WorldDiscoverRoute
+  '/world/hellos': typeof WorldHellosRoute
   '/world/intro': typeof WorldIntroRoute
+  '/world/messages': typeof WorldMessagesRoute
   '/talk-show': typeof TalkShowIndexRoute
   '/world': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
+  '/world/hello/$id': typeof WorldHelloIdRoute
+  '/world/messages/$id': typeof WorldMessagesIdRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
   '/world/onboarding/3': typeof WorldOnboarding3Route
@@ -328,11 +360,15 @@ export interface FileRoutesById {
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/world/discover': typeof WorldDiscoverRoute
+  '/world/hellos': typeof WorldHellosRoute
   '/world/intro': typeof WorldIntroRoute
+  '/world/messages': typeof WorldMessagesRoute
   '/talk-show/': typeof TalkShowIndexRoute
   '/world/': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
+  '/world/hello/$id': typeof WorldHelloIdRoute
+  '/world/messages_/$id': typeof WorldMessagesIdRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
   '/world/onboarding/3': typeof WorldOnboarding3Route
@@ -368,11 +404,15 @@ export interface FileRouteTypes {
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/world/discover'
+    | '/world/hellos'
     | '/world/intro'
+    | '/world/messages'
     | '/talk-show/'
     | '/world/'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
+    | '/world/hello/$id'
+    | '/world/messages/$id'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
     | '/world/onboarding/3'
@@ -405,11 +445,15 @@ export interface FileRouteTypes {
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/world/discover'
+    | '/world/hellos'
     | '/world/intro'
+    | '/world/messages'
     | '/talk-show'
     | '/world'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
+    | '/world/hello/$id'
+    | '/world/messages/$id'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
     | '/world/onboarding/3'
@@ -443,11 +487,15 @@ export interface FileRouteTypes {
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/world/discover'
+    | '/world/hellos'
     | '/world/intro'
+    | '/world/messages'
     | '/talk-show/'
     | '/world/'
     | '/talk-show/config/$format'
     | '/talk-show/preview/$format'
+    | '/world/hello/$id'
+    | '/world/messages_/$id'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
     | '/world/onboarding/3'
@@ -475,8 +523,12 @@ export interface RootRouteChildren {
   PlayQuizRoute: typeof PlayQuizRoute
   TableIdRoute: typeof TableIdRoute
   WorldDiscoverRoute: typeof WorldDiscoverRoute
+  WorldHellosRoute: typeof WorldHellosRoute
   WorldIntroRoute: typeof WorldIntroRoute
+  WorldMessagesRoute: typeof WorldMessagesRoute
   WorldIndexRoute: typeof WorldIndexRoute
+  WorldHelloIdRoute: typeof WorldHelloIdRoute
+  WorldMessagesIdRoute: typeof WorldMessagesIdRoute
   WorldOnboarding1Route: typeof WorldOnboarding1Route
   WorldOnboarding2Route: typeof WorldOnboarding2Route
   WorldOnboarding3Route: typeof WorldOnboarding3Route
@@ -670,11 +722,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorldDiscoverRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/world/hellos': {
+      id: '/world/hellos'
+      path: '/world/hellos'
+      fullPath: '/world/hellos'
+      preLoaderRoute: typeof WorldHellosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/world/intro': {
       id: '/world/intro'
       path: '/world/intro'
       fullPath: '/world/intro'
       preLoaderRoute: typeof WorldIntroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/world/messages': {
+      id: '/world/messages'
+      path: '/world/messages'
+      fullPath: '/world/messages'
+      preLoaderRoute: typeof WorldMessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/talk-show/config/$format': {
@@ -690,6 +756,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/talk-show/preview/$format'
       preLoaderRoute: typeof TalkShowPreviewFormatRouteImport
       parentRoute: typeof TalkShowRoute
+    }
+    '/world/hello/$id': {
+      id: '/world/hello/$id'
+      path: '/world/hello/$id'
+      fullPath: '/world/hello/$id'
+      preLoaderRoute: typeof WorldHelloIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/world/messages_/$id': {
+      id: '/world/messages_/$id'
+      path: '/world/messages/$id'
+      fullPath: '/world/messages/$id'
+      preLoaderRoute: typeof WorldMessagesIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/world/onboarding/1': {
       id: '/world/onboarding/1'
@@ -791,8 +871,12 @@ const rootRouteChildren: RootRouteChildren = {
   PlayQuizRoute: PlayQuizRoute,
   TableIdRoute: TableIdRoute,
   WorldDiscoverRoute: WorldDiscoverRoute,
+  WorldHellosRoute: WorldHellosRoute,
   WorldIntroRoute: WorldIntroRoute,
+  WorldMessagesRoute: WorldMessagesRoute,
   WorldIndexRoute: WorldIndexRoute,
+  WorldHelloIdRoute: WorldHelloIdRoute,
+  WorldMessagesIdRoute: WorldMessagesIdRoute,
   WorldOnboarding1Route: WorldOnboarding1Route,
   WorldOnboarding2Route: WorldOnboarding2Route,
   WorldOnboarding3Route: WorldOnboarding3Route,

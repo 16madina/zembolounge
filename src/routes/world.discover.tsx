@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import decor from "@/assets/world-room-elena.png";
 import { resetWorldProfile, loadWorldProfile } from "@/lib/world-profile";
 import { WorldHelloMatch, type HelloMatchPerson } from "@/components/zembo/WorldHelloMatch";
+import { pendingHellos } from "@/lib/world-hello";
 
 export const Route = createFileRoute("/world/discover")({
   head: () => ({
@@ -219,6 +220,7 @@ function WorldDiscover() {
   const [ageRange, setAgeRange] = useState("25–35");
   const lockRef = useRef(0);
   const [match, setMatch] = useState<WorldCard | null>(null);
+  const [hellosCount] = useState(() => pendingHellos().length);
 
   const me: HelloMatchPerson = useMemo(() => {
     const p = loadWorldProfile();
@@ -477,6 +479,18 @@ function WorldDiscover() {
         </Pressable>
       </header>
 
+      {hellosCount > 0 && (
+        <Pressable
+          onClick={() => {
+            tap();
+            navigate({ to: "/world/hellos" });
+          }}
+          className="absolute top-[7.5%] left-1/2 z-30 -translate-x-1/2 rounded-full border border-gold/45 bg-black/65 px-3 py-1.5 text-[11px] font-bold text-gold backdrop-blur-md"
+        >
+          👋 Hellos ({hellosCount})
+        </Pressable>
+      )}
+
       <WorldHelloMatch
         open={!!match}
         me={me}
@@ -494,9 +508,9 @@ function WorldDiscover() {
         }
         onStartVideo={() => {
           tap();
-          toast("Bientôt : la rencontre vidéo de 60 secondes");
+          const id = match?.id;
           setMatch(null);
-          next();
+          if (id) navigate({ to: "/world/hello/$id", params: { id }, search: { step: "meet" } });
         }}
         onLater={() => {
           setMatch(null);
