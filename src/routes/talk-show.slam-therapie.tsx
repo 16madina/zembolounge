@@ -38,6 +38,7 @@ import { ZemboIcon } from "@/components/zembo/ZemboMark";
 import { SlamRequestSheet, type SlamRequest } from "@/components/zembo/SlamRequestSheet";
 import { fmtDur, moodOf, type SlamDuration } from "@/lib/zembo-sounds";
 import stage from "@/assets/zembo-slam-stage.png";
+import { LikeCount, LikePill, useTapToLike } from "@/components/zembo/TapToLike";
 
 export const Route = createFileRoute("/talk-show/slam-therapie")({
   head: () => ({
@@ -138,8 +139,7 @@ const tap = () => navigator.vibrate?.(15);
 function SlamTherapieLive() {
   const [msgs, setMsgs] = useState<Msg[]>(INITIAL);
   const [draft, setDraft] = useState("");
-  const [likes, setLikes] = useState(4200);
-  const [hearts, setHearts] = useState<number[]>([]);
+  const tapLike = useTapToLike(4200);
   const [toast, setToast] = useState<string | null>(null);
   const [drawer, setDrawer] = useState(false);
   const [sheet, setSheet] = useState<"share" | "gift" | "zems" | "menu" | null>(null);
@@ -225,14 +225,6 @@ function SlamTherapieLive() {
     setTimeout(() => setToast(null), 2000);
   };
 
-  const like = () => {
-    tap();
-    setLikes((l) => l + 1);
-    seq.current += 1;
-    const id = seq.current;
-    setHearts((h) => [...h.slice(-8), id]);
-    setTimeout(() => setHearts((h) => h.filter((x) => x !== id)), 1700);
-  };
 
   const send = () => {
     const text = draft.trim();
@@ -373,7 +365,11 @@ function SlamTherapieLive() {
   const imOnStage = perf.me === true;
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-black">
+    <div
+      className="relative h-full w-full overflow-hidden bg-black"
+      onPointerDown={tapLike.onSceneTap}
+    >
+      {tapLike.layer}
       {/* ── DÉCOR PLEIN ÉCRAN ── */}
       <img
         src={stage}
@@ -406,6 +402,7 @@ function SlamTherapieLive() {
               <span className="flex items-center gap-1 rounded-md bg-black/50 px-1.5 py-[2px] text-[9px] font-bold text-white/90 backdrop-blur">
                 <Users size={10} /> 1.2K
               </span>
+              <LikePill likes={tapLike.likes} pop={tapLike.pop} />
               <Pressable
                 onClick={() => {
                   tap();
@@ -535,13 +532,19 @@ function SlamTherapieLive() {
 
       {/* COLONNE D'ACTIONS */}
       <div className="absolute right-2 bottom-[112px] flex flex-col items-center gap-2">
-        <Pressable onClick={like} className="flex flex-col items-center" aria-label="J'aime">
+        <Pressable
+          onClick={tapLike.likeFromButton}
+          className="flex flex-col items-center"
+          aria-label="J'aime"
+        >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
             <Heart size={20} className="fill-[oklch(0.6_0.23_20)] text-[oklch(0.6_0.23_20)]" />
           </span>
-          <span className="mt-[2px] text-[9.5px] font-bold text-white/90">
-            {(likes / 1000).toFixed(1)}K
-          </span>
+          <LikeCount
+            likes={tapLike.likes}
+            pop={tapLike.pop}
+            className="mt-[2px] inline-block text-[9.5px] font-bold text-white/90"
+          />
         </Pressable>
         <Pressable
           onClick={focusChat}
@@ -594,23 +597,7 @@ function SlamTherapieLive() {
         </Pressable>
 
 
-        {/* cœurs animés */}
-        <div className="pointer-events-none absolute right-3 bottom-[40px]">
-          <AnimatePresence>
-            {hearts.map((h) => (
-              <motion.span
-                key={h}
-                initial={{ opacity: 0, y: 0, scale: 0.6 }}
-                animate={{ opacity: [0, 1, 1, 0], y: -220, scale: 1, x: (h % 3) * 12 - 12 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.6, ease: "easeOut" }}
-                className="absolute text-[22px]"
-              >
-                ❤️
-              </motion.span>
-            ))}
-          </AnimatePresence>
-        </div>
+
       </div>
 
       {/* CHAT EN SURIMPRESSION — monte jusqu'au milieu puis s'estompe */}
