@@ -55,6 +55,16 @@ type Guest = {
   speaking: boolean;
 };
 
+type Role = "host" | "guest" | "viewer";
+
+const ROLE_LABEL: Record<Role, string> = {
+  host: "👑 Hôte",
+  guest: "🙋 Invité",
+  viewer: "👁 Spectateur",
+};
+
+const NEXT_ROLE: Record<Role, Role> = { host: "guest", guest: "viewer", viewer: "host" };
+
 const SLOT_POS: Record<1 | 2 | 3 | 4, { left: string; width: string }> = {
   1: { left: "4.25%", width: "23.2%" },
   2: { left: "27.6%", width: "22.3%" },
@@ -124,7 +134,7 @@ function fmt(s: number) {
 
 function MicroOuvertLive() {
   const navigate = useNavigate();
-  const [role, setRole] = useState<"host" | "guest">("host");
+  const [role, setRole] = useState<Role>("host");
   const [guests, setGuests] = useState<Guest[]>([
     { slot: 1, name: "Malik", mic: true, hand: false, speaking: true },
     { slot: 2, name: "Aïssatou", mic: false, hand: true, speaking: false },
@@ -134,6 +144,10 @@ function MicroOuvertLive() {
   const [myHand, setMyHand] = useState(false);
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
+  const [riseQueue, setRiseQueue] = useState<string[]>(["Kevin", "Nadia"]);
+  const [riseAsked, setRiseAsked] = useState(false);
+  const [riseOpen, setRiseOpen] = useState(false);
+  const [placesOpen, setPlacesOpen] = useState(false);
   const [seconds, setSeconds] = useState(4356);
   const [viewers, setViewers] = useState(325);
   const [likes, setLikes] = useState(1800);
@@ -236,7 +250,165 @@ function MicroOuvertLive() {
     if (slot === 3) setMyHand(false);
   };
 
+  const freeSlots = guests.filter((g) => !g.name).length;
+
+  // Un invité quitte la scène → il redevient spectateur, sa place se libère
+  const leaveStage = () => {
+    tap();
+    setMyHand(false);
+    setGuests((gs) =>
+      gs.map((g) =>
+        g.slot === 3 ? { ...g, name: null, mic: false, hand: false, speaking: false } : g,
+      ),
+    );
+    setRole("viewer");
+    setRiseAsked(false);
+    flash("Tu es redescendu·e 👁 Spectateur");
+  };
+
+  // L'hôte fait descendre un invité
+  const kick = (slot: number) => {
+    tap();
+    const name = guests.find((g) => g.slot === slot)?.name;
+    setGuests((gs) =>
+      gs.map((g) =>
+        g.slot === slot ? { ...g, name: null, mic: false, hand: false, speaking: false } : g,
+      ),
+    );
+    flash(`${name} est redescendu·e`);
+  };
+
+  // Un spectateur demande à MONTER
+  const askRise = () => {
+    tap();
+    setRiseAsked(true);
+    flash("Demande envoyée ⏳ En attente de l'hôte");
+  };
+
+  // L'hôte fait MONTER un spectateur sur une place libre
+  const promote = (name: string) => {
+    tap();
+    const free = guests.find((g) => !g.name);
+    if (!free) {
+      flash("Table pleine — libère une place d'abord");
+      return;
+    }
+    setGuests((gs) =>
+      gs.map((g) =>
+        g.slot === free.slot ? { ...g, name, mic: false, hand: false, speaking: false } : g,
+      ),
+    );
+    setRiseQueue((q) => q.filter((n) => n !== name));
+    flash(`${name} monte sur scène 🎤`);
+  };
+
+  const refuseRise = (name: string) => {
+    tap();
+    setRiseQueue((q) => q.filter((n) => n !== name));
+  };
+
   const centerLabel = role === "host" ? "Donner la parole" : myHand ? "Main levée" : "Demander à parler";
+
+  const moreItems: Array<{
+    emoji: string;
+    title: string;
+    sub: string;
+    badge?: number | undefined;
+    action: () => void;
+  }> =
+    role === "host"
+      ? [
+          {
+            emoji: "🙋",
+            title: "Gérer les places",
+            sub: `4 places max · ${freeSlots} libre(s)`,
+            action: () => setPlacesOpen(true),
+          },
+          {
+            emoji: "✋",
+            title: "Demandes de montée",
+            sub: "Spectateurs qui veulent une place",
+            badge: riseQueue.length || undefined,
+            action: () => setRiseOpen(true),
+          },
+          {
+            emoji: "🚫",
+            title: "Modération / Signaler",
+            sub: "Gérer un comportement inapproprié",
+            action: () => flash("Signalement transmis"),
+          },
+          {
+            emoji: "📄",
+            title: "Règles",
+            sub: "Respect • Pas de jugement • Bonne vibe ✨",
+            action: () => flash("Règles du live affichées"),
+          },
+          {
+            emoji: "⏹",
+            title: "Terminer le live",
+            sub: "Fermer le Micro Ouvert pour tout le monde",
+            action: () => navigate({ to: "/talk-show" }),
+          },
+        ]
+      : role === "guest"
+        ? [
+            {
+              emoji: "↗",
+              title: "Partager",
+              sub: "Inviter des amis à écouter",
+              action: () => setInviteOpen(true),
+            },
+            {
+              emoji: "🚪",
+              title: "Quitter la scène",
+              sub: "Redevenir spectateur et libérer ta place",
+              action: leaveStage,
+            },
+            {
+              emoji: "🚫",
+              title: "Signaler",
+              sub: "Signaler un comportement inapproprié",
+              action: () => flash("Signalement transmis"),
+            },
+            {
+              emoji: "📄",
+              title: "Règles",
+              sub: "Respect • Pas de jugement • Bonne vibe ✨",
+              action: () => flash("Règles du live affichées"),
+            },
+          ]
+        : [
+            {
+              emoji: "↗",
+              title: "Partager",
+              sub: "Inviter des amis à écouter",
+              action: () => setInviteOpen(true),
+            },
+            {
+              emoji: "🔇",
+              title: "Couper le son du live",
+              sub: "Continuer à lire le chat en silence",
+              action: () => flash("Son du live coupé"),
+            },
+            {
+              emoji: "🚫",
+              title: "Signaler le live",
+              sub: "Prévenir la modération Zembo",
+              action: () => flash("Signalement transmis"),
+            },
+            {
+              emoji: "📄",
+              title: "Règles de la communauté",
+              sub: "Respect • Pas de jugement • Bonne vibe ✨",
+              action: () => flash("Règles affichées"),
+            },
+            {
+              emoji: "🚪",
+              title: "Quitter",
+              sub: "Sortir du live",
+              action: () => navigate({ to: "/talk-show" }),
+            },
+          ];
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden bg-black">
@@ -273,11 +445,11 @@ function MicroOuvertLive() {
             <Pressable
               onClick={() => {
                 tap();
-                setRole((r) => (r === "host" ? "guest" : "host"));
+                setRole((r) => NEXT_ROLE[r]);
               }}
               className="rounded-full border border-white/20 bg-black/60 px-2 py-[3px] text-[10px] font-bold whitespace-nowrap text-white/85 backdrop-blur-md"
             >
-              {role === "host" ? "👑 Vue" : "🙋 Vue"}
+              {ROLE_LABEL[role]}
             </Pressable>
             <Pressable
               aria-label="Plus d'options"
@@ -392,9 +564,11 @@ function MicroOuvertLive() {
               ) : (
                 <Pressable
                   onClick={() => {
-                    tap();
-                    flash("Demande envoyée à l'hôte ✋");
-                    setMyHand(true);
+                    if (role === "viewer" && !riseAsked) askRise();
+                    else if (role === "host") {
+                      tap();
+                      setRiseOpen(true);
+                    }
                   }}
                   className="flex h-full w-full flex-col items-center justify-center rounded-xl border border-dashed border-gold/45 bg-black/45"
                 >
@@ -402,7 +576,11 @@ function MicroOuvertLive() {
                     +
                   </span>
                   <span className="mt-0.5 px-1 text-center text-[8.5px] leading-tight font-bold text-white/85">
-                    Demander à monter
+                    {role === "viewer"
+                      ? riseAsked
+                        ? "En attente…"
+                        : "Demander à monter"
+                      : "Place libre"}
                   </span>
                 </Pressable>
               )}
@@ -573,6 +751,20 @@ function MicroOuvertLive() {
             </motion.div>
           )}
         </AnimatePresence>
+        {role === "viewer" && (
+          <Pressable
+            onClick={() => {
+              if (!riseAsked) askRise();
+            }}
+            className={
+              riseAsked
+                ? "mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-full border border-gold/40 bg-black/60 py-2 text-[12px] font-bold text-gold backdrop-blur-md"
+                : "mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-full bg-gold py-2 text-[12.5px] font-extrabold text-black shadow-[0_6px_18px_oklch(0.82_0.13_85_/_0.4)]"
+            }
+          >
+            {riseAsked ? "Demande envoyée ⏳ En attente de l'hôte" : "✋ Demander à monter"}
+          </Pressable>
+        )}
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -605,86 +797,91 @@ function MicroOuvertLive() {
         </form>
       </div>
 
-      {/* ══ BARRE DU BAS ══ */}
-      <div className="shrink-0 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),8px)]">
-        <div className="flex items-end justify-between rounded-[26px] border border-white/10 bg-black/70 px-1.5 py-2 backdrop-blur-xl">
-          <BarItem
-            icon={<LogOut size={18} />}
-            label="Quitter"
-            onClick={() => {
-              tap();
-              navigate({ to: "/talk-show" });
-            }}
-          />
-          <BarItem
-            icon={micOn ? <Mic size={18} /> : <MicOff size={18} className="text-white/45" />}
-            label="Mic"
-            onClick={() => {
-              tap();
-              setMicOn((m) => !m);
-              flash(micOn ? "Micro coupé" : "Micro ouvert");
-            }}
-          />
-          <BarItem
-            icon={camOn ? <Camera size={18} /> : <CameraOff size={18} className="text-white/45" />}
-            label="Caméra"
-            onClick={() => {
-              tap();
-              setCamOn((c) => !c);
-            }}
-          />
-
-          {/* BOUTON CENTRAL */}
-          <Pressable
-            onClick={() => {
-              if (role === "host") {
+      {/* ══ BARRE DU BAS — hôte & invité seulement ══ */}
+      {role !== "viewer" && (
+        <div className="shrink-0 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),8px)]">
+          <div className="flex items-end justify-between rounded-[26px] border border-white/10 bg-black/70 px-1.5 py-2 backdrop-blur-xl">
+            <BarItem
+              icon={<LogOut size={18} />}
+              label={role === "host" ? "Quitter" : "Quitter la scène"}
+              onClick={() => {
+                if (role === "guest") leaveStage();
+                else {
+                  tap();
+                  navigate({ to: "/talk-show" });
+                }
+              }}
+            />
+            <BarItem
+              icon={micOn ? <Mic size={18} /> : <MicOff size={18} className="text-white/45" />}
+              label="Mic"
+              onClick={() => {
                 tap();
-                setRequestsOpen(true);
-              } else toggleMyHand();
-            }}
-            className="relative -mt-4 flex h-[62px] w-[62px] shrink-0 flex-col items-center justify-center rounded-full bg-gold shadow-[0_6px_20px_oklch(0.82_0.13_85_/_0.45)]"
-          >
-            {role === "host" ? (
-              <Mic size={18} className="text-black" />
-            ) : (
-              <Hand size={18} className={myHand ? "text-black/60" : "text-black"} />
-            )}
-            <span className="mt-[1px] max-w-[56px] text-center text-[8.5px] leading-[1.05] font-black text-black">
-              {centerLabel}
-            </span>
-            {role === "host" && hands.length > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-live text-[10px] font-black text-white">
-                {hands.length}
-              </span>
-            )}
-          </Pressable>
+                setMicOn((m) => !m);
+                flash(micOn ? "Micro coupé" : "Micro ouvert");
+              }}
+            />
+            <BarItem
+              icon={camOn ? <Camera size={18} /> : <CameraOff size={18} className="text-white/45" />}
+              label="Caméra"
+              onClick={() => {
+                tap();
+                setCamOn((c) => !c);
+              }}
+            />
 
-          <BarItem
-            icon={<Users size={18} />}
-            label="Inviter"
-            onClick={() => {
-              tap();
-              setInviteOpen(true);
-            }}
-          />
-          <BarItem
-            icon={<SmilePlus size={18} />}
-            label="Réactions"
-            onClick={() => {
-              tap();
-              setReactOpen(true);
-            }}
-          />
-          <BarItem
-            icon={<MoreHorizontal size={18} />}
-            label="Plus"
-            onClick={() => {
-              tap();
-              setMoreOpen(true);
-            }}
-          />
+            {/* BOUTON CENTRAL */}
+            <Pressable
+              onClick={() => {
+                if (role === "host") {
+                  tap();
+                  setRequestsOpen(true);
+                } else toggleMyHand();
+              }}
+              className="relative -mt-4 flex h-[62px] w-[62px] shrink-0 flex-col items-center justify-center rounded-full bg-gold shadow-[0_6px_20px_oklch(0.82_0.13_85_/_0.45)]"
+            >
+              {role === "host" ? (
+                <Mic size={18} className="text-black" />
+              ) : (
+                <Hand size={18} className={myHand ? "text-black/60" : "text-black"} />
+              )}
+              <span className="mt-[1px] max-w-[56px] text-center text-[8.5px] leading-[1.05] font-black text-black">
+                {centerLabel}
+              </span>
+              {role === "host" && hands.length > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-live text-[10px] font-black text-white">
+                  {hands.length}
+                </span>
+              )}
+            </Pressable>
+
+            <BarItem
+              icon={<Users size={18} />}
+              label="Inviter"
+              onClick={() => {
+                tap();
+                setInviteOpen(true);
+              }}
+            />
+            <BarItem
+              icon={<SmilePlus size={18} />}
+              label="Réactions"
+              onClick={() => {
+                tap();
+                setReactOpen(true);
+              }}
+            />
+            <BarItem
+              icon={<MoreHorizontal size={18} />}
+              label="Plus"
+              onClick={() => {
+                tap();
+                setMoreOpen(true);
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ══ DEMANDES DE PAROLE (hôte) ══ */}
       <BottomSheet open={requestsOpen} onClose={() => setRequestsOpen(false)}>
@@ -798,31 +995,110 @@ function MicroOuvertLive() {
         </div>
       </BottomSheet>
 
-      {/* ══ PLUS ══ */}
+      {/* ══ PLUS — spécifique au rôle ══ */}
       <BottomSheet open={moreOpen} onClose={() => setMoreOpen(false)}>
         <div className="px-4">
-          <h2 className="text-[15px] font-extrabold text-foreground">Options du live</h2>
+          <h2 className="text-[15px] font-extrabold text-foreground">
+            Options du live · {ROLE_LABEL[role]}
+          </h2>
           <div className="mt-3 space-y-2">
-            {[
-              ["📄", "Règles du live", "Respect • Pas de jugement • Bonne vibe ✨"],
-              ["🙋", "Gérer les places", "Max 4 invités · rotation par l'hôte"],
-              ["🚫", "Signaler", "Signaler un comportement inapproprié"],
-            ].map(([e, t, s]) => (
+            {moreItems.map((it) => (
               <Pressable
-                key={t}
+                key={it.title}
                 onClick={() => {
+                  tap();
                   setMoreOpen(false);
-                  flash("Action enregistrée");
+                  it.action();
                 }}
                 className="card-surface flex w-full items-center gap-3 rounded-2xl p-3 text-left"
               >
-                <span className="text-[18px]">{e}</span>
+                <span className="text-[18px]">{it.emoji}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[12.5px] font-bold text-foreground">{t}</span>
-                  <span className="block text-[11px] text-muted-foreground">{s}</span>
+                  <span className="flex items-center gap-1.5 text-[12.5px] font-bold text-foreground">
+                    {it.title}
+                    {it.badge ? (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-live px-1 text-[9.5px] font-black text-white">
+                        {it.badge}
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="block text-[11px] text-muted-foreground">{it.sub}</span>
                 </span>
               </Pressable>
             ))}
+          </div>
+        </div>
+      </BottomSheet>
+
+      {/* ══ GÉRER LES PLACES (hôte) ══ */}
+      <BottomSheet open={placesOpen} onClose={() => setPlacesOpen(false)}>
+        <div className="px-4">
+          <h2 className="text-[15px] font-extrabold text-foreground">Gérer les places</h2>
+          <p className="mt-1 text-[11.5px] text-muted-foreground">
+            4 places maximum sur scène · {freeSlots} libre(s)
+          </p>
+          <div className="mt-3 space-y-2">
+            {guests.map((g) => (
+              <div key={g.slot} className="card-surface flex items-center gap-2.5 rounded-2xl p-2.5">
+                {g.name ? <Avatar name={g.name} size={36} /> : (
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-dashed border-gold/50 text-[13px] font-black text-gold">
+                    +
+                  </span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-bold text-foreground">
+                    {g.name ?? "Place libre"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">Place {g.slot}</p>
+                </div>
+                {g.name && (
+                  <Pressable
+                    onClick={() => kick(g.slot)}
+                    className="rounded-full border border-white/18 px-2.5 py-1.5 text-[10.5px] font-bold text-muted-foreground"
+                  >
+                    Faire descendre
+                  </Pressable>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </BottomSheet>
+
+      {/* ══ DEMANDES DE MONTÉE (hôte) ══ */}
+      <BottomSheet open={riseOpen} onClose={() => setRiseOpen(false)}>
+        <div className="px-4">
+          <h2 className="text-[15px] font-extrabold text-foreground">Demandes de montée</h2>
+          <p className="mt-1 text-[11.5px] text-muted-foreground">
+            {freeSlots === 0
+              ? "Table pleine — libère une place d'abord."
+              : `${riseQueue.length} spectateur(s) veulent monter · ${freeSlots} place(s) libre(s)`}
+          </p>
+          <div className="mt-3 space-y-2">
+            {riseQueue.map((n) => (
+              <div key={n} className="card-surface flex items-center gap-2.5 rounded-2xl p-2.5">
+                <Avatar name={n} size={36} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-bold text-foreground">{n}</p>
+                  <p className="text-[11px] text-muted-foreground">Spectateur · ✋ veut monter</p>
+                </div>
+                <Pressable
+                  onClick={() => promote(n)}
+                  className="rounded-full bg-gold px-2.5 py-1.5 text-[10.5px] font-extrabold text-black"
+                >
+                  Faire monter
+                </Pressable>
+                <Pressable
+                  onClick={() => refuseRise(n)}
+                  className="rounded-full border border-white/18 px-2.5 py-1.5 text-[10.5px] font-bold text-muted-foreground"
+                >
+                  Refuser
+                </Pressable>
+              </div>
+            ))}
+            {riseQueue.length === 0 && (
+              <p className="text-[11.5px] text-muted-foreground">Aucune demande pour le moment.</p>
+            )}
           </div>
         </div>
       </BottomSheet>
