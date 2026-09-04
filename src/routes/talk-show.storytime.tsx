@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import { BottomSheet } from "@/components/zembo/Sheet";
 import { Avatar, Pressable } from "@/components/zembo/ui";
 import bg from "@/assets/storytime-live-bg.jpg";
+import { LikeCount, LikePill, useTapToLike } from "@/components/zembo/TapToLike";
 
 export const Route = createFileRoute("/talk-show/storytime")({
   head: () => ({
@@ -82,9 +83,8 @@ function StorytimeLive() {
   const [msgs, setMsgs] = useState<Msg[]>(INITIAL);
   const [draft, setDraft] = useState("");
   const [follow, setFollow] = useState(false);
-  const [likes, setLikes] = useState(2400);
+  const tapLike = useTapToLike(2400);
   const [viewers, setViewers] = useState(1247);
-  const [hearts, setHearts] = useState<number[]>([]);
   const [floatGifts, setFloatGifts] = useState<{ id: number; emoji: string }[]>([]);
   const [giftsOpen, setGiftsOpen] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -117,13 +117,6 @@ function StorytimeLive() {
     return () => clearInterval(t);
   }, []);
 
-  const like = () => {
-    tap();
-    setLikes((l) => l + 1);
-    const id = Date.now() + Math.random();
-    setHearts((h) => [...h, id]);
-    setTimeout(() => setHearts((h) => h.filter((x) => x !== id)), 1600);
-  };
 
   const send = () => {
     const text = draft.trim();
@@ -146,7 +139,10 @@ function StorytimeLive() {
   };
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-black">
+    <div
+      className="relative h-full w-full overflow-hidden bg-black"
+      onPointerDown={tapLike.onSceneTap}
+    >
       {/* Décor plein écran */}
       <img
         src={bg}
@@ -155,6 +151,8 @@ function StorytimeLive() {
         height={1600}
         className="absolute inset-0 h-full w-full object-cover"
       />
+
+      {tapLike.layer}
 
       {/* Dégradés de lisibilité */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[26%] bg-gradient-to-b from-black/85 via-black/35 to-transparent" />
@@ -175,6 +173,7 @@ function StorytimeLive() {
             <Eye size={11} />
             {(viewers / 1000).toFixed(1)}K
           </span>
+          <LikePill likes={tapLike.likes} pop={tapLike.pop} />
         </div>
 
         <div className="mt-2 flex items-center gap-2 rounded-full bg-black/45 py-1 pr-1 pl-1 backdrop-blur-md">
@@ -224,31 +223,18 @@ function StorytimeLive() {
       {/* ── COLONNE D'ACTIONS ── */}
       <div className="absolute right-3 bottom-[168px] z-20 flex flex-col items-center gap-3.5">
         <div className="relative flex flex-col items-center">
-          {/* cœurs qui s'envolent */}
-          <AnimatePresence>
-            {hearts.map((h) => (
-              <motion.span
-                key={h}
-                initial={{ opacity: 0.95, y: 0, x: 0, scale: 0.7 }}
-                animate={{ opacity: 0, y: -160, x: (Math.random() - 0.5) * 60, scale: 1.3 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                className="pointer-events-none absolute bottom-8 text-[22px]"
-              >
-                ❤️
-              </motion.span>
-            ))}
-          </AnimatePresence>
           <Pressable
             aria-label="J'aime"
-            onClick={like}
+            onClick={tapLike.likeFromButton}
             className="flex h-11 w-11 items-center justify-center rounded-full bg-black/40 backdrop-blur-md"
           >
             <Heart size={22} className="text-[oklch(0.65_0.22_20)]" fill="currentColor" />
           </Pressable>
-          <span className="mt-1 text-[10.5px] font-bold text-white/90">
-            {(likes / 1000).toFixed(1)}K
-          </span>
+          <LikeCount
+            likes={tapLike.likes}
+            pop={tapLike.pop}
+            className="mt-1 inline-block text-[10.5px] font-bold text-white/90"
+          />
         </div>
 
         <div className="flex flex-col items-center">
