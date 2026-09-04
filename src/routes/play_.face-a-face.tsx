@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { Send, Smile } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { CheckCircle2, Heart, HeartCrack, Lock, Sparkles } from "lucide-react";
 import stage from "@/assets/zembo-face-a-face-stage.png";
 import { BottomSheet } from "@/components/zembo/Sheet";
 import { Pressable } from "@/components/zembo/ui";
@@ -31,6 +31,7 @@ const BLUE = "oklch(0.66 0.19 250)";
 const PINK = "oklch(0.68 0.22 350)";
 const GOLD = "oklch(0.85 0.14 86)";
 const PANEL = "rgb(6,6,7)";
+const FINAL_SCORE = 87;
 
 const ANSWERS = [
   { k: "A", label: "La confiance", top: "64.7%" },
@@ -42,17 +43,6 @@ const ANSWERS = [
 /** Réponse (mock) de l'adversaire, question après question */
 const OPPONENT = ["B", "A", "B", "C", "A"];
 
-type Msg = { id: number; name: string; text: string; time: string; bot?: boolean };
-
-const INITIAL_CHAT: Msg[] = [
-  {
-    id: 1,
-    name: "Zembo",
-    text: "Répondez sincèrement et bonne chance !",
-    time: "21:30",
-    bot: true,
-  },
-];
 
 function Ring({ value }: { value: number }) {
   const r = 44;
@@ -106,10 +96,20 @@ function AnswerBlock({
         key={answer ?? "wait"}
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        className="truncate font-bold"
+        className="flex items-center gap-1 truncate font-bold"
         style={{ color, fontSize: "2.8cqw" }}
       >
-        {answer ? `✓ ${answer}` : "🔒 En attente…"}
+        {answer ? (
+          <>
+            <CheckCircle2 size={11} style={{ color }} />
+            <span className="truncate">{answer}</span>
+          </>
+        ) : (
+          <>
+            <Lock size={10} style={{ color }} />
+            <span>En attente…</span>
+          </>
+        )}
       </motion.p>
     </div>
   );
@@ -124,9 +124,8 @@ function FaceAFace() {
   const [compat, setCompat] = useState<number | null>(null);
   const [remaining, setRemaining] = useState(18 * 60 + 25);
   const [rulesOpen, setRulesOpen] = useState(false);
-  const [chat, setChat] = useState<Msg[]>(INITIAL_CHAT);
-  const [draft, setDraft] = useState("");
-  const endRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [finished, setFinished] = useState(false);
 
   const oppKey = OPPONENT[(question - 1) % OPPONENT.length]!;
   const oppLabel = ANSWERS.find((a) => a.k === oppKey)?.label ?? "";
@@ -134,12 +133,18 @@ function FaceAFace() {
 
   /* chrono principal + boucle de démo */
   useEffect(() => {
+    if (finished) return;
     if (revealed) {
       const t = setTimeout(() => {
+        if (question >= 20) {
+          setCompat(FINAL_SCORE);
+          setFinished(true);
+          return;
+        }
         setRevealed(false);
         setPicked(null);
         setSeconds(15);
-        setQuestion((q) => (q >= 20 ? 1 : q + 1));
+        setQuestion((q) => q + 1);
       }, 2000);
       return () => clearTimeout(t);
     }
@@ -150,24 +155,21 @@ function FaceAFace() {
         setCompat((c) => {
           const base = c ?? 40;
           const match = picked === oppKey;
-          return Math.min(85, Math.round(base + (match ? 11 : 5)));
+          return Math.min(FINAL_SCORE, Math.round(base + (match ? 11 : 5)));
         });
       } else {
         setSeconds((s) => s - 1);
       }
     }, 1000);
     return () => clearTimeout(t);
-  }, [seconds, revealed, picked, oppKey]);
+  }, [seconds, revealed, picked, oppKey, question, finished]);
 
   /* temps restant cosmétique */
   useEffect(() => {
+    if (finished) return;
     const i = setInterval(() => setRemaining((r) => (r > 0 ? r - 1 : 0)), 1000);
     return () => clearInterval(i);
-  }, []);
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
-  }, [chat]);
+  }, [finished]);
 
   const pick = (k: string) => {
     if (revealed || picked) return;
@@ -175,36 +177,30 @@ function FaceAFace() {
     navigator.vibrate?.(15);
   };
 
-  const send = () => {
-    const text = draft.trim();
-    if (!text) return;
-    const now = new Date();
-    setChat((c) => [
-      ...c,
-      {
-        id: Date.now(),
-        name: "Deena",
-        text,
-        time: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
-      },
-    ]);
-    setDraft("");
-  };
-
   const mmss = `${String(Math.floor(remaining / 60)).padStart(2, "0")}:${String(remaining % 60).padStart(2, "0")}`;
   const compatText = compat === null ? "–– %" : `${compat} %`;
 
+  if (finished) {
+    return (
+      <ResultScreen
+        score={compat ?? FINAL_SCORE}
+        onQuit={() => navigate({ to: "/play" })}
+        onRetry={() => navigate({ to: "/face-a-face" })}
+      />
+    );
+  }
+
   return (
-    <div className="flex min-h-full flex-col bg-[oklch(0.03_0_0)]">
+    <div className="flex min-h-full flex-col overflow-x-hidden bg-[oklch(0.03_0_0)]">
       {/* ===== Décor + overlays vivants ===== */}
       <div
-        className="relative w-full shrink-0 select-none"
+        className="relative w-full max-w-full shrink-0 overflow-hidden select-none"
         style={{ containerType: "inline-size" }}
       >
         <img
           src={stage}
           alt="Plateau Face à Face — Deena contre Moussa"
-          className="block w-full"
+          className="block w-full max-w-full"
           draggable={false}
         />
 
@@ -227,7 +223,7 @@ function FaceAFace() {
         {/* ⋮ */}
         <Pressable
           aria-label="Plus d'options"
-          onClick={() => setRulesOpen(true)}
+          onClick={() => setMenuOpen(true)}
           whileTap={{ scale: 0.96 }}
           className="absolute rounded-full"
           style={{ left: "92%", top: "2.1%", width: "6.5%", height: "3.3%" }}
@@ -365,61 +361,6 @@ function FaceAFace() {
         </div>
       </div>
 
-      {/* ===== Chat ===== */}
-      <div className="flex flex-1 flex-col bg-[oklch(0.03_0_0)] px-3 pt-2">
-        <div className="space-y-2.5">
-          {chat.map((m) => (
-            <div
-              key={m.id}
-              className="rounded-2xl border border-white/8 bg-[oklch(0.07_0.005_280)] px-3 py-2"
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className="text-[12.5px] font-extrabold"
-                  style={{ color: m.bot ? "oklch(0.68 0.2 285)" : GOLD }}
-                >
-                  {m.name}
-                </span>
-                {m.bot && (
-                  <span className="rounded-md bg-[oklch(0.45_0.18_285)] px-1.5 py-[1px] text-[9px] font-extrabold text-white">
-                    BOT
-                  </span>
-                )}
-                <span className="ml-auto text-[10.5px] text-muted-foreground">{m.time}</span>
-              </div>
-              <p className="mt-1 text-[13px] leading-snug text-foreground/90">{m.text}</p>
-            </div>
-          ))}
-          <div ref={endRef} />
-        </div>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            send();
-          }}
-          className="sticky bottom-0 z-10 mt-auto flex items-center gap-2 bg-[oklch(0.03_0_0)] py-3 pb-[max(env(safe-area-inset-bottom),12px)]"
-        >
-          <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-border bg-surface-2/60 px-3 py-2">
-            <Smile size={16} className="shrink-0 text-muted-foreground" />
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              placeholder="Écrire un message…"
-              className="min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
-            />
-          </div>
-          <Pressable
-            type="submit"
-            aria-label="Envoyer"
-            whileTap={{ scale: 0.96 }}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/60 bg-gold-gradient"
-          >
-            <Send size={16} className="text-[oklch(0.16_0.02_60)]" />
-          </Pressable>
-        </form>
-      </div>
-
       <BottomSheet open={rulesOpen} onClose={() => setRulesOpen(false)}>
         <div className="px-5 pt-2 pb-4">
           <h2 className="text-[16px] font-extrabold tracking-wide text-gold">
@@ -431,6 +372,179 @@ function FaceAFace() {
           </p>
         </div>
       </BottomSheet>
+
+      <BottomSheet open={menuOpen} onClose={() => setMenuOpen(false)}>
+        <div className="px-4 pt-2 pb-4">
+          <Pressable
+            onClick={() => {
+              setMenuOpen(false);
+              setCompat(FINAL_SCORE);
+              setFinished(true);
+            }}
+            className="w-full rounded-2xl border border-gold/50 bg-gold/10 px-4 py-3 text-left text-[14px] font-bold text-gold"
+          >
+            Voir le résultat (démo)
+          </Pressable>
+          <Pressable
+            onClick={() => {
+              setMenuOpen(false);
+              setRulesOpen(true);
+            }}
+            className="mt-2 w-full rounded-2xl border border-border bg-surface-2/60 px-4 py-3 text-left text-[14px] font-semibold text-foreground/90"
+          >
+            Règles du jeu
+          </Pressable>
+          <Pressable
+            onClick={() => navigate({ to: "/play" })}
+            className="mt-2 w-full rounded-2xl border border-border px-4 py-3 text-left text-[14px] font-semibold text-muted-foreground"
+          >
+            Quitter la partie
+          </Pressable>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
+
+function ResultScreen({
+  score,
+  onQuit,
+  onRetry,
+}: {
+  score: number;
+  onQuit: () => void;
+  onRetry: () => void;
+}) {
+  const [step, setStep] = useState<"idle" | "waiting" | "done">("idle");
+  const matched = score >= 85;
+
+  useEffect(() => {
+    if (step !== "waiting") return;
+    const t = setTimeout(() => setStep("done"), 1500);
+    return () => clearTimeout(t);
+  }, [step]);
+
+  if (!matched) {
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center overflow-x-hidden bg-[oklch(0.03_0_0)] px-7 text-center">
+        <HeartCrack size={40} className="text-[oklch(0.6_0.16_20)]" />
+        <h1 className="mt-4 text-[21px] leading-snug font-extrabold text-foreground">
+          Malheureusement, vous n'êtes pas compatibles.
+        </h1>
+        <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+          La salle se ferme. Aucun accès au profil privé ni à la messagerie n'est créé.
+        </p>
+        <Pressable
+          onClick={onRetry}
+          className="mt-8 w-full rounded-full bg-gold-gradient py-3.5 text-[15px] font-extrabold text-[oklch(0.16_0.02_60)]"
+        >
+          Relancer
+        </Pressable>
+        <Pressable
+          onClick={onQuit}
+          className="mt-3 w-full rounded-full border border-border py-3 text-[14px] font-semibold text-muted-foreground"
+        >
+          Quitter
+        </Pressable>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative flex min-h-full flex-col items-center justify-center overflow-hidden bg-[oklch(0.04_0.02_320)] px-6 text-center">
+      {/* cœurs qui montent */}
+      {Array.from({ length: 10 }).map((_, i) => (
+        <motion.span
+          key={i}
+          className="pointer-events-none absolute"
+          style={{ left: i % 2 ? `${86 + (i % 3) * 4}%` : `${3 + (i % 3) * 4}%`, bottom: -30, zIndex: 0 }}
+          animate={{ y: [-0, -620], opacity: [0, 1, 0], scale: [0.7, 1.1] }}
+          transition={{ duration: 6 + (i % 4), repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
+        >
+          <Heart size={16 + (i % 3) * 6} style={{ color: i % 2 ? PINK : GOLD }} fill="currentColor" />
+        </motion.span>
+      ))}
+      <div
+        className="pointer-events-none absolute h-72 w-72 rounded-full blur-[70px]"
+        style={{ background: "oklch(0.6 0.2 340 / 35%)" }}
+      />
+
+      <motion.h1
+        initial={{ scale: 0.7, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 220, damping: 16 }}
+        className="relative z-10 flex items-center gap-2 text-[46px] leading-none font-extrabold tracking-tight"
+      >
+        <Sparkles size={30} className="text-gold" />
+        <span className="text-gold-gradient">MATCH</span>
+      </motion.h1>
+      <p className="relative z-10 mt-3 text-[16px] font-bold text-foreground">
+        Vous êtes compatibles à {score} % !
+      </p>
+
+      <div className="relative z-10 mt-8 flex items-end justify-center gap-6">
+        {[
+          { name: "Deena", tint: "oklch(0.65 0.18 320)" },
+          { name: "Moussa", tint: BLUE },
+        ].map((p) => (
+          <div key={p.name} className="flex flex-col items-center">
+            <motion.div
+              animate={{ boxShadow: [`0 0 0 2px ${p.tint}`, `0 0 26px 4px ${p.tint}`] }}
+              transition={{ duration: 1.6, repeat: Infinity, repeatType: "reverse" }}
+              className="flex h-24 w-24 items-center justify-center rounded-full border border-white/15"
+              style={{
+                background: `linear-gradient(160deg, ${p.tint}, oklch(0.2 0.05 300))`,
+              }}
+            >
+              <span className="text-[30px] font-extrabold text-white/90">{p.name.charAt(0)}</span>
+            </motion.div>
+            <span className="mt-2 text-[13.5px] font-extrabold text-foreground">{p.name}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative z-10 mt-9 w-full">
+        {step === "idle" && (
+          <Pressable
+            onClick={() => {
+              navigator.vibrate?.(15);
+              setStep("waiting");
+            }}
+            className="w-full rounded-full bg-gold-gradient py-3.5 text-[15px] font-extrabold text-[oklch(0.16_0.02_60)]"
+          >
+            Se connecter
+          </Pressable>
+        )}
+        <AnimatePresence>
+          {step === "waiting" && (
+            <motion.p
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="rounded-full border border-gold/40 bg-gold/10 py-3.5 text-[14px] font-bold text-gold"
+            >
+              En attente de la réponse de Moussa…
+            </motion.p>
+          )}
+          {step === "done" && (
+            <motion.p
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-2 rounded-2xl border border-emerald/40 bg-emerald/10 px-4 py-3.5 text-left text-[13.5px] leading-relaxed font-bold text-emerald"
+            >
+              <CheckCircle2 size={18} className="shrink-0" />
+              Connexion établie ! Retrouve Moussa dans Messages › Mes matchs
+            </motion.p>
+          )}
+        </AnimatePresence>
+        <Pressable
+          onClick={onQuit}
+          className="mt-3 w-full rounded-full border border-border py-3 text-[14px] font-semibold text-muted-foreground"
+        >
+          Quitter
+        </Pressable>
+      </div>
+    </div>
+  );
+}
+

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FaceAFaceRouteImport } from './routes/face-a-face'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlayRouteImport } from './routes/play'
@@ -24,6 +25,11 @@ import { Route as TalkShowIdRouteImport } from './routes/talk-show.$id'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaceAFaceRoute = FaceAFaceRouteImport.update({
+  id: '/face-a-face',
+  path: '/face-a-face',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LiveRoute = LiveRouteImport.update({
@@ -79,6 +85,7 @@ const TalkShowIdRoute = TalkShowIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/face-a-face'
     | '/live'
     | '/messages'
     | '/play'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/face-a-face'
     | '/live'
     | '/messages'
     | '/play'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/face-a-face'
     | '/live'
     | '/messages'
     | '/play'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FaceAFaceRoute: typeof FaceAFaceRoute
   LiveRoute: typeof LiveRoute
   MessagesRoute: typeof MessagesRoute
   PlayRoute: typeof PlayRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/face-a-face': {
+      id: '/face-a-face'
+      path: '/face-a-face'
+      fullPath: '/face-a-face'
+      preLoaderRoute: typeof FaceAFaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/live': {
@@ -257,6 +277,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FaceAFaceRoute: FaceAFaceRoute,
   LiveRoute: LiveRoute,
   MessagesRoute: MessagesRoute,
   PlayRoute: PlayRoute,

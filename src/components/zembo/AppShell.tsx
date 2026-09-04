@@ -12,7 +12,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [createOpen, setCreateOpen] = useState(false);
   const isTab = TABS.includes(pathname);
   const isThread = pathname.startsWith("/messages/");
-  const isGame = pathname.startsWith("/play/");
+  const isGame = pathname.startsWith("/play/") || pathname.startsWith("/face-a-face");
   const noDock = isThread || isGame;
 
   return (

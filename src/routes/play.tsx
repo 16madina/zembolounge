@@ -33,7 +33,7 @@ type Game = {
   players: string;
   badge: string;
   accent: string;
-  to: "/play/quiz" | "/play/hot-seat" | "/play/face-a-face" | null;
+  to: "/play/quiz" | "/play/hot-seat" | "/face-a-face" | null;
 };
 
 const GOLD = "oklch(0.82 0.13 85)";
@@ -70,7 +70,7 @@ const GAMES: Game[] = [
     players: "2 joueurs",
     badge: "SOCIAL",
     accent: BLUE,
-    to: "/play/face-a-face",
+    to: "/face-a-face",
   },
   {
     id: "prefer",
