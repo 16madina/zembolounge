@@ -812,31 +812,110 @@ function MicroOuvertLive() {
         </div>
       </BottomSheet>
 
-      {/* ══ PLUS ══ */}
+      {/* ══ PLUS — spécifique au rôle ══ */}
       <BottomSheet open={moreOpen} onClose={() => setMoreOpen(false)}>
         <div className="px-4">
-          <h2 className="text-[15px] font-extrabold text-foreground">Options du live</h2>
+          <h2 className="text-[15px] font-extrabold text-foreground">
+            Options du live · {ROLE_LABEL[role]}
+          </h2>
           <div className="mt-3 space-y-2">
-            {[
-              ["📄", "Règles du live", "Respect • Pas de jugement • Bonne vibe ✨"],
-              ["🙋", "Gérer les places", "Max 4 invités · rotation par l'hôte"],
-              ["🚫", "Signaler", "Signaler un comportement inapproprié"],
-            ].map(([e, t, s]) => (
+            {moreItems.map((it) => (
               <Pressable
-                key={t}
+                key={it.title}
                 onClick={() => {
+                  tap();
                   setMoreOpen(false);
-                  flash("Action enregistrée");
+                  it.action();
                 }}
                 className="card-surface flex w-full items-center gap-3 rounded-2xl p-3 text-left"
               >
-                <span className="text-[18px]">{e}</span>
+                <span className="text-[18px]">{it.emoji}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[12.5px] font-bold text-foreground">{t}</span>
-                  <span className="block text-[11px] text-muted-foreground">{s}</span>
+                  <span className="flex items-center gap-1.5 text-[12.5px] font-bold text-foreground">
+                    {it.title}
+                    {it.badge ? (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-live px-1 text-[9.5px] font-black text-white">
+                        {it.badge}
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="block text-[11px] text-muted-foreground">{it.sub}</span>
                 </span>
               </Pressable>
             ))}
+          </div>
+        </div>
+      </BottomSheet>
+
+      {/* ══ GÉRER LES PLACES (hôte) ══ */}
+      <BottomSheet open={placesOpen} onClose={() => setPlacesOpen(false)}>
+        <div className="px-4">
+          <h2 className="text-[15px] font-extrabold text-foreground">Gérer les places</h2>
+          <p className="mt-1 text-[11.5px] text-muted-foreground">
+            4 places maximum sur scène · {freeSlots} libre(s)
+          </p>
+          <div className="mt-3 space-y-2">
+            {guests.map((g) => (
+              <div key={g.slot} className="card-surface flex items-center gap-2.5 rounded-2xl p-2.5">
+                {g.name ? <Avatar name={g.name} size={36} /> : (
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-dashed border-gold/50 text-[13px] font-black text-gold">
+                    +
+                  </span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-bold text-foreground">
+                    {g.name ?? "Place libre"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">Place {g.slot}</p>
+                </div>
+                {g.name && (
+                  <Pressable
+                    onClick={() => kick(g.slot)}
+                    className="rounded-full border border-white/18 px-2.5 py-1.5 text-[10.5px] font-bold text-muted-foreground"
+                  >
+                    Faire descendre
+                  </Pressable>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </BottomSheet>
+
+      {/* ══ DEMANDES DE MONTÉE (hôte) ══ */}
+      <BottomSheet open={riseOpen} onClose={() => setRiseOpen(false)}>
+        <div className="px-4">
+          <h2 className="text-[15px] font-extrabold text-foreground">Demandes de montée</h2>
+          <p className="mt-1 text-[11.5px] text-muted-foreground">
+            {freeSlots === 0
+              ? "Table pleine — libère une place d'abord."
+              : `${riseQueue.length} spectateur(s) veulent monter · ${freeSlots} place(s) libre(s)`}
+          </p>
+          <div className="mt-3 space-y-2">
+            {riseQueue.map((n) => (
+              <div key={n} className="card-surface flex items-center gap-2.5 rounded-2xl p-2.5">
+                <Avatar name={n} size={36} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-bold text-foreground">{n}</p>
+                  <p className="text-[11px] text-muted-foreground">Spectateur · ✋ veut monter</p>
+                </div>
+                <Pressable
+                  onClick={() => promote(n)}
+                  className="rounded-full bg-gold px-2.5 py-1.5 text-[10.5px] font-extrabold text-black"
+                >
+                  Faire monter
+                </Pressable>
+                <Pressable
+                  onClick={() => refuseRise(n)}
+                  className="rounded-full border border-white/18 px-2.5 py-1.5 text-[10.5px] font-bold text-muted-foreground"
+                >
+                  Refuser
+                </Pressable>
+              </div>
+            ))}
+            {riseQueue.length === 0 && (
+              <p className="text-[11.5px] text-muted-foreground">Aucune demande pour le moment.</p>
+            )}
           </div>
         </div>
       </BottomSheet>
