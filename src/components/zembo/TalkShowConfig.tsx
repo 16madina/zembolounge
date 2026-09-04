@@ -1,16 +1,19 @@
 import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
+  Ban,
+  BookOpen,
   Camera,
   ChevronRight,
   Globe,
   HelpCircle,
   Lock,
   MessageCircle,
+  Mic,
+  MicVocal,
   Plus,
   Ticket,
   Users,
-  Ban,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
