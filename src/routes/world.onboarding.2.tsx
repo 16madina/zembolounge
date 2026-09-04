@@ -74,15 +74,13 @@ function WorldOnboarding2() {
       </div>
 
       <p className="mt-4 rounded-2xl border border-gold/20 bg-gold/[0.05] p-3 text-[11.5px] leading-relaxed text-muted-foreground">
-        L'ajout de photos arrive bientôt. Tu peux continuer sans photo pour l'instant.
+        L'ajout de photos et les étapes 3 à 6 (genre, orientation, pays, ville, langues,
+        intentions) arrivent juste après.
       </p>
 
-      <Pressable
-        onClick={() => navigate({ to: "/world/onboarding/1" })}
-        className="glow-gold mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[15px] font-bold text-[oklch(0.16_0.02_60)]"
-      >
-        Continuer <span className="text-[17px] leading-none">›</span>
-      </Pressable>
+      <div className="mt-6 flex w-full items-center justify-center rounded-full border border-gold/25 bg-white/[0.04] py-3.5 text-[14px] font-bold text-muted-foreground">
+        Suite bientôt
+      </div>
     </div>
   );
 }
