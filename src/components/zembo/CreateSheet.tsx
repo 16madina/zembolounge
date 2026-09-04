@@ -69,7 +69,7 @@ export function CreateSheet({ open, onClose }: { open: boolean; onClose: () => v
             onClick={() => {
               onClose();
               if (o.id === "talk") navigate({ to: "/talk-show" });
-              else if (o.id === "world") navigate({ to: "/world/intro" });
+              else if (o.id === "world") navigate({ to: "/world" });
               else if (o.to === "/play") navigate({ to: "/play" });
               else navigate({ to: o.to, params: { id: o.id } });
             }}

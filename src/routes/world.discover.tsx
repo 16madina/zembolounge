@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
@@ -18,6 +18,7 @@ import { Pressable } from "@/components/zembo/ui";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { cn } from "@/lib/utils";
 import decor from "@/assets/world-room-elena.png";
+import { resetWorldProfile } from "@/lib/world-profile";
 
 export const Route = createFileRoute("/world/discover")({
   head: () => ({
@@ -205,6 +206,7 @@ function ActionButton({
 
 function WorldDiscover() {
   const [index, setIndex] = useState(0);
+  const navigate = useNavigate();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [gender, setGender] = useState("Tous");
   const [zone, setZone] = useState("Monde entier");
@@ -503,6 +505,17 @@ function WorldDiscover() {
             className="bg-gold-gradient w-full rounded-2xl py-3 text-[14px] font-bold text-[oklch(0.16_0.02_60)]"
           >
             Voir les profils
+          </Pressable>
+          <Pressable
+            onClick={() => {
+              tap();
+              resetWorldProfile();
+              toast.success("Profil World Room réinitialisé");
+              navigate({ to: "/world" });
+            }}
+            className="w-full py-2 text-center text-[11.5px] text-white/40"
+          >
+            Recommencer l'onboarding (démo)
           </Pressable>
         </div>
       </BottomSheet>

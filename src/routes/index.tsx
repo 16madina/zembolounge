@@ -145,7 +145,7 @@ function Home() {
               q.id === "talk"
                 ? navigate({ to: "/talk-show" })
                 : q.id === "world"
-                  ? navigate({ to: "/world/intro" })
+                  ? navigate({ to: "/world" })
                   : go(q.id, q.id)
             }
             className="card-surface relative overflow-hidden rounded-2xl p-2.5 text-center"

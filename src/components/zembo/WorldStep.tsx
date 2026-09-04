@@ -5,6 +5,7 @@ import { Pressable } from "@/components/zembo/ui";
 
 export function WorldStep({
   step,
+  total = 7,
   title,
   subtitle,
   back,
@@ -16,6 +17,7 @@ export function WorldStep({
   children,
 }: {
   step: number;
+  total?: number;
   title: string;
   subtitle: string;
   back: string;
@@ -39,12 +41,12 @@ export function WorldStep({
             <ArrowLeft size={22} className="text-gold" />
           </Pressable>
           <span className="text-[12px] font-semibold tracking-wide text-muted-foreground">
-            ÉTAPE {step}/6
+            ÉTAPE {step}/{total}
           </span>
         </div>
 
         <div className="mt-3 flex gap-1.5">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+          {Array.from({ length: total }, (_, k) => k + 1).map((i) => (
             <span
               key={i}
               className={`h-1 flex-1 rounded-full ${i <= step ? "bg-gold-gradient" : "bg-white/10"}`}
@@ -92,7 +94,7 @@ export function worldHead(step: number, title: string, description: string) {
       { title: `${title} — World Room` },
       { name: "description", content: description },
       { property: "og:title", content: `${title} — World Room` },
-      { property: "og:description", content: `Étape ${step}/6 de ton profil World Room.` },
+      { property: "og:description", content: `Étape ${step}/7 de ton profil World Room.` },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

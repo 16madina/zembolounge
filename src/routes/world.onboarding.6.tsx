@@ -1,103 +1,75 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, User } from "lucide-react";
+import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { WorldStep, worldHead } from "@/components/zembo/WorldStep";
+import { Pressable } from "@/components/zembo/ui";
 import {
   EMPTY_WORLD_PROFILE,
-  ageFromBirthdate,
-  intentionLabels,
+  INTENTIONS,
   loadWorldProfile,
   saveWorldProfile,
   type WorldProfileDraft,
 } from "@/lib/world-profile";
 
 export const Route = createFileRoute("/world/onboarding/6")({
-  head: worldHead(6, "Ton profil est prêt", "Récapitulatif de ton profil World Room avant d'entrer dans la découverte."),
-  component: Step6,
+  head: worldHead(6, "Tes intentions", "Amitié, discussion ou rencontre : dis ce que tu cherches sur World Room."),
+  component: Step5,
 });
 
-function Step6() {
+function Step5() {
   const navigate = useNavigate();
   const [draft, setDraft] = useState<WorldProfileDraft>(EMPTY_WORLD_PROFILE);
   useEffect(() => setDraft(loadWorldProfile()), []);
 
-  const age = ageFromBirthdate(draft.birthdate);
-  const labels = intentionLabels(draft.intentions);
-  const main = draft.photos[0];
+  const toggle = (k: string) =>
+    setDraft((d) => ({
+      ...d,
+      intentions: d.intentions.includes(k)
+        ? d.intentions.filter((x) => x !== k)
+        : [...d.intentions, k],
+    }));
 
   return (
     <WorldStep
       step={6}
-      title="Ton profil est prêt !"
-      subtitle="Voici un aperçu de ce que les autres verront."
+      title="Tes intentions"
+      subtitle="Qu'est-ce que tu recherches sur World Room ?"
       back="/world/onboarding/5"
-      cta="Entrer dans World Room"
+      ctaDisabled={draft.intentions.length === 0}
       onCta={() => {
-        saveWorldProfile({ ...draft, completed: true });
-        navigate({ to: "/world/discover" });
+        saveWorldProfile(draft);
+        navigate({ to: "/world/onboarding/7" });
       }}
-      secondary="Modifier"
-      onSecondary={() => navigate({ to: "/world/onboarding/1" })}
     >
-      <div className="rounded-3xl border border-gold/25 bg-white/[0.03] p-4">
-        <div className="flex items-center gap-3.5">
-          <span
-            className="flex h-20 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gold/25"
-            style={main ? { background: main } : undefined}
-          >
-            {!main && <User size={22} className="text-gold/70" />}
-          </span>
-          <div className="min-w-0">
-            <p className="truncate text-[17px] font-extrabold text-foreground">
-              {draft.firstName || "Ton prénom"}
-              {draft.showAge && age !== null ? `, ${age}` : ""}
-            </p>
-            {draft.username && (
-              <p className="truncate text-[12.5px] font-semibold text-gold">@{draft.username}</p>
-            )}
-            <p className="mt-1 flex items-center gap-1 truncate text-[12.5px] text-muted-foreground">
-              <MapPin size={12} className="shrink-0 text-gold" />
-              {[draft.city, draft.country].filter(Boolean).join(", ") || "Ta ville"}
-            </p>
-            {draft.languages.length > 0 && (
-              <p className="mt-1 truncate text-[11.5px] text-muted-foreground">
-                {draft.languages.join(" · ")}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <p className="text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
-            Intentions
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {(labels.length ? labels : ["À compléter"]).map((l) => (
-              <span
-                key={l}
-                className="rounded-full border border-gold/30 bg-gold/[0.08] px-2.5 py-1 text-[11.5px] font-semibold text-gold"
-              >
-                {l}
+      <div className="flex flex-col gap-3">
+        {INTENTIONS.map((it) => {
+          const on = draft.intentions.includes(it.key);
+          return (
+            <Pressable
+              key={it.key}
+              onClick={() => toggle(it.key)}
+              className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left ${
+                on ? "border-gold bg-gold/[0.08]" : "border-white/10 bg-white/[0.03]"
+              }`}
+            >
+              <span className="text-[18px] leading-none">{it.icon}</span>
+              <span className="min-w-0 flex-1 truncate text-[13.5px] font-semibold text-foreground">
+                {it.label}
               </span>
-            ))}
-          </div>
-        </div>
-
-        {draft.photos.length > 1 && (
-          <div className="mt-4 flex gap-2">
-            {draft.photos.slice(1, 6).map((p, i) => (
               <span
-                key={i}
-                className="h-12 w-10 shrink-0 rounded-xl border border-white/10"
-                style={{ background: p }}
-              />
-            ))}
-          </div>
-        )}
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
+                  on ? "border-transparent bg-gold-gradient" : "border-white/20"
+                }`}
+              >
+                {on && <Check size={13} className="text-[oklch(0.16_0.02_60)]" />}
+              </span>
+            </Pressable>
+          );
+        })}
       </div>
 
-      <p className="mt-4 text-[11.5px] leading-relaxed text-muted-foreground">
-        Ton profil World Room est séparé de ton compte Zembo. Tu pourras le modifier à tout moment.
+      <p className="mt-5 rounded-2xl border border-gold/25 bg-gold/[0.06] p-3.5 text-[12px] leading-relaxed text-foreground/85">
+        ✨ Sois honnête, ça aide à faire des rencontres plus authentiques.
       </p>
     </WorldStep>
   );
