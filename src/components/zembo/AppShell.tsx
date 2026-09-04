@@ -19,7 +19,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isAdmin = pathname.startsWith("/admin");
   const isAuth = pathname.startsWith("/connexion") || pathname === "/signup" || pathname === "/login";
   const isLiveShow =
-    pathname.startsWith("/talk-show/storytime") || pathname.startsWith("/talk-show/micro-ouvert");
+    pathname.startsWith("/talk-show/storytime") ||
+    pathname.startsWith("/talk-show/micro-ouvert") ||
+    pathname.startsWith("/talk-show/stand");
   const noDock = isThread || isGame || isLiveShow || isSlam || isAdmin || isAuth;
 
 
