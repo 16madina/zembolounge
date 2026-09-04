@@ -39,6 +39,7 @@ import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.con
 import { Route as TalkShowPreviewFormatRouteImport } from './routes/talk-show.preview.$format'
 import { Route as WorldOnboarding1RouteImport } from './routes/world.onboarding.1'
 import { Route as WorldOnboarding2RouteImport } from './routes/world.onboarding.2'
+import { Route as WorldOnboarding3RouteImport } from './routes/world.onboarding.3'
 import { Route as WorldOnboarding4RouteImport } from './routes/world.onboarding.4'
 import { Route as WorldOnboarding5RouteImport } from './routes/world.onboarding.5'
 import { Route as WorldOnboarding6RouteImport } from './routes/world.onboarding.6'
@@ -194,6 +195,11 @@ const WorldOnboarding2Route = WorldOnboarding2RouteImport.update({
   path: '/world/onboarding/2',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorldOnboarding3Route = WorldOnboarding3RouteImport.update({
+  id: '/world/onboarding/3',
+  path: '/world/onboarding/3',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorldOnboarding4Route = WorldOnboarding4RouteImport.update({
   id: '/world/onboarding/4',
   path: '/world/onboarding/4',
@@ -246,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
+  '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
   '/world/onboarding/5': typeof WorldOnboarding5Route
   '/world/onboarding/6': typeof WorldOnboarding6Route
@@ -281,6 +288,7 @@ export interface FileRoutesByTo {
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
+  '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
   '/world/onboarding/5': typeof WorldOnboarding5Route
   '/world/onboarding/6': typeof WorldOnboarding6Route
@@ -318,6 +326,7 @@ export interface FileRoutesById {
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
+  '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
   '/world/onboarding/5': typeof WorldOnboarding5Route
   '/world/onboarding/6': typeof WorldOnboarding6Route
@@ -356,6 +365,7 @@ export interface FileRouteTypes {
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
+    | '/world/onboarding/3'
     | '/world/onboarding/4'
     | '/world/onboarding/5'
     | '/world/onboarding/6'
@@ -391,6 +401,7 @@ export interface FileRouteTypes {
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
+    | '/world/onboarding/3'
     | '/world/onboarding/4'
     | '/world/onboarding/5'
     | '/world/onboarding/6'
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
+    | '/world/onboarding/3'
     | '/world/onboarding/4'
     | '/world/onboarding/5'
     | '/world/onboarding/6'
@@ -454,6 +466,7 @@ export interface RootRouteChildren {
   WorldIntroRoute: typeof WorldIntroRoute
   WorldOnboarding1Route: typeof WorldOnboarding1Route
   WorldOnboarding2Route: typeof WorldOnboarding2Route
+  WorldOnboarding3Route: typeof WorldOnboarding3Route
   WorldOnboarding4Route: typeof WorldOnboarding4Route
   WorldOnboarding5Route: typeof WorldOnboarding5Route
   WorldOnboarding6Route: typeof WorldOnboarding6Route
@@ -672,6 +685,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorldOnboarding2RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/world/onboarding/3': {
+      id: '/world/onboarding/3'
+      path: '/world/onboarding/3'
+      fullPath: '/world/onboarding/3'
+      preLoaderRoute: typeof WorldOnboarding3RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/world/onboarding/4': {
       id: '/world/onboarding/4'
       path: '/world/onboarding/4'
@@ -754,6 +774,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorldIntroRoute: WorldIntroRoute,
   WorldOnboarding1Route: WorldOnboarding1Route,
   WorldOnboarding2Route: WorldOnboarding2Route,
+  WorldOnboarding3Route: WorldOnboarding3Route,
   WorldOnboarding4Route: WorldOnboarding4Route,
   WorldOnboarding5Route: WorldOnboarding5Route,
   WorldOnboarding6Route: WorldOnboarding6Route,

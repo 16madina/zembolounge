@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { WorldStep, worldHead } from "@/components/zembo/WorldStep";
 import {
   EMPTY_WORLD_PROFILE,
-  ageFromBirthdate,
+  ageNumber,
   intentionLabels,
   loadWorldProfile,
   saveWorldProfile,
@@ -21,7 +21,7 @@ function Step6() {
   const [draft, setDraft] = useState<WorldProfileDraft>(EMPTY_WORLD_PROFILE);
   useEffect(() => setDraft(loadWorldProfile()), []);
 
-  const age = ageFromBirthdate(draft.birthdate);
+  const age = ageNumber(draft.age);
   const labels = intentionLabels(draft.intentions);
   const main = draft.photos[0];
 
@@ -49,11 +49,11 @@ function Step6() {
           </span>
           <div className="min-w-0">
             <p className="truncate text-[17px] font-extrabold text-foreground">
-              {draft.firstName || "Ton prénom"}
+              {draft.username ? `@${draft.username}` : "Ton pseudo"}
               {draft.showAge && age !== null ? `, ${age}` : ""}
             </p>
-            {draft.username && (
-              <p className="truncate text-[12.5px] font-semibold text-gold">@{draft.username}</p>
+            {draft.bio && (
+              <p className="truncate text-[12.5px] text-foreground/80">{draft.bio}</p>
             )}
             <p className="mt-1 flex items-center gap-1 truncate text-[12.5px] text-muted-foreground">
               <MapPin size={12} className="shrink-0 text-gold" />
