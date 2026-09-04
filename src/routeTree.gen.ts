@@ -33,6 +33,7 @@ import { Route as TalkShowSlamRouteImport } from './routes/talk-show.slam'
 import { Route as TalkShowSlamTherapieRouteImport } from './routes/talk-show.slam-therapie'
 import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
 import { Route as TalkShowStorytimeRouteImport } from './routes/talk-show.storytime'
+import { Route as WorldDiscoverRouteImport } from './routes/world.discover'
 import { Route as WorldIntroRouteImport } from './routes/world.intro'
 import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.config.$format'
 import { Route as TalkShowPreviewFormatRouteImport } from './routes/talk-show.preview.$format'
@@ -159,6 +160,11 @@ const TalkShowStorytimeRoute = TalkShowStorytimeRouteImport.update({
   path: '/storytime',
   getParentRoute: () => TalkShowRoute,
 } as any)
+const WorldDiscoverRoute = WorldDiscoverRouteImport.update({
+  id: '/world/discover',
+  path: '/world/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorldIntroRoute = WorldIntroRouteImport.update({
   id: '/world/intro',
   path: '/world/intro',
@@ -209,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
+  '/world/discover': typeof WorldDiscoverRoute
   '/world/intro': typeof WorldIntroRoute
   '/talk-show/': typeof TalkShowIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
+  '/world/discover': typeof WorldDiscoverRoute
   '/world/intro': typeof WorldIntroRoute
   '/talk-show': typeof TalkShowIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
@@ -271,6 +279,7 @@ export interface FileRoutesById {
   '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
+  '/world/discover': typeof WorldDiscoverRoute
   '/world/intro': typeof WorldIntroRoute
   '/talk-show/': typeof TalkShowIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
+    | '/world/discover'
     | '/world/intro'
     | '/talk-show/'
     | '/talk-show/config/$format'
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
+    | '/world/discover'
     | '/world/intro'
     | '/talk-show'
     | '/talk-show/config/$format'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
+    | '/world/discover'
     | '/world/intro'
     | '/talk-show/'
     | '/talk-show/config/$format'
@@ -390,6 +402,7 @@ export interface RootRouteChildren {
   PlayHotSeatRoute: typeof PlayHotSeatRoute
   PlayQuizRoute: typeof PlayQuizRoute
   TableIdRoute: typeof TableIdRoute
+  WorldDiscoverRoute: typeof WorldDiscoverRoute
   WorldIntroRoute: typeof WorldIntroRoute
   WorldOnboarding1Route: typeof WorldOnboarding1Route
   WorldOnboarding2Route: typeof WorldOnboarding2Route
@@ -565,6 +578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalkShowStorytimeRouteImport
       parentRoute: typeof TalkShowRoute
     }
+    '/world/discover': {
+      id: '/world/discover'
+      path: '/world/discover'
+      fullPath: '/world/discover'
+      preLoaderRoute: typeof WorldDiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/world/intro': {
       id: '/world/intro'
       path: '/world/intro'
@@ -650,6 +670,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlayHotSeatRoute: PlayHotSeatRoute,
   PlayQuizRoute: PlayQuizRoute,
   TableIdRoute: TableIdRoute,
+  WorldDiscoverRoute: WorldDiscoverRoute,
   WorldIntroRoute: WorldIntroRoute,
   WorldOnboarding1Route: WorldOnboarding1Route,
   WorldOnboarding2Route: WorldOnboarding2Route,
