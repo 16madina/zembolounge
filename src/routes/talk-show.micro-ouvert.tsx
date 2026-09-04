@@ -249,7 +249,7 @@ function MicroOuvertLive() {
           height={785}
           className="block w-full"
         />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[26%] bg-gradient-to-b from-black/92 via-black/55 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[34%] bg-gradient-to-b from-black/95 via-black/72 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[12%] bg-gradient-to-t from-black/80 to-transparent" />
 
         {/* 1) EN-TÊTE — 2 lignes */}
@@ -411,7 +411,7 @@ function MicroOuvertLive() {
         })}
 
         {/* ══ COLONNE DROITE (démarre au niveau de la rangée des invités) ══ */}
-        <div className="absolute top-[74%] right-1.5 z-40 flex flex-col items-center gap-2">
+        <div className="absolute top-[97%] right-1.5 z-40 flex flex-col items-center gap-2">
 
           <div className="relative flex flex-col items-center">
             <AnimatePresence>
