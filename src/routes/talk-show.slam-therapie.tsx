@@ -474,10 +474,14 @@ function SlamTherapieLive() {
               />
             </svg>
             <div className={urgent ? "text-center animate-pulse" : "text-center"}>
-              <p className="text-[16px] leading-none font-extrabold text-white">
+              <p
+                className={`leading-none font-extrabold ${
+                  urgent ? "text-[20px] text-[oklch(0.72_0.2_25)]" : "text-[16px] text-white"
+                }`}
+              >
                 {mm}:{ss}
               </p>
-              <p className="text-[8.5px] text-white/60">/ 03:00</p>
+              <p className="text-[8.5px] text-white/60">/ {fmtDur(perf.duration)}</p>
             </div>
           </div>
 
