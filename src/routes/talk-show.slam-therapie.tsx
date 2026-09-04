@@ -341,8 +341,8 @@ function SlamTherapieLive() {
             {(likes / 1000).toFixed(1)}K
           </span>
         </Pressable>
-        <button
-          onClick={() => showToast("Commentaires")}
+        <Pressable
+          onClick={focusChat}
           className="flex flex-col items-center"
           aria-label="Commentaires"
         >
@@ -350,27 +350,36 @@ function SlamTherapieLive() {
             <MessageCircle size={19} className="text-white" />
           </span>
           <span className="mt-[2px] text-[9.5px] font-bold text-white/90">286</span>
-        </button>
-        <button
-          onClick={() => showToast("Lien du live copié")}
+        </Pressable>
+        <Pressable
+          onClick={() => {
+            tap();
+            setSheet("share");
+          }}
           className="flex flex-col items-center"
           aria-label="Partager"
         >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
             <Share2 size={18} className="text-white" />
           </span>
-        </button>
-        <button
-          onClick={() => showToast("Cadeau envoyé à Moussa 🌹")}
+        </Pressable>
+        <Pressable
+          onClick={() => {
+            tap();
+            setSheet("gift");
+          }}
           className="flex flex-col items-center"
           aria-label="Cadeau"
         >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
             <Gift size={19} className="text-gold" />
           </span>
-        </button>
-        <button
-          onClick={() => showToast("Zems envoyés ✨")}
+        </Pressable>
+        <Pressable
+          onClick={() => {
+            tap();
+            setSheet("zems");
+          }}
           className="flex flex-col items-center"
           aria-label="Envoyer des Zems"
         >
@@ -380,7 +389,8 @@ function SlamTherapieLive() {
           <span className="mt-[2px] max-w-[46px] text-center text-[8.5px] leading-tight font-bold text-white/90">
             Zems
           </span>
-        </button>
+        </Pressable>
+
 
         {/* cœurs animés */}
         <div className="pointer-events-none absolute right-3 bottom-[40px]">
