@@ -450,6 +450,21 @@ function StandLive() {
           </span>
           <span className="mt-[2px] text-[8.5px] font-bold text-white/90">Zems</span>
         </Pressable>
+        {!host && (
+          <Pressable
+            onClick={() => {
+              tap();
+              setAsk(true);
+            }}
+            className="flex flex-col items-center"
+            aria-label="Poser une question"
+          >
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
+              <HelpCircle size={19} className="text-gold" />
+            </span>
+            <span className="mt-[2px] text-[8.5px] font-bold text-white/90">Question</span>
+          </Pressable>
+        )}
 
         <div className="pointer-events-none absolute right-3 bottom-[36px]">
           <AnimatePresence>
