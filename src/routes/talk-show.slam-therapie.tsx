@@ -258,18 +258,27 @@ function SlamTherapieLive() {
             </div>
           </div>
 
-          {/* VIGNETTE HÔTE */}
-          <div className="w-[62px] shrink-0 overflow-hidden rounded-xl bg-black/55 p-1 ring-1 ring-gold/50 backdrop-blur">
-            <div className="grid place-items-center">
-              <Avatar name="Deena" size={34} ring />
-              <p className="mt-1 flex items-center gap-1 text-[9.5px] font-bold text-white">
-                <Crown size={9} className="text-gold" /> Deena
-              </p>
-              <p className="text-[8.5px] text-white/60">Hôte</p>
-            </div>
+        </div>
+      </div>
+
+      {/* VIGNETTE HÔTE — CAMÉRA LIVE (picture-in-picture) */}
+      <div className="absolute right-2 top-[150px] w-[100px] overflow-hidden rounded-2xl ring-1 ring-gold/60 shadow-[0_8px_24px_rgba(0,0,0,0.55)]">
+        <div className="relative h-[130px] w-full bg-gradient-to-b from-[oklch(0.28_0.03_60)] to-[oklch(0.12_0.02_60)]">
+          <div className="grid h-full w-full place-items-center">
+            <Avatar name="Deena" size={54} ring />
+          </div>
+          <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-md bg-[oklch(0.55_0.22_25)] px-1.5 py-[1px] text-[7.5px] font-extrabold text-white">
+            <span className="h-[4px] w-[4px] rounded-full bg-white" /> CAM
+          </span>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-1.5 pb-1.5 pt-3">
+            <p className="flex items-center justify-center gap-1 text-[10px] font-bold text-white">
+              <Crown size={9} className="text-gold" /> Deena
+            </p>
+            <p className="text-center text-[8.5px] text-white/65">Hôte</p>
           </div>
         </div>
       </div>
+
 
       {/* COLONNE D'ACTIONS */}
       <div className="absolute right-2 bottom-[112px] flex flex-col items-center gap-2">
