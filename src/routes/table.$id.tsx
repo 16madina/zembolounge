@@ -301,10 +301,10 @@ function TableRoom() {
           transition={{ duration: 0.22 }}
           className="absolute flex items-center justify-center px-1 text-center"
           style={{
-            left: "47.4%",
-            top: "54.8%",
-            width: "21.8%",
-            height: "20%",
+            left: "48.2%",
+            top: "55.4%",
+            width: "19.4%",
+            height: "18.6%",
             background: "oklch(0.055 0.004 60)",
           }}
         >
