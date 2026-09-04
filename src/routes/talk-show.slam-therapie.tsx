@@ -152,6 +152,38 @@ function SlamTherapieLive() {
     setDraft("");
   };
 
+  const pushSystem = (text: string) => {
+    seq.current += 1;
+    setMsgs((m) => [
+      ...m.slice(-20),
+      { id: seq.current, user: "Deena", text, tint: "text-gold", me: true },
+    ]);
+  };
+
+  const sendGift = (g: { emoji: string; name: string; cost: number }) => {
+    tap();
+    setSheet(null);
+    const id = Date.now();
+    setGiftFly({ id, emoji: g.emoji });
+    setTimeout(() => setGiftFly(null), 1800);
+    pushSystem(`a envoyé ${g.emoji} ${g.name}`);
+    showToast(`${g.name} envoyé · ${g.cost} Zems`);
+  };
+
+  const sendZems = (amount: number) => {
+    tap();
+    setSheet(null);
+    pushSystem(`a envoyé ${amount} Zems ✨`);
+    showToast(`${amount} Zems envoyés à Moussa ✨`);
+  };
+
+  const focusChat = () => {
+    tap();
+    inputRef.current?.focus();
+  };
+
+
+
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
   const ss = String(left % 60).padStart(2, "0");
   const ratio = left / TOTAL;
