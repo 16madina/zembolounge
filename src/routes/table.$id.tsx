@@ -11,6 +11,11 @@ import {
   Eye,
   FastForward,
   Flame,
+  Crown,
+  Flower2,
+  Gem,
+  Star,
+  Gift,
   Globe,
   Heart,
   Laugh,
@@ -102,7 +107,28 @@ const REACTIONS = [
   { key: "hundred", Icon: BadgeCheck, count: 5, tint: "oklch(0.7 0.16 150)" },
 ];
 
-const SPECTATORS = ["Ben", "Emma", "Kader", "Nadia", "Ibrahim", "Awa"];
+const SPECTATORS_23 = [
+  "Ben", "Emma", "Kader", "Nadia", "Ibrahim", "Awa", "Fatou", "Moussa", "Karim", "Inès",
+  "Salif", "Chloé", "Yasmine", "Diallo", "Mamadou", "Céline", "Ousmane", "Lina", "Bakary",
+  "Amina", "Théo", "Rokia", "Samir",
+];
+
+const TABS = [
+  { id: "chat", label: "Chat" },
+  { id: "spectators", label: `Spectateurs (${SPECTATORS_23.length})` },
+  { id: "queue", label: "En attente" },
+] as const;
+
+const EMOJIS = ["😊", "😂", "🔥", "❤️", "👏", "😮", "🙏", "💯", "👀", "🎉", "😍", "🤔"];
+
+const GIFTS = [
+  { name: "Rose", cost: 5, Icon: Flower2 },
+  { name: "Cœur", cost: 10, Icon: Heart },
+  { name: "Étoile", cost: 25, Icon: Star },
+  { name: "Flamme", cost: 50, Icon: Flame },
+  { name: "Couronne", cost: 99, Icon: Crown },
+  { name: "Diamant", cost: 199, Icon: Gem },
+];
 
 const DICE_DOTS: Record<number, [number, number][]> = {
   1: [[50, 50]],
@@ -180,6 +206,9 @@ function TableRoom() {
   const [draft, setDraft] = useState("");
   const [reactions, setReactions] = useState(REACTIONS.map((r) => r.count));
   const [floats, setFloats] = useState<{ id: number; i: number; x: number }[]>([]);
+  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("chat");
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [giftOpen, setGiftOpen] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   /** ordre de parole : à partir du lanceur, puis sièges suivants (occupés) */
@@ -319,21 +348,23 @@ function TableRoom() {
     if (!text) return;
     setChat((c) => [...c, { id: Date.now(), name: "Deena", time: "21:37", text }]);
     setDraft("");
+    setEmojiOpen(false);
+    setTab("chat");
   };
 
   const react = (i: number) => {
     navigator.vibrate?.(10);
     setReactions((r) => r.map((v, k) => (k === i ? v + 1 : v)));
     const id = Date.now() + i;
-    setFloats((f) => [...f, { id, i, x: 8 + i * 20 }]);
-    setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 1100);
+    setFloats((f) => [...f, { id, i, x: -20 + Math.random() * 40 }]);
+    setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 1400);
   };
 
   const occupied = seats.filter((s) => s.name).length;
   const stepIndex = STEPS.findIndex((s) => s.key === phase);
 
   return (
-    <div className="flex min-h-full flex-col overflow-x-hidden bg-[oklch(0.03_0_0)]">
+    <div className="flex h-full flex-col overflow-hidden bg-[oklch(0.03_0_0)]">
       {/* ============ DÉCOR + ÉLÉMENTS VIVANTS ============ */}
       <div className="relative w-full shrink-0 select-none">
         <img src={stage} alt="Zembo Table — six joueurs autour de la table à questions" className="block w-full" />
@@ -1051,6 +1082,27 @@ function TableRoom() {
           >
             Quitter la table
           </Pressable>
+        </div>
+      </BottomSheet>
+
+      <BottomSheet open={giftOpen} onClose={() => setGiftOpen(false)}>
+        <div className="px-5 pt-2 pb-4">
+          <h2 className="text-[16px] font-extrabold tracking-wide text-gold">CADEAUX</h2>
+          <p className="mt-1 text-[12px] text-muted-foreground">Offre un cadeau à la table (coût en Zems).</p>
+          <div className="mt-3 grid grid-cols-3 gap-2.5">
+            {GIFTS.map((g) => (
+              <Pressable
+                key={g.name}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setGiftOpen(false)}
+                className="flex flex-col items-center gap-1 rounded-2xl border border-gold/25 bg-[oklch(0.08_0.005_60)] py-3"
+              >
+                <g.Icon size={22} className="text-gold" />
+                <span className="text-[12px] font-bold text-white">{g.name}</span>
+                <span className="text-[11px] font-semibold text-gold/80">{g.cost} Zems</span>
+              </Pressable>
+            ))}
+          </div>
         </div>
       </BottomSheet>
 
