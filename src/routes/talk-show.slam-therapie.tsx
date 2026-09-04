@@ -153,7 +153,7 @@ function SlamTherapieLive() {
   return (
     <div className="relative flex h-full flex-col overflow-hidden bg-background">
       {/* ── SCÈNE ── */}
-      <div className="relative w-full flex-[0_0_59%] overflow-hidden">
+      <div className="relative w-full flex-[0_0_50%] overflow-hidden">
         <img
           src={stage}
           alt="Moussa slame sur la scène Slam Thérapie de Zembo"
@@ -260,12 +260,6 @@ function SlamTherapieLive() {
 
         {/* COLONNE D'ACTIONS */}
         <div className="absolute right-2 bottom-2 flex flex-col items-center gap-3">
-          <p
-            className="mb-1 text-[8.5px] font-semibold tracking-[0.22em] text-white/45"
-            style={{ writingMode: "vertical-rl" }}
-          >
-            EXPRIME · RESSENS · GUÉRIS
-          </p>
           <Pressable onClick={like} className="flex flex-col items-center" aria-label="J'aime">
             <span className="grid h-10 w-10 place-items-center rounded-full bg-white/14 backdrop-blur">
               <Heart size={20} className="fill-[oklch(0.6_0.23_20)] text-[oklch(0.6_0.23_20)]" />
@@ -318,7 +312,7 @@ function SlamTherapieLive() {
           </button>
 
           {/* cœurs animés */}
-          <div className="pointer-events-none absolute right-3 bottom-[210px]">
+          <div className="pointer-events-none absolute right-3 bottom-[190px]">
             <AnimatePresence>
               {hearts.map((h) => (
                 <motion.span
@@ -337,8 +331,8 @@ function SlamTherapieLive() {
         </div>
 
         {/* CHAT */}
-        <div className="absolute bottom-2 left-2 max-h-[46%] w-[64%] overflow-hidden">
-          <div className="app-scroll no-scrollbar flex max-h-[150px] flex-col gap-1.5">
+        <div className="absolute bottom-2 left-2 max-h-[40%] w-[62%] overflow-hidden">
+          <div className="app-scroll no-scrollbar flex max-h-[118px] flex-col gap-1.5">
             {msgs.map((m) => (
               <motion.div
                 key={m.id}
