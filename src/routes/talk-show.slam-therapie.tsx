@@ -136,11 +136,9 @@ const tap = () => navigator.vibrate?.(15);
 function SlamTherapieLive() {
   const [msgs, setMsgs] = useState<Msg[]>(INITIAL);
   const [draft, setDraft] = useState("");
-  const [left, setLeft] = useState(167);
   const [likes, setLikes] = useState(4200);
   const [hearts, setHearts] = useState<number[]>([]);
   const [toast, setToast] = useState<string | null>(null);
-  const [ended, setEnded] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [sheet, setSheet] = useState<"share" | "gift" | "zems" | "menu" | null>(null);
   const [giftFly, setGiftFly] = useState<{ id: number; emoji: string } | null>(null);
@@ -148,27 +146,67 @@ function SlamTherapieLive() {
   const inputRef = useRef<HTMLInputElement>(null);
   const seq = useRef(100);
 
+  // ── SCÈNE & FILE ──
+  const [perf, setPerf] = useState<Slot>(STAGE0);
+  const [left, setLeft] = useState(167);
+  const [running, setRunning] = useState(true);
+  const [queue, setQueue] = useState<Slot[]>(QUEUE0);
+  const [requests, setRequests] = useState<Slot[]>(REQUESTS0);
+  const [thanks, setThanks] = useState<Slot | null>(null);
+  const [nextUp, setNextUp] = useState<Slot | null>(null);
+  const [count, setCount] = useState<number | null>(null);
+
+  // ── MON PARCOURS ──
+  const [flow, setFlow] = useState<"request" | "confirm" | "notice" | "backstage" | null>(null);
+  const [mine, setMine] = useState<Slot | null>(null);
+  const [ready, setReady] = useState(false);
+  const [hostMode, setHostMode] = useState(true);
+
+  const total = perf.duration * 60;
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [msgs]);
 
+  // chrono de la performance : à 0 → merci → prochain passage
   useEffect(() => {
+    if (!running) return;
     const t = setInterval(() => {
       setLeft((s) => {
         if (s <= 1) {
-          setEnded(true);
-          setTimeout(() => {
-            setEnded(false);
-            setLeft(TOTAL);
-          }, 3200);
+          setRunning(false);
+          finish();
           return 0;
         }
         return s - 1;
       });
     }, 1000);
     return () => clearInterval(t);
-  }, []);
+  }, [running]);
+
+  // décompte 3 · 2 · 1 puis démarrage synchronisé chrono + musique
+  useEffect(() => {
+    if (count === null) return;
+    if (count === 0) {
+      const s = nextUp;
+      const t = setTimeout(() => {
+        if (s) {
+          setPerf(s);
+          setLeft(s.duration * 60);
+          setRunning(true);
+          if (s.me) {
+            setReady(false);
+            setMine(null);
+          }
+        }
+        setNextUp(null);
+        setCount(null);
+      }, 700);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setCount((c) => (c === null ? null : c - 1)), 900);
+    return () => clearTimeout(t);
+  }, [count, nextUp]);
 
   useEffect(() => {
     const t = setInterval(() => {
