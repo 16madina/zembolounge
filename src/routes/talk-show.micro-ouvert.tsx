@@ -418,13 +418,13 @@ function MicroOuvertLive() {
           haut pré-dessiné. Aucun cache opaque : remplaçable par une vidéo. */}
       <div
         className="relative w-full shrink-0 overflow-hidden"
-        style={{ aspectRatio: "556 / 435" }}
+        style={{ aspectRatio: "556 / 385" }}
       >
         <img
           src={stage}
           alt="Micro Ouvert : Deena anime le live avec quatre invités"
           className="absolute block max-w-none"
-          style={{ width: "169.24%", left: "-26.98%", top: "-80.46%" }}
+          style={{ width: "169.24%", left: "-26.98%", top: "-90.91%" }}
         />
 
 
