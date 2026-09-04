@@ -180,16 +180,24 @@ function SlamTherapieLive() {
             </p>
           </div>
           <div className="flex flex-col items-end gap-1.5">
-            <Pressable
-              onClick={() => {
-                tap();
-                showToast("Options du live");
-              }}
-              className="grid h-8 w-8 place-items-center rounded-full bg-white/12 text-white/90 backdrop-blur"
-              aria-label="Plus d'options"
-            >
-              <MoreHorizontal size={17} />
-            </Pressable>
+            <div className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1 rounded-md bg-[oklch(0.55_0.22_25)] px-1.5 py-[2px] text-[9px] font-extrabold text-white">
+                <span className="h-[5px] w-[5px] rounded-full bg-white" /> LIVE
+              </span>
+              <span className="flex items-center gap-1 rounded-md bg-black/50 px-1.5 py-[2px] text-[9px] font-bold text-white/90 backdrop-blur">
+                <Users size={10} /> 1.2K
+              </span>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  showToast("Options du live");
+                }}
+                className="grid h-7 w-7 place-items-center rounded-full bg-white/12 text-white/90 backdrop-blur"
+                aria-label="Plus d'options"
+              >
+                <MoreHorizontal size={16} />
+              </Pressable>
+            </div>
             <Pressable
               onClick={() => {
                 tap();
@@ -203,34 +211,25 @@ function SlamTherapieLive() {
           </div>
         </div>
 
-        <div className="mt-2 flex items-center gap-2">
-          <span className="flex items-center gap-1 rounded-md bg-[oklch(0.55_0.22_25)] px-2 py-[3px] text-[10px] font-extrabold text-white">
-            <span className="h-[6px] w-[6px] rounded-full bg-white" /> LIVE
-          </span>
-          <span className="flex items-center gap-1 rounded-md bg-black/50 px-2 py-[3px] text-[10px] font-bold text-white/90 backdrop-blur">
-            <Users size={11} /> 1.2K
-          </span>
-        </div>
-
         {/* BLOC SUR SCÈNE */}
-        <div className="mt-2 flex items-start gap-2">
+        <div className="mt-1.5 flex items-start gap-2">
           <div className="min-w-0 flex-1">
-            <span className="inline-block rounded-md bg-gold px-2 py-[2px] text-[9px] font-extrabold tracking-wide text-black">
+            <span className="inline-block rounded-md bg-gold px-2 py-[2px] text-[8.5px] font-extrabold tracking-wide text-black">
               SUR SCÈNE
             </span>
-            <p className="mt-1 text-[26px] leading-none font-extrabold text-white drop-shadow">
+            <p className="mt-1 text-[20px] leading-none font-extrabold text-white drop-shadow">
               Moussa
             </p>
-            <p className="mt-[3px] text-[13px] italic text-white/85">Les blessures invisibles</p>
+            <p className="mt-[3px] text-[11px] italic text-white/85">Les blessures invisibles</p>
             <Pressable
               onClick={() => {
                 tap();
                 showToast("Musique : Renaissance (Piano)");
               }}
-              className="mt-2 flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur"
+              className="mt-1.5 flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold text-white/90 backdrop-blur"
             >
-              <Music2 size={12} className="text-gold" /> Renaissance (Piano)
-              <ChevronRight size={13} className="text-white/60" />
+              <Music2 size={11} className="text-gold" /> Renaissance (Piano)
+              <ChevronRight size={12} className="text-white/60" />
             </Pressable>
           </div>
 
