@@ -131,33 +131,15 @@ function WorldIntro() {
           ))}
         </div>
 
-        {/* Bouton principal + compte Zembo */}
-        {connected ? (
-          <Pressable
-            onClick={() => navigate({ to: "/world/onboarding/1" })}
-            className="glow-gold mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[15px] font-bold text-[oklch(0.16_0.02_60)]"
-          >
-            Créer mon profil <span className="text-[17px] leading-none">›</span>
-          </Pressable>
-        ) : (
-          <>
-            <Pressable
-              onClick={() => navigate({ to: "/signup" })}
-              className="glow-gold mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[15px] font-bold text-[oklch(0.16_0.02_60)]"
-            >
-              Créer mon profil <span className="text-[17px] leading-none">›</span>
-            </Pressable>
-            <div className="mt-4 mb-6 text-center text-[13px]">
-              <span className="text-muted-foreground">Déjà inscrit ? </span>
-              <Pressable
-                onClick={() => navigate({ to: "/login" })}
-                className="font-semibold text-gold underline-offset-2"
-              >
-                Se connecter
-              </Pressable>
-            </div>
-          </>
-        )}
+        {/* Bouton principal — aucune auth World Room */}
+        <Pressable
+          onClick={() =>
+            connected ? navigate({ to: "/world/onboarding/1" }) : navigate({ to: "/login" })
+          }
+          className="glow-gold mt-7 mb-6 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[15px] font-bold text-[oklch(0.16_0.02_60)]"
+        >
+          Créer mon profil <span className="text-[17px] leading-none">›</span>
+        </Pressable>
       </div>
     </div>
   );
