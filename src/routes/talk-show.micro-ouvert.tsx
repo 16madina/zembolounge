@@ -23,6 +23,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BottomSheet } from "@/components/zembo/Sheet";
 import { Avatar, Pressable } from "@/components/zembo/ui";
 import stage from "@/assets/zembo-micro-ouvert-stage.png";
+import { LikeCount, LikePill, useTapToLike } from "@/components/zembo/TapToLike";
 
 export const Route = createFileRoute("/talk-show/micro-ouvert")({
   head: () => ({
@@ -150,12 +151,11 @@ function MicroOuvertLive() {
   const [placesOpen, setPlacesOpen] = useState(false);
   const [seconds, setSeconds] = useState(4356);
   const [viewers, setViewers] = useState(325);
-  const [likes, setLikes] = useState(1800);
+  const tapLike = useTapToLike(1800);
   const [follow, setFollow] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>(INITIAL);
   const [draft, setDraft] = useState("");
   const [emojiOpen, setEmojiOpen] = useState(false);
-  const [hearts, setHearts] = useState<number[]>([]);
   const [floats, setFloats] = useState<{ id: number; emoji: string }[]>([]);
   const [requestsOpen, setRequestsOpen] = useState(false);
   const [giftsOpen, setGiftsOpen] = useState(false);
@@ -201,13 +201,6 @@ function MicroOuvertLive() {
     setTimeout(() => setNotice(null), 2400);
   };
 
-  const like = () => {
-    tap();
-    setLikes((l) => l + 1);
-    const id = Date.now() + Math.random();
-    setHearts((h) => [...h, id]);
-    setTimeout(() => setHearts((h) => h.filter((x) => x !== id)), 1600);
-  };
 
   const floatEmoji = (emoji: string) => {
     const id = Date.now() + Math.random();
@@ -411,7 +404,11 @@ function MicroOuvertLive() {
           ];
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden bg-black">
+    <div
+      className="relative flex h-full flex-col overflow-hidden bg-black"
+      onPointerDown={tapLike.onSceneTap}
+    >
+      {tapLike.layer}
       {/* ══ DÉCOR + OVERLAYS ══ */}
       {/* Disposition d'origine restaurée. Seul changement : le fond lui-même
           est cadré/masqué sur son bord droit (propriété de l'image, pas de
@@ -456,6 +453,7 @@ function MicroOuvertLive() {
               <Eye size={11} className="text-gold" /> {viewers}
               <span className="font-medium text-white/55">en direct</span>
             </span>
+            <LikePill likes={tapLike.likes} pop={tapLike.pop} />
             <Pressable
               onClick={() => {
                 tap();
@@ -606,30 +604,18 @@ function MicroOuvertLive() {
         <div className="absolute top-[97%] right-1.5 z-40 flex flex-col items-center gap-2">
 
           <div className="relative flex flex-col items-center">
-            <AnimatePresence>
-              {hearts.map((h) => (
-                <motion.span
-                  key={h}
-                  initial={{ opacity: 0.95, y: 0, scale: 0.6 }}
-                  animate={{ opacity: 0, y: -150, x: (Math.random() - 0.5) * 50, scale: 1.3 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  className="pointer-events-none absolute bottom-7 text-[20px]"
-                >
-                  ❤️
-                </motion.span>
-              ))}
-            </AnimatePresence>
             <Pressable
               aria-label="J'aime"
-              onClick={like}
+              onClick={tapLike.likeFromButton}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 backdrop-blur-md"
             >
               <Heart size={18} className="text-[oklch(0.65_0.22_20)]" fill="currentColor" />
             </Pressable>
-            <span className="text-[9.5px] font-bold text-white/90">
-              {(likes / 1000).toFixed(1)}K
-            </span>
+            <LikeCount
+              likes={tapLike.likes}
+              pop={tapLike.pop}
+              className="inline-block text-[9.5px] font-bold text-white/90"
+            />
           </div>
           <div className="flex flex-col items-center">
             <Pressable

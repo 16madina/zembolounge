@@ -24,6 +24,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Avatar, Pressable } from "@/components/zembo/ui";
 import { ZemboIcon } from "@/components/zembo/ZemboMark";
 import decor from "@/assets/zembo-stand-live.png.asset.json";
+import { LikeCount, LikePill, useTapToLike } from "@/components/zembo/TapToLike";
 
 export const Route = createFileRoute("/talk-show/stand")({
   head: () => ({
@@ -145,8 +146,7 @@ function StandLive() {
   const [host, setHost] = useState(true);
   const [msgs, setMsgs] = useState<Msg[]>(INITIAL);
   const [draft, setDraft] = useState("");
-  const [likes, setLikes] = useState(4200);
-  const [hearts, setHearts] = useState<number[]>([]);
+  const tapLike = useTapToLike(4200);
   const [toast, setToast] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [sheet, setSheet] = useState<"share" | "gift" | "zems" | "menu" | null>(null);
@@ -187,14 +187,6 @@ function StandLive() {
     setTimeout(() => setNotice(null), 3200);
   };
 
-  const like = () => {
-    tap();
-    setLikes((l) => l + 1);
-    seq.current += 1;
-    const id = seq.current;
-    setHearts((h) => [...h.slice(-8), id]);
-    setTimeout(() => setHearts((h) => h.filter((x) => x !== id)), 1700);
-  };
 
   const push = (text: string, user = "Deena", me = true) => {
     seq.current += 1;
@@ -258,7 +250,11 @@ function StandLive() {
   );
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-black select-none">
+    <div
+      className="relative h-full w-full overflow-hidden bg-black select-none"
+      onPointerDown={tapLike.onSceneTap}
+    >
+      {tapLike.layer}
       <img
         src={decor.url}
         alt="Deena partage ses conseils en direct sur la scène Stand de Zembo"
@@ -323,6 +319,7 @@ function StandLive() {
           <span className="flex items-center gap-1 rounded-md bg-black/50 px-1.5 py-[2px] text-[8px] font-bold text-white/90 backdrop-blur">
             <Users size={9} /> 1.2K
           </span>
+          <LikePill likes={tapLike.likes} pop={tapLike.pop} />
         </div>
 
         {/* BLOC TITRE */}
@@ -392,13 +389,19 @@ function StandLive() {
 
       {/* COLONNE D'ACTIONS */}
       <div className="absolute right-2 bottom-[150px] z-20 flex flex-col items-center gap-2">
-        <Pressable onClick={like} className="flex flex-col items-center" aria-label="J'aime">
+        <Pressable
+          onClick={tapLike.likeFromButton}
+          className="flex flex-col items-center"
+          aria-label="J'aime"
+        >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
             <Heart size={20} className="fill-[oklch(0.6_0.23_20)] text-[oklch(0.6_0.23_20)]" />
           </span>
-          <span className="mt-[2px] text-[9.5px] font-bold text-white/90">
-            {(likes / 1000).toFixed(1)}K
-          </span>
+          <LikeCount
+            likes={tapLike.likes}
+            pop={tapLike.pop}
+            className="mt-[2px] inline-block text-[9.5px] font-bold text-white/90"
+          />
         </Pressable>
         <Pressable
           onClick={() => {
@@ -466,22 +469,7 @@ function StandLive() {
           </Pressable>
         )}
 
-        <div className="pointer-events-none absolute right-3 bottom-[36px]">
-          <AnimatePresence>
-            {hearts.map((h) => (
-              <motion.span
-                key={h}
-                initial={{ opacity: 0, y: 0, scale: 0.6 }}
-                animate={{ opacity: [0, 1, 1, 0], y: -210, scale: 1.1, x: (h % 5) * 8 - 16 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.6, ease: "easeOut" }}
-                className="absolute text-[20px]"
-              >
-                ❤️
-              </motion.span>
-            ))}
-          </AnimatePresence>
-        </div>
+
       </div>
 
       {/* BOUTON QUESTIONS (HÔTE) */}
