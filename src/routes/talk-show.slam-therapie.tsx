@@ -424,7 +424,7 @@ function SlamTherapieLive() {
               className="flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 text-[10.5px] font-bold text-white/90 ring-1 ring-gold/40 backdrop-blur"
               aria-label="Ouvrir la file d'attente"
             >
-              <ListOrdered size={12} className="text-gold" /> File d'attente (3)
+              <ListOrdered size={12} className="text-gold" /> File d'attente ({queue.length})
             </Pressable>
           </div>
         </div>
@@ -433,20 +433,25 @@ function SlamTherapieLive() {
         <div className="mt-1.5 flex items-start gap-2">
           <div className="min-w-0 flex-1">
             <span className="inline-block rounded-md bg-gold px-2 py-[2px] text-[8.5px] font-extrabold tracking-wide text-black">
-              SUR SCÈNE
+              🎤 SUR SCÈNE
             </span>
-            <p className="mt-1 text-[20px] leading-none font-extrabold text-white drop-shadow">
-              Moussa
+            <p className="mt-1 truncate text-[20px] leading-none font-extrabold text-white drop-shadow">
+              {perf.name}
             </p>
-            <p className="mt-[3px] text-[11px] italic text-white/85">Les blessures invisibles</p>
+            <p className="mt-[3px] truncate text-[11px] italic text-white/85">{perf.title}</p>
             <Pressable
               onClick={() => {
                 tap();
-                showToast("Musique : Renaissance (Piano)");
+                showToast(
+                  perf.sound
+                    ? `Musique : ${perf.sound} (${moodOf(perf.mood).label})`
+                    : "Sans musique — a cappella",
+                );
               }}
               className="mt-1.5 flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold text-white/90 backdrop-blur"
             >
-              <Music2 size={11} className="text-gold" /> Renaissance (Piano)
+              <Music2 size={11} className="text-gold" />{" "}
+              {perf.sound ? `${perf.sound} (${moodOf(perf.mood).label})` : "Sans musique"}
               <ChevronRight size={12} className="text-white/60" />
             </Pressable>
           </div>
