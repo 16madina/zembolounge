@@ -1,15 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Camera,
+  Check,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Crown,
   Flag,
   Gift,
+  GripVertical,
   LogOut,
-
   Heart,
   ListOrdered,
   MessageCircle,
+  MicOff,
   MoreHorizontal,
   Mic,
   Music2,
@@ -17,12 +22,19 @@ import {
   Share2,
   Shield,
   Smile,
+  SkipForward,
+  Sparkles,
+  StopCircle,
+  Trash2,
+  UserMinus,
   Users,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Avatar, Pressable } from "@/components/zembo/ui";
 import { ZemboIcon } from "@/components/zembo/ZemboMark";
+import { SlamRequestSheet, type SlamRequest } from "@/components/zembo/SlamRequestSheet";
+import { fmtDur, moodOf, type SlamDuration } from "@/lib/zembo-sounds";
 import stage from "@/assets/zembo-slam-stage.png";
 
 export const Route = createFileRoute("/talk-show/slam-therapie")({
