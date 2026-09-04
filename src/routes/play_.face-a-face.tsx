@@ -96,15 +96,18 @@ function AnswerBlock({
         borderColor: `color-mix(in oklab, ${color} 45%, transparent)`,
       }}
     >
-      <p className="text-[9.5px] font-extrabold tracking-[0.1em] uppercase" style={{ color }}>
+      <p
+        className="font-extrabold tracking-[0.08em] whitespace-nowrap uppercase"
+        style={{ color, fontSize: "2.1cqw" }}
+      >
         {title}
       </p>
       <motion.p
         key={answer ?? "wait"}
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        className="truncate text-[11.5px] font-bold"
-        style={{ color }}
+        className="truncate font-bold"
+        style={{ color, fontSize: "2.8cqw" }}
       >
         {answer ? `✓ ${answer}` : "🔒 En attente…"}
       </motion.p>
@@ -194,7 +197,10 @@ function FaceAFace() {
   return (
     <div className="flex min-h-full flex-col bg-[oklch(0.03_0_0)]">
       {/* ===== Décor + overlays vivants ===== */}
-      <div className="relative w-full shrink-0 select-none">
+      <div
+        className="relative w-full shrink-0 select-none"
+        style={{ containerType: "inline-size" }}
+      >
         <img
           src={stage}
           alt="Plateau Face à Face — Deena contre Moussa"
@@ -229,8 +235,9 @@ function FaceAFace() {
 
         {/* QUESTION n / 20 */}
         <div
-          className="absolute flex items-center justify-center rounded-full border text-[10.5px] font-extrabold tracking-[0.08em]"
+          className="absolute flex items-center justify-center rounded-full border font-extrabold tracking-[0.08em] whitespace-nowrap"
           style={{
+            fontSize: "2.7cqw",
             left: "38%",
             top: "12.7%",
             width: "21.5%",
@@ -245,8 +252,15 @@ function FaceAFace() {
 
         {/* Compatibilité sous les vidéos */}
         <div
-          className="absolute flex items-center text-[13px] font-extrabold tracking-[0.08em] text-white"
-          style={{ left: "17.4%", top: "43.6%", width: "14%", height: "2.6%", background: PANEL }}
+          className="absolute flex items-center font-extrabold tracking-[0.08em] whitespace-nowrap text-white"
+          style={{
+            fontSize: "3.2cqw",
+            left: "17.4%",
+            top: "44.3%",
+            width: "14%",
+            height: "1.9%",
+            background: PANEL,
+          }}
         >
           {compatText}
         </div>
@@ -313,21 +327,39 @@ function FaceAFace() {
         >
           <Ring value={seconds} />
           <span className="absolute text-center leading-none">
-            <span className="block text-[19px] font-extrabold text-white">{seconds}</span>
-            <span className="block text-[8px] font-bold text-white/70">S</span>
+            <span className="block font-extrabold text-white" style={{ fontSize: "5cqw" }}>
+              {seconds}
+            </span>
+            <span className="block font-bold text-white/70" style={{ fontSize: "2cqw" }}>
+              S
+            </span>
           </span>
         </div>
 
         {/* Stats du bas : compatibilité + temps restant */}
         <div
-          className="absolute flex items-center text-[13px] font-extrabold tracking-[0.06em] text-white"
-          style={{ left: "15.3%", top: "96.1%", width: "14%", height: "2.4%", background: PANEL }}
+          className="absolute flex items-center font-extrabold tracking-[0.06em] whitespace-nowrap text-white"
+          style={{
+            fontSize: "3.2cqw",
+            left: "15.3%",
+            top: "96.6%",
+            width: "14%",
+            height: "1.9%",
+            background: PANEL,
+          }}
         >
           {compatText}
         </div>
         <div
-          className="absolute flex items-center text-[17px] font-extrabold text-white"
-          style={{ left: "79.5%", top: "94.3%", width: "14%", height: "2.6%", background: PANEL }}
+          className="absolute flex items-center font-extrabold whitespace-nowrap text-white"
+          style={{
+            fontSize: "3.7cqw",
+            left: "79.5%",
+            top: "94.9%",
+            width: "14%",
+            height: "2.1%",
+            background: PANEL,
+          }}
         >
           {mmss}
         </div>
