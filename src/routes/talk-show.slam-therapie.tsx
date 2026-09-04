@@ -3,7 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronRight,
   Crown,
+  Flag,
   Gift,
+  LogOut,
+
   Heart,
   ListOrdered,
   MessageCircle,
@@ -76,7 +79,22 @@ const QUEUE = [
   { n: 3, name: "Aïssatou", title: "Ma renaissance", music: "🥁 Afro douce", time: "01:00" },
 ];
 
+const GIFTS = [
+  { emoji: "🌹", name: "Rose", cost: 5 },
+  { emoji: "👏", name: "Applaudissements", cost: 10 },
+  { emoji: "🔥", name: "Flamme", cost: 20 },
+  { emoji: "💎", name: "Diamant", cost: 50 },
+  { emoji: "👑", name: "Couronne", cost: 100 },
+  { emoji: "🎤", name: "Micro d'or", cost: 250 },
+  { emoji: "🦋", name: "Papillon", cost: 30 },
+  { emoji: "🤍", name: "Cœur pur", cost: 15 },
+  { emoji: "🚀", name: "Fusée", cost: 500 },
+];
+
+const ZEM_AMOUNTS = [50, 100, 250, 500, 1000, 2500];
+
 const TOTAL = 180;
+
 const tap = () => navigator.vibrate?.(15);
 
 function SlamTherapieLive() {
@@ -88,8 +106,12 @@ function SlamTherapieLive() {
   const [toast, setToast] = useState<string | null>(null);
   const [ended, setEnded] = useState(false);
   const [drawer, setDrawer] = useState(false);
+  const [sheet, setSheet] = useState<"share" | "gift" | "zems" | "menu" | null>(null);
+  const [giftFly, setGiftFly] = useState<{ id: number; emoji: string } | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const seq = useRef(100);
+
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
@@ -148,6 +170,38 @@ function SlamTherapieLive() {
     setDraft("");
   };
 
+  const pushSystem = (text: string) => {
+    seq.current += 1;
+    setMsgs((m) => [
+      ...m.slice(-20),
+      { id: seq.current, user: "Deena", text, tint: "text-gold", me: true },
+    ]);
+  };
+
+  const sendGift = (g: { emoji: string; name: string; cost: number }) => {
+    tap();
+    setSheet(null);
+    const id = Date.now();
+    setGiftFly({ id, emoji: g.emoji });
+    setTimeout(() => setGiftFly(null), 1800);
+    pushSystem(`a envoyé ${g.emoji} ${g.name}`);
+    showToast(`${g.name} envoyé · ${g.cost} Zems`);
+  };
+
+  const sendZems = (amount: number) => {
+    tap();
+    setSheet(null);
+    pushSystem(`a envoyé ${amount} Zems ✨`);
+    showToast(`${amount} Zems envoyés à Moussa ✨`);
+  };
+
+  const focusChat = () => {
+    tap();
+    inputRef.current?.focus();
+  };
+
+
+
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
   const ss = String(left % 60).padStart(2, "0");
   const ratio = left / TOTAL;
@@ -190,8 +244,9 @@ function SlamTherapieLive() {
               <Pressable
                 onClick={() => {
                   tap();
-                  showToast("Options du live");
+                  setSheet("menu");
                 }}
+
                 className="grid h-7 w-7 place-items-center rounded-full bg-white/12 text-white/90 backdrop-blur"
                 aria-label="Plus d'options"
               >
@@ -258,18 +313,27 @@ function SlamTherapieLive() {
             </div>
           </div>
 
-          {/* VIGNETTE HÔTE */}
-          <div className="w-[62px] shrink-0 overflow-hidden rounded-xl bg-black/55 p-1 ring-1 ring-gold/50 backdrop-blur">
-            <div className="grid place-items-center">
-              <Avatar name="Deena" size={34} ring />
-              <p className="mt-1 flex items-center gap-1 text-[9.5px] font-bold text-white">
-                <Crown size={9} className="text-gold" /> Deena
-              </p>
-              <p className="text-[8.5px] text-white/60">Hôte</p>
-            </div>
+        </div>
+      </div>
+
+      {/* VIGNETTE HÔTE — CAMÉRA LIVE (picture-in-picture) */}
+      <div className="absolute right-2 top-[150px] w-[100px] overflow-hidden rounded-2xl ring-1 ring-gold/60 shadow-[0_8px_24px_rgba(0,0,0,0.55)]">
+        <div className="relative h-[130px] w-full bg-gradient-to-b from-[oklch(0.28_0.03_60)] to-[oklch(0.12_0.02_60)]">
+          <div className="grid h-full w-full place-items-center">
+            <Avatar name="Deena" size={54} ring />
+          </div>
+          <span className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-md bg-[oklch(0.55_0.22_25)] px-1.5 py-[1px] text-[7.5px] font-extrabold text-white">
+            <span className="h-[4px] w-[4px] rounded-full bg-white" /> CAM
+          </span>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-1.5 pb-1.5 pt-3">
+            <p className="flex items-center justify-center gap-1 text-[10px] font-bold text-white">
+              <Crown size={9} className="text-gold" /> Deena
+            </p>
+            <p className="text-center text-[8.5px] text-white/65">Hôte</p>
           </div>
         </div>
       </div>
+
 
       {/* COLONNE D'ACTIONS */}
       <div className="absolute right-2 bottom-[112px] flex flex-col items-center gap-2">
@@ -281,8 +345,8 @@ function SlamTherapieLive() {
             {(likes / 1000).toFixed(1)}K
           </span>
         </Pressable>
-        <button
-          onClick={() => showToast("Commentaires")}
+        <Pressable
+          onClick={focusChat}
           className="flex flex-col items-center"
           aria-label="Commentaires"
         >
@@ -290,27 +354,36 @@ function SlamTherapieLive() {
             <MessageCircle size={19} className="text-white" />
           </span>
           <span className="mt-[2px] text-[9.5px] font-bold text-white/90">286</span>
-        </button>
-        <button
-          onClick={() => showToast("Lien du live copié")}
+        </Pressable>
+        <Pressable
+          onClick={() => {
+            tap();
+            setSheet("share");
+          }}
           className="flex flex-col items-center"
           aria-label="Partager"
         >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
             <Share2 size={18} className="text-white" />
           </span>
-        </button>
-        <button
-          onClick={() => showToast("Cadeau envoyé à Moussa 🌹")}
+        </Pressable>
+        <Pressable
+          onClick={() => {
+            tap();
+            setSheet("gift");
+          }}
           className="flex flex-col items-center"
           aria-label="Cadeau"
         >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
             <Gift size={19} className="text-gold" />
           </span>
-        </button>
-        <button
-          onClick={() => showToast("Zems envoyés ✨")}
+        </Pressable>
+        <Pressable
+          onClick={() => {
+            tap();
+            setSheet("zems");
+          }}
           className="flex flex-col items-center"
           aria-label="Envoyer des Zems"
         >
@@ -320,7 +393,8 @@ function SlamTherapieLive() {
           <span className="mt-[2px] max-w-[46px] text-center text-[8.5px] leading-tight font-bold text-white/90">
             Zems
           </span>
-        </button>
+        </Pressable>
+
 
         {/* cœurs animés */}
         <div className="pointer-events-none absolute right-3 bottom-[40px]">
@@ -373,6 +447,8 @@ function SlamTherapieLive() {
       {/* SAISIE */}
       <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 px-3 pt-2 pb-[max(8px,env(safe-area-inset-bottom))]">
         <input
+          ref={inputRef}
+
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
@@ -528,6 +604,140 @@ function SlamTherapieLive() {
           </>
         )}
       </AnimatePresence>
+
+      {/* ── CADEAU QUI S'ENVOLE ── */}
+      <AnimatePresence>
+        {giftFly && (
+          <motion.div
+            key={giftFly.id}
+            initial={{ opacity: 0, scale: 0.4, y: 40 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0.4, 1.6, 1.4, 1.2], y: -120 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.7, ease: "easeOut" }}
+            className="pointer-events-none absolute bottom-[38%] left-1/2 z-[55] -translate-x-1/2 text-[64px]"
+          >
+            {giftFly.emoji}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── FEUILLES ── */}
+      <AnimatePresence>
+        {sheet && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSheet(null)}
+              className="absolute inset-0 z-[58] bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+              className="absolute inset-x-0 bottom-0 z-[59] rounded-t-3xl bg-[oklch(0.09_0.01_60)] px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))] ring-1 ring-white/10"
+            >
+              <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/20" />
+
+              {sheet === "share" && (
+                <>
+                  <p className="text-[15px] font-extrabold text-foreground">Partager le live</p>
+                  <div className="mt-3 flex flex-col gap-1.5">
+                    {[
+                      { icon: "🔗", label: "Copier le lien", t: "Lien du live copié" },
+                      { icon: "💬", label: "Envoyer en message", t: "Partagé en message" },
+                      { icon: "📲", label: "Partager sur WhatsApp", t: "Partagé sur WhatsApp" },
+                      { icon: "📸", label: "Ajouter à ma story", t: "Ajouté à ta story" },
+                    ].map((o) => (
+                      <Pressable
+                        key={o.label}
+                        onClick={() => {
+                          tap();
+                          setSheet(null);
+                          showToast(o.t);
+                        }}
+                        className="flex items-center gap-3 rounded-2xl bg-white/[0.05] px-3 py-3 text-[13px] font-semibold text-foreground"
+                      >
+                        <span className="text-[18px]">{o.icon}</span> {o.label}
+                      </Pressable>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {sheet === "gift" && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[15px] font-extrabold text-foreground">Offrir un cadeau</p>
+                    <p className="text-[12px] font-bold text-gold">Solde : 3 250 Z</p>
+                  </div>
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {GIFTS.map((g) => (
+                      <Pressable
+                        key={g.name}
+                        onClick={() => sendGift(g)}
+                        className="flex flex-col items-center gap-0.5 rounded-2xl bg-white/[0.05] py-2.5 ring-1 ring-white/8"
+                      >
+                        <span className="text-[26px]">{g.emoji}</span>
+                        <span className="text-[10px] font-semibold text-foreground">{g.name}</span>
+                        <span className="text-[10px] font-bold text-gold">{g.cost} Z</span>
+                      </Pressable>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {sheet === "zems" && (
+                <>
+                  <p className="text-[15px] font-extrabold text-foreground">
+                    Envoyer des Zems à Moussa
+                  </p>
+                  <p className="mt-1 text-[11.5px] text-muted-foreground">
+                    Soutiens sa performance — Solde : 3 250 Z
+                  </p>
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {ZEM_AMOUNTS.map((a) => (
+                      <Pressable
+                        key={a}
+                        onClick={() => sendZems(a)}
+                        className="grid place-items-center rounded-2xl bg-gradient-to-br from-gold/25 to-transparent py-3 ring-1 ring-gold/30"
+                      >
+                        <span className="text-[15px] font-extrabold text-gold">{a} Z</span>
+                      </Pressable>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {sheet === "menu" && (
+                <div className="flex flex-col gap-1.5">
+                  {[
+                    { icon: <Shield size={16} className="text-gold" />, label: "Règles de la scène", t: "Règles : respect, zéro jugement, 1 ou 3 minutes" },
+                    { icon: <Flag size={16} className="text-white/80" />, label: "Signaler", t: "Signalement envoyé à la modération" },
+                    { icon: <LogOut size={16} className="text-[oklch(0.65_0.2_25)]" />, label: "Quitter le live", t: "À bientôt sur Zembo 🤍" },
+                  ].map((o) => (
+                    <Pressable
+                      key={o.label}
+                      onClick={() => {
+                        tap();
+                        setSheet(null);
+                        showToast(o.t);
+                      }}
+                      className="flex items-center gap-3 rounded-2xl bg-white/[0.05] px-3 py-3 text-[13px] font-semibold text-foreground"
+                    >
+                      {o.icon} {o.label}
+                    </Pressable>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+
 
       <AnimatePresence>
         {toast && (
