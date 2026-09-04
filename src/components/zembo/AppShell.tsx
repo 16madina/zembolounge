@@ -17,9 +17,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isSetup = pathname.startsWith("/talk-show/config") || pathname.startsWith("/talk-show/preview");
   const isSlam = pathname.startsWith("/talk-show/slam-therapie");
   const isAdmin = pathname.startsWith("/admin");
+  const isAuth = pathname.startsWith("/connexion");
   const isLiveShow =
     pathname.startsWith("/talk-show/storytime") || pathname.startsWith("/talk-show/micro-ouvert");
-  const noDock = isThread || isGame || isLiveShow || isSlam || isAdmin;
+  const noDock = isThread || isGame || isLiveShow || isSlam || isAdmin || isAuth;
+
 
   return (
     <div className="flex min-h-[100dvh] justify-center bg-[oklch(0.05_0_0)]">
