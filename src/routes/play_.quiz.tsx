@@ -143,7 +143,7 @@ function Quiz() {
           <Countdown value={seconds} />
           <span className="absolute text-center leading-[1] font-extrabold text-gold">
             <span className="block text-[22px]">{seconds}</span>
-            <span className="block text-[7px] tracking-[0.12em]">SECONDES</span>
+            <span className="block text-[6px] tracking-[0.08em]">SECONDES</span>
           </span>
         </div>
 
