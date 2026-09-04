@@ -935,57 +935,175 @@ function SlamTherapieLive() {
               </div>
 
               <div className="app-scroll no-scrollbar min-h-0 flex-1 px-3 pt-3 pb-[24px]">
-                <p className="text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
+                {/* MODE HÔTE */}
+                <Pressable
+                  onClick={() => {
+                    tap();
+                    setHostMode((h) => !h);
+                  }}
+                  className="mb-3 flex w-full items-center gap-2 rounded-xl bg-white/[0.05] px-2.5 py-2 text-[11.5px] font-bold text-foreground"
+                >
+                  <Crown size={13} className="text-gold" />
+                  <span className="flex-1 text-left">
+                    {hostMode ? "Vue Hôte (modération active)" : "Vue Spectateur"}
+                  </span>
+                  <span className="text-[10.5px] text-muted-foreground">changer</span>
+                </Pressable>
+
+                {/* DEMANDES DE PASSAGE — HÔTE */}
+                {hostMode && requests.length > 0 && (
+                  <>
+                    <p className="text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
+                      DEMANDES DE PASSAGE ({requests.length})
+                    </p>
+                    <div className="mt-1.5 flex flex-col gap-1.5">
+                      {requests.map((r) => (
+                        <div
+                          key={r.id}
+                          className="rounded-2xl bg-white/[0.05] p-2.5 ring-1 ring-gold/20"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <Avatar name={r.name} size={32} />
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-[12.5px] font-bold text-foreground">
+                                {r.name}
+                              </p>
+                              <p className="truncate text-[11px] italic text-muted-foreground">
+                                {r.title}
+                              </p>
+                              <p className="mt-0.5 text-[10.5px] text-muted-foreground">
+                                ⏱ {r.duration} min • {moodOf(r.mood).emoji}{" "}
+                                {moodOf(r.mood).label}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex gap-1.5">
+                            <Pressable
+                              onClick={() => refuse(r)}
+                              className="flex-1 rounded-xl bg-white/[0.07] py-2 text-[11.5px] font-bold text-white/75"
+                            >
+                              Refuser
+                            </Pressable>
+                            <Pressable
+                              onClick={() => accept(r)}
+                              className="flex-1 rounded-xl bg-gold py-2 text-[11.5px] font-extrabold text-black"
+                            >
+                              Accepter
+                            </Pressable>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-1.5 text-[10px] text-muted-foreground">
+                      On n'entre dans la file officielle qu'après acceptation.
+                    </p>
+                  </>
+                )}
+
+                <p className="mt-4 text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
                   SUR SCÈNE
                 </p>
                 <div className="mt-1.5 flex items-center gap-2.5 rounded-2xl bg-white/[0.05] p-2.5 ring-1 ring-gold/30">
-                  <Avatar name="Moussa" size={38} ring />
+                  <Avatar name={perf.name} size={38} ring />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-bold text-foreground">Moussa</p>
+                    <p className="truncate text-[13px] font-bold text-foreground">{perf.name}</p>
                     <p className="truncate text-[11.5px] italic text-muted-foreground">
-                      Les blessures invisibles
+                      {perf.title}
                     </p>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className="text-[11px] text-muted-foreground">🎹 Piano</p>
-                    <p className="text-[11px] font-bold text-gold">03:00</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {moodOf(perf.mood).emoji} {moodOf(perf.mood).label}
+                    </p>
+                    <p className="text-[11px] font-bold text-gold">{fmtDur(perf.duration)}</p>
                   </div>
                 </div>
 
                 <p className="mt-4 text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
-                  À SUIVRE (3)
+                  À SUIVRE ({queue.length})
                 </p>
                 <div className="mt-1.5 flex flex-col gap-1.5">
-                  {QUEUE.map((q) => (
+                  {queue.map((q, i) => (
                     <div
-                      key={q.n}
-                      className="flex items-center gap-2.5 rounded-2xl bg-white/[0.035] p-2.5"
+                      key={q.id}
+                      className={`rounded-2xl p-2.5 ${
+                        q.me ? "bg-gold/12 ring-1 ring-gold/40" : "bg-white/[0.035]"
+                      }`}
                     >
-                      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gold/15 text-[11px] font-extrabold text-gold">
-                        {q.n}
-                      </span>
-                      <Avatar name={q.name} size={30} />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[12.5px] font-bold text-foreground">{q.name}</p>
-                        <p className="truncate text-[11px] italic text-muted-foreground">
-                          {q.title}
-                        </p>
+                      <div className="flex items-center gap-2.5">
+                        {hostMode && <GripVertical size={14} className="shrink-0 text-white/30" />}
+                        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gold/15 text-[11px] font-extrabold text-gold">
+                          {i + 1}
+                        </span>
+                        <Avatar name={q.name} size={30} />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[12.5px] font-bold text-foreground">
+                            {q.name}
+                            {q.me ? " (toi)" : ""}
+                          </p>
+                          <p className="truncate text-[11px] italic text-muted-foreground">
+                            {q.title}
+                          </p>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <p className="text-[10.5px] text-muted-foreground">
+                            {moodOf(q.mood).emoji} {moodOf(q.mood).label}
+                          </p>
+                          <p className="text-[10.5px] font-bold text-gold/80">
+                            {fmtDur(q.duration)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="shrink-0 text-right">
-                        <p className="text-[10.5px] text-muted-foreground">{q.music}</p>
-                        {q.time && <p className="text-[10.5px] font-bold text-gold/80">{q.time}</p>}
-                      </div>
+                      {hostMode && (
+                        <div className="mt-2 flex items-center gap-1.5">
+                          <Pressable
+                            onClick={() => move(i, -1)}
+                            className="grid h-7 w-7 place-items-center rounded-lg bg-white/[0.07] text-white/70"
+                            aria-label={`Monter ${q.name}`}
+                          >
+                            <ChevronUp size={14} />
+                          </Pressable>
+                          <Pressable
+                            onClick={() => move(i, 1)}
+                            className="grid h-7 w-7 place-items-center rounded-lg bg-white/[0.07] text-white/70"
+                            aria-label={`Descendre ${q.name}`}
+                          >
+                            <ChevronDown size={14} />
+                          </Pressable>
+                          <Pressable
+                            onClick={() => removeFromQueue(q)}
+                            className="grid h-7 w-7 place-items-center rounded-lg bg-white/[0.07] text-[oklch(0.68_0.2_25)]"
+                            aria-label={`Retirer ${q.name}`}
+                          >
+                            <Trash2 size={13} />
+                          </Pressable>
+                          <Pressable
+                            onClick={() => {
+                              setDrawer(false);
+                              startNow(q);
+                            }}
+                            className="ml-auto flex items-center gap-1 rounded-lg bg-gold/90 px-2.5 py-1.5 text-[11px] font-extrabold text-black"
+                          >
+                            <SkipForward size={12} /> Passer maintenant
+                          </Pressable>
+                        </div>
+                      )}
                     </div>
                   ))}
+                  {queue.length === 0 && (
+                    <p className="rounded-2xl bg-white/[0.035] p-3 text-[11.5px] text-muted-foreground">
+                      La file est vide — la scène est à toi.
+                    </p>
+                  )}
                 </div>
                 <Pressable
                   onClick={() => {
                     tap();
-                    showToast("Bientôt : toute la file d'attente");
+                    showToast(`File complète : ${queue.length + requests.length} personnes`);
                   }}
                   className="mt-2 flex w-full items-center justify-center gap-1 rounded-xl bg-white/[0.05] py-2 text-[12px] font-bold text-foreground"
                 >
-                  Voir toute la file (5) <ChevronRight size={14} />
+                  Voir toute la file ({queue.length + requests.length}) <ChevronRight size={14} />
                 </Pressable>
 
                 <div className="mt-4 rounded-2xl bg-gradient-to-br from-gold/15 to-transparent p-3 ring-1 ring-gold/25">
