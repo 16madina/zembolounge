@@ -274,12 +274,101 @@ function SlamTherapieLive() {
     inputRef.current?.focus();
   };
 
+  // ── CYCLE DES PASSAGES ──
+  function finish() {
+    setThanks(perf);
+    setTimeout(() => {
+      setThanks(null);
+      setQueue((q) => {
+        const [first, ...rest] = q;
+        if (first) {
+          setNextUp(first);
+          setCount(3);
+          return rest;
+        }
+        setPerf(STAGE0);
+        setLeft(STAGE0.duration * 60);
+        setRunning(true);
+        return q;
+      });
+    }, 2600);
+  }
 
+  const startNow = (s: Slot) => {
+    tap();
+    setRunning(false);
+    setQueue((q) => q.filter((x) => x.id !== s.id));
+    setNextUp(s);
+    setCount(3);
+  };
+
+  const accept = (s: Slot) => {
+    tap();
+    setRequests((r) => r.filter((x) => x.id !== s.id));
+    setQueue((q) => [...q, s]);
+    showToast(`${s.name} entre dans la file 🎉`);
+    if (s.me) {
+      setMine(s);
+      setFlow("confirm");
+    }
+  };
+
+  const refuse = (s: Slot) => {
+    tap();
+    setRequests((r) => r.filter((x) => x.id !== s.id));
+    showToast(`Demande de ${s.name} refusée`);
+  };
+
+  const move = (i: number, dir: -1 | 1) => {
+    tap();
+    setQueue((q) => {
+      const n = [...q];
+      const j = i + dir;
+      if (j < 0 || j >= n.length) return q;
+      [n[i], n[j]] = [n[j]!, n[i]!];
+      return n;
+    });
+  };
+
+  const removeFromQueue = (s: Slot) => {
+    tap();
+    setQueue((q) => q.filter((x) => x.id !== s.id));
+    showToast(`${s.name} retiré de la file`);
+  };
+
+  const submitRequest = (r: SlamRequest) => {
+    const slot: Slot = {
+      id: 90 + seq.current,
+      name: "Deena",
+      title: r.title,
+      mood: r.mood,
+      sound: r.sound?.name ?? null,
+      duration: r.duration,
+      me: true,
+    };
+    seq.current += 1;
+    setRequests((q) => [slot, ...q]);
+    setFlow(null);
+    showToast("Demande envoyée à l'hôte…");
+    // l'hôte accepte (mock) après un court délai
+    setTimeout(() => {
+      setRequests((q) => q.filter((x) => x.id !== slot.id));
+      setQueue((q) => [...q, slot]);
+      setMine(slot);
+      setFlow("confirm");
+    }, 1800);
+  };
+
+  const myPos = mine ? queue.findIndex((q) => q.id === mine.id) + 1 : 0;
+  const etaMin = mine
+    ? Math.max(1, Math.round(left / 60) + queue.slice(0, Math.max(0, myPos - 1)).reduce((a, q) => a + q.duration, 0))
+    : 0;
 
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
   const ss = String(left % 60).padStart(2, "0");
-  const ratio = left / TOTAL;
+  const ratio = left / total;
   const urgent = left <= 10;
+  const imOnStage = perf.me === true;
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
