@@ -457,7 +457,7 @@ function ResultScreen({
         <motion.span
           key={i}
           className="pointer-events-none absolute"
-          style={{ left: `${6 + i * 9.5}%`, bottom: -30 }}
+          style={{ left: i % 2 ? `${86 + (i % 3) * 4}%` : `${3 + (i % 3) * 4}%`, bottom: -30, zIndex: 0 }}
           animate={{ y: [-0, -620], opacity: [0, 1, 0], scale: [0.7, 1.1] }}
           transition={{ duration: 6 + (i % 4), repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
         >
