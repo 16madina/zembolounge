@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConnexionRouteImport } from './routes/connexion'
 import { Route as FaceAFaceRouteImport } from './routes/face-a-face'
 import { Route as LiveRouteImport } from './routes/live'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -53,6 +54,11 @@ const FaceAFaceRoute = FaceAFaceRouteImport.update({
 const LiveRoute = LiveRouteImport.update({
   id: '/live',
   path: '/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesRoute = MessagesRouteImport.update({
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/connexion': typeof ConnexionRoute
   '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
@@ -193,6 +200,7 @@ export interface FileRoutesByTo {
   '/connexion': typeof ConnexionRoute
   '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/connexion': typeof ConnexionRoute
   '/face-a-face': typeof FaceAFaceRoute
   '/live': typeof LiveRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/connexion'
     | '/face-a-face'
     | '/live'
+    | '/login'
     | '/messages'
     | '/play'
     | '/profile'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/connexion'
     | '/face-a-face'
     | '/live'
+    | '/login'
     | '/messages'
     | '/play'
     | '/profile'
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | '/connexion'
     | '/face-a-face'
     | '/live'
+    | '/login'
     | '/messages'
     | '/play'
     | '/profile'
@@ -330,6 +342,7 @@ export interface RootRouteChildren {
   ConnexionRoute: typeof ConnexionRoute
   FaceAFaceRoute: typeof FaceAFaceRoute
   LiveRoute: typeof LiveRoute
+  LoginRoute: typeof LoginRoute
   MessagesRoute: typeof MessagesRoute
   PlayRoute: typeof PlayRoute
   ProfileRoute: typeof ProfileRoute
@@ -371,6 +384,13 @@ declare module '@tanstack/react-router' {
       path: '/live'
       fullPath: '/live'
       preLoaderRoute: typeof LiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages': {
@@ -558,6 +578,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConnexionRoute: ConnexionRoute,
   FaceAFaceRoute: FaceAFaceRoute,
   LiveRoute: LiveRoute,
+  LoginRoute: LoginRoute,
   MessagesRoute: MessagesRoute,
   PlayRoute: PlayRoute,
   ProfileRoute: ProfileRoute,
