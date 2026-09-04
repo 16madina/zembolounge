@@ -643,18 +643,254 @@ function SlamTherapieLive() {
         </Pressable>
       </div>
 
+      {/* BOUTON PARTICIPANT : J'AI TERMINÉ */}
+      {imOnStage && running && (
+        <Pressable
+          onClick={() => {
+            tap();
+            setRunning(false);
+            finish();
+          }}
+          className="absolute bottom-[52px] left-1/2 z-30 -translate-x-1/2 rounded-full bg-gold px-4 py-2 text-[12.5px] font-extrabold text-black"
+        >
+          🎤 J'ai terminé
+        </Pressable>
+      )}
+
       {/* FIN DE PERFORMANCE */}
       <AnimatePresence>
-        {ended && (
+        {thanks && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-x-6 top-[42%] rounded-2xl bg-black/80 px-4 py-3 text-center ring-1 ring-gold/50 backdrop-blur"
+            className="absolute inset-x-6 top-[42%] z-[62] rounded-2xl bg-black/85 px-4 py-3 text-center ring-1 ring-gold/50 backdrop-blur"
           >
-            <p className="text-[15px] font-extrabold text-gold">👏 MERCI MOUSSA</p>
-            <p className="mt-1 text-[12px] text-white/80">Ta performance est terminée</p>
+            <p className="text-[15px] font-extrabold text-gold">
+              👏 MERCI {thanks.name.toUpperCase()}
+            </p>
+            <p className="mt-1 text-[12px] text-white/80">Ta performance est terminée.</p>
+            <p className="mt-1 text-[11px] text-white/55">
+              La musique s'estompe · retour en spectateur
+            </p>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* PROCHAIN SUR SCÈNE + DÉCOMPTE 3·2·1 */}
+      <AnimatePresence>
+        {nextUp && count !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[63] grid place-items-center bg-black/85 backdrop-blur-sm"
+          >
+            <div className="px-6 text-center">
+              <p className="text-[10px] font-bold tracking-[0.24em] text-gold">
+                PROCHAIN SUR SCÈNE
+              </p>
+              <p className="mt-2 text-[30px] leading-none font-extrabold text-white">
+                {nextUp.name.toUpperCase()}
+              </p>
+              <p className="mt-1.5 text-[13px] italic text-white/80">{nextUp.title}</p>
+              <p className="mt-1 text-[11.5px] text-white/60">
+                {moodOf(nextUp.mood).emoji}{" "}
+                {nextUp.sound ? `${nextUp.sound} · ` : ""}
+                {nextUp.duration} min
+              </p>
+              <motion.p
+                key={count}
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="mt-4 text-[64px] leading-none font-extrabold text-gold"
+              >
+                {count === 0 ? "🎤" : count}
+              </motion.p>
+              {count === 0 && (
+                <p className="mt-2 text-[11.5px] text-white/70">Chrono et musique lancés ✓</p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* NOTIFICATION : TU PASSES BIENTÔT */}
+      <AnimatePresence>
+        {flow === "notice" && (
+          <motion.div
+            initial={{ opacity: 0, y: -14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -14 }}
+            className="absolute inset-x-3 top-[46%] z-[61] rounded-2xl bg-[oklch(0.11_0.02_60)]/95 p-3 ring-1 ring-gold/45 backdrop-blur"
+          >
+            <p className="text-[13.5px] font-extrabold text-gold">🎤 Tu passes bientôt</p>
+            <p className="mt-1 text-[11.5px] text-white/80">
+              Ta performance commence dans ~1 minute.
+            </p>
+            <div className="mt-2.5 flex gap-2">
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow("backstage");
+                }}
+                className="flex-1 rounded-xl bg-gold py-2.5 text-[12.5px] font-extrabold text-black"
+              >
+                Préparer ma performance
+              </Pressable>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow(null);
+                }}
+                className="rounded-xl bg-white/[0.07] px-3 py-2.5 text-[12.5px] font-bold text-white/80"
+              >
+                Plus tard
+              </Pressable>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* BACKSTAGE PRIVÉ */}
+      <AnimatePresence>
+        {flow === "backstage" && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-[64] bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 24, opacity: 0 }}
+              className="absolute inset-x-3 top-1/2 z-[65] -translate-y-1/2 rounded-3xl bg-[oklch(0.09_0.01_60)] p-4 ring-1 ring-gold/40"
+            >
+              <p className="text-[10px] font-bold tracking-[0.2em] text-gold">BACKSTAGE PRIVÉ</p>
+              <p className="mt-1 text-[17px] font-extrabold text-foreground">Tu es le prochain !</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                Passage dans <span className="font-bold text-gold">00:30</span> — personne ne te
+                voit ni ne t'entend pour l'instant.
+              </p>
+
+              <div className="mt-3 flex flex-col gap-1.5">
+                {[
+                  { icon: <Mic size={15} className="text-gold" />, label: "Micro prêt" },
+                  { icon: <Camera size={15} className="text-gold" />, label: "Caméra prête" },
+                  {
+                    icon: <Music2 size={15} className="text-gold" />,
+                    label: mine?.sound
+                      ? `${mine.sound} — ${moodOf(mine.mood).label}`
+                      : "Sans musique",
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.label}
+                    className="flex items-center gap-2 rounded-2xl bg-white/[0.05] px-3 py-2.5"
+                  >
+                    {c.icon}
+                    <p className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-foreground">
+                      {c.label}
+                    </p>
+                    <Check size={15} className="text-[oklch(0.72_0.16_150)]" />
+                  </div>
+                ))}
+              </div>
+
+              <p className="mt-2.5 text-[10.5px] text-muted-foreground">
+                Ta caméra ne s'allumera qu'après ta confirmation. Sans confirmation, l'hôte passe au
+                suivant.
+              </p>
+
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setReady(true);
+                  setFlow(null);
+                  showToast("Tu es prêt ✓ — l'hôte va te faire monter");
+                  if (mine) startNow(mine);
+                }}
+                className="mt-3 w-full rounded-2xl bg-gold py-3 text-[14px] font-extrabold text-black"
+              >
+                JE SUIS PRÊT
+              </Pressable>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow(null);
+                }}
+                className="mt-1.5 w-full rounded-2xl bg-white/[0.06] py-2.5 text-[12.5px] font-bold text-white/70"
+              >
+                Fermer
+              </Pressable>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* CONFIRMATION : DEMANDE ACCEPTÉE */}
+      <AnimatePresence>
+        {flow === "confirm" && mine && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setFlow(null)}
+              className="absolute inset-0 z-[64] bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="absolute inset-x-4 top-1/2 z-[65] -translate-y-1/2 rounded-3xl bg-[oklch(0.09_0.01_60)] p-4 text-center ring-1 ring-gold/45"
+            >
+              <p className="text-[15px] font-extrabold text-gold">
+                Ta demande a été acceptée 🎉
+              </p>
+              <p className="mt-2 text-[13px] text-foreground">
+                Tu es <span className="font-extrabold text-gold">#{myPos || 1}</span> dans la file
+                d'attente.
+              </p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                Passage estimé dans ~{etaMin} min.
+              </p>
+              <div className="mt-3 rounded-2xl bg-white/[0.05] p-3 text-left">
+                <p className="truncate text-[13px] font-bold text-foreground">{mine.title}</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  ⏱ {mine.duration} min • {moodOf(mine.mood).emoji}{" "}
+                  {mine.sound ?? moodOf(mine.mood).label}
+                </p>
+              </div>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow(null);
+                }}
+                className="mt-3 w-full rounded-2xl bg-gold py-2.5 text-[13px] font-extrabold text-black"
+              >
+                Super, je patiente
+              </Pressable>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow("backstage");
+                }}
+                className="mt-1.5 w-full rounded-2xl bg-white/[0.06] py-2.5 text-[12.5px] font-bold text-white/80"
+              >
+                Préparer ma performance
+              </Pressable>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* FENÊTRE : DEMANDER À SLAMER */}
+      <AnimatePresence>
+        {flow === "request" && (
+          <SlamRequestSheet onClose={() => setFlow(null)} onSubmit={submitRequest} />
         )}
       </AnimatePresence>
 
