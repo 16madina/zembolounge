@@ -113,90 +113,111 @@ function Quiz() {
 
   return (
     <div className="flex h-full flex-col bg-[oklch(0.03_0_0)]">
-      {/* Décor du plateau + overlays interactifs */}
-      <div className="relative shrink-0 select-none">
-        <img src={stage} alt="Plateau Zembo Quiz — 8 joueurs derrière leurs pupitres" className="block w-full" />
-        {/* fondu vers le noir en bas pour une jointure invisible */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[6%] bg-[linear-gradient(180deg,transparent,oklch(0.03_0_0))]" />
-
-        {/* ⋯ */}
-        <Pressable
-          aria-label="Plus d'options"
-          onClick={() => setRulesOpen(true)}
-          className="absolute rounded-full"
-          style={{ left: "90.9%", width: "6.9%", top: "2.4%", height: "4.8%" }}
-        />
-        {/* RÈGLES */}
-        <Pressable
-          aria-label="Règles du Zembo Quiz"
-          onClick={() => setRulesOpen(true)}
-          className="absolute rounded-full active:bg-gold/10"
-          style={{ left: "82.9%", width: "13.3%", top: "10.7%", height: "4%" }}
-        />
-
-        {/* Chrono par-dessus l'anneau dessiné */}
-        <div
-          className="pointer-events-none absolute flex items-center justify-center rounded-full bg-[oklch(0.04_0_0)]"
-          style={{ left: "2.1%", width: "14.9%", top: "56.2%", aspectRatio: "1 / 1" }}
-        >
-          <Countdown value={seconds} />
-          <span className="absolute text-center leading-[1] font-extrabold text-gold">
-            <span className="block text-[22px]">{seconds}</span>
-            <span className="block text-[6px] tracking-[0.08em]">SECONDES</span>
-          </span>
+      {/* Décor du plateau (haut) + rangée de réponses réelle + décor (bas) */}
+      <div className="flex max-h-[60%] shrink-0 flex-col overflow-hidden bg-[oklch(0.03_0_0)] select-none">
+        <div className="relative">
+          <img
+            src={stageTop}
+            alt="Plateau Zembo Quiz — candidats derrière leurs pupitres"
+            className="block w-full"
+          />
+          {/* ⋯ */}
+          <Pressable
+            aria-label="Plus d'options"
+            onClick={() => setRulesOpen(true)}
+            className="absolute rounded-full"
+            style={{ left: "90.9%", width: "6.9%", top: "4.1%", height: "8.1%" }}
+          />
+          {/* RÈGLES */}
+          <Pressable
+            aria-label="Règles du Zembo Quiz"
+            onClick={() => setRulesOpen(true)}
+            className="absolute rounded-full active:bg-gold/10"
+            style={{ left: "82.9%", width: "13.3%", top: "18.1%", height: "6.8%" }}
+          />
         </div>
 
-        {/* Réponses A / B / C */}
-        {ANSWER_ZONES.map((a) => {
-          const isPicked = picked === a.k;
-          const dim = picked && !isPicked && !revealed;
-          const good = revealed && a.k === CORRECT;
-          const bad = revealed && a.k !== CORRECT;
-          return (
-            <Pressable
-              key={a.k}
-              aria-label={`Répondre ${a.k} — ${a.label}`}
-              onClick={() => pick(a.k)}
-              whileTap={{ scale: 0.97 }}
-              className="absolute rounded-2xl border-2 transition-colors duration-200"
-              style={{
-                left: `${a.left}%`,
-                width: `${a.width}%`,
-                top: `${ANSWER_TOP}%`,
-                height: `${ANSWER_HEIGHT}%`,
-                borderColor: good
-                  ? "oklch(0.72 0.18 150)"
-                  : bad
-                    ? "oklch(0.55 0.16 25 / 70%)"
-                    : isPicked
-                      ? "oklch(0.86 0.14 88)"
-                      : "transparent",
-                background: good
-                  ? "oklch(0.72 0.18 150 / 22%)"
-                  : bad
-                    ? "oklch(0.5 0.16 25 / 16%)"
-                    : isPicked
-                      ? "oklch(0.86 0.14 88 / 16%)"
-                      : "transparent",
-                boxShadow: isPicked && !revealed ? "0 0 14px -2px oklch(0.86 0.14 88 / 70%)" : undefined,
-                opacity: dim ? 0.45 : 1,
-              }}
-            />
-          );
-        })}
+        {/* Bande interactive : chrono réel + vrais boutons A/B/C + état */}
+        <div className="relative flex items-stretch">
+          <div className="relative w-[21.5%]">
+            <div
+              className="absolute top-1/2 left-[2.7%] flex w-[17%] -translate-y-1/2 items-center justify-center"
+              style={{ aspectRatio: "1 / 1", width: "78%" }}
+            >
+              <Countdown value={seconds} />
+              <span className="absolute text-center leading-[1] font-extrabold text-gold">
+                <span className="block text-[21px]">{seconds}</span>
+                <span className="block text-[6px] tracking-[0.08em]">SECONDES</span>
+              </span>
+            </div>
+          </div>
 
-        {/* Ligne d'état sous les réponses */}
-        <div
-          className="pointer-events-none absolute flex items-center justify-center bg-[oklch(0.045_0.002_280)]"
-          style={{ left: "20%", width: "72%", top: "68.6%", height: "3.4%" }}
-        >
-          <span
-            className="text-[11px] font-semibold"
-            style={{ color: revealed ? "oklch(0.75 0.16 152)" : "oklch(0.85 0.13 85)" }}
+          <div
+            className="min-w-0 flex-1 px-[1.5%] pb-1"
+            style={{
+              background: "oklch(0.045 0.004 280)",
+              borderLeft: "1px solid oklch(0.5 0.09 85 / 55%)",
+              borderRight: "1px solid oklch(0.5 0.09 85 / 55%)",
+            }}
           >
-            {revealed ? "Réponse : Accra ✅" : "ⓘ 7 / 8 joueurs ont répondu"}
-          </span>
+            <div className="flex items-stretch gap-[2%]">
+              {ANSWERS.map((a) => {
+                const isPicked = picked === a.k;
+                const dim = picked && !isPicked && !revealed;
+                const good = revealed && a.k === CORRECT;
+                const bad = revealed && a.k !== CORRECT;
+                return (
+                  <Pressable
+                    key={a.k}
+                    aria-label={`Répondre ${a.k} — ${a.label}`}
+                    onClick={() => pick(a.k)}
+                    whileTap={{ scale: 0.97 }}
+                    className="flex min-w-0 flex-1 items-center gap-1.5 rounded-2xl border px-1.5 py-1.5 text-left transition-colors duration-200"
+                    style={{
+                      borderColor: good
+                        ? "oklch(0.72 0.18 150)"
+                        : bad
+                          ? "oklch(0.55 0.16 25 / 70%)"
+                          : isPicked
+                            ? "oklch(0.86 0.14 88)"
+                            : "oklch(1 0 0 / 12%)",
+                      background: good
+                        ? "oklch(0.72 0.18 150 / 20%)"
+                        : bad
+                          ? "oklch(0.5 0.16 25 / 14%)"
+                          : isPicked
+                            ? "oklch(0.86 0.14 88 / 14%)"
+                            : "oklch(0.08 0 0)",
+                      boxShadow:
+                        isPicked && !revealed ? "0 0 14px -2px oklch(0.86 0.14 88 / 70%)" : undefined,
+                      opacity: dim ? 0.45 : 1,
+                    }}
+                  >
+                    <span
+                      className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[11px] font-extrabold text-white"
+                      style={{ background: a.tint }}
+                    >
+                      {a.k}
+                    </span>
+                    <span className="min-w-0 truncate text-[11.5px] font-semibold text-white">
+                      {a.label}
+                    </span>
+                  </Pressable>
+                );
+              })}
+            </div>
+            <p
+              className="mt-1 text-center text-[10.5px] font-semibold"
+              style={{ color: revealed ? "oklch(0.75 0.16 152)" : "oklch(0.85 0.13 85)" }}
+            >
+              {revealed ? "Réponse : Accra ✅" : "ⓘ 7 / 8 joueurs ont répondu"}
+            </p>
+          </div>
+          <div className="w-[4.1%]" />
         </div>
+
+        <img src={stageBottom} alt="" className="block w-full" />
+
       </div>
 
       {/* Chat spectateurs */}
