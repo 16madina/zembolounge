@@ -341,9 +341,17 @@ function SlamTherapieLive() {
         </div>
       </div>
 
-      {/* CHAT EN SURIMPRESSION */}
-      <div className="absolute bottom-[62px] left-2 w-[62%]">
-        <div className="app-scroll no-scrollbar flex max-h-[150px] flex-col gap-1.5">
+      {/* CHAT EN SURIMPRESSION — monte jusqu'au milieu puis s'estompe */}
+      <div
+        className="absolute bottom-[62px] left-2 w-[62%]"
+        style={{
+          maskImage:
+            "linear-gradient(to top, transparent 4%, black 26%, black 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to top, transparent 4%, black 26%, black 100%)",
+        }}
+      >
+        <div className="app-scroll no-scrollbar flex max-h-[44vh] flex-col gap-1.5">
           {msgs.map((m) => (
             <motion.div
               key={m.id}
