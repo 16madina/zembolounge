@@ -1,7 +1,30 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { BadgeCheck, ChevronRight, Clock, Flame, Globe, Heart, Laugh, MicOff, PartyPopper, Send, Smile } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  BadgeCheck,
+  ChevronRight,
+  Clock,
+  Dices,
+  Eye,
+  FastForward,
+  Flame,
+  Globe,
+  Heart,
+  Laugh,
+  Mic,
+  MicOff,
+  PartyPopper,
+  Send,
+  Shield,
+  Smile,
+  SkipForward,
+  Sparkles,
+  Users,
+  Vote,
+} from "lucide-react";
 import stage from "@/assets/zembo-table-stage.png";
 import { PhotoAvatar, photoUrl } from "@/components/zembo/PhotoAvatar";
 import { BottomSheet } from "@/components/zembo/Sheet";
@@ -14,12 +37,12 @@ export const Route = createFileRoute("/table/$id")({
       {
         name: "description",
         content:
-          "Zembo Table : 6 joueurs autour d'une table à questions, dé, tour de parole, chat et spectateurs en file d'attente.",
+          "Zembo Table : 6 joueurs autour d'une table à questions, dé, tour de parole, vote et file d'attente des spectateurs.",
       },
       { property: "og:title", content: "Zembo Table — discussion à 6 places" },
       {
         property: "og:description",
-        content: "Cartes à questions, tour de parole chronométré, chat live et réactions.",
+        content: "Cartes à questions, tour de parole chronométré, vote de la table et montée des spectateurs.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -29,21 +52,40 @@ export const Route = createFileRoute("/table/$id")({
 });
 
 /** Sièges dessinés sur le décor — coordonnées en % du conteneur de l'image */
-const SEATS = [
-  { n: 1, name: "Deena", label: "Deena (Toi)", you: true, av: [50, 33], mic: [58.3, 36.6], dots: [55.4, 41.5] },
-  { n: 2, name: "Sarah", label: "Sarah", host: true, av: [79, 40.8], mic: [86.9, 45.3], dots: [83.8, 49.2] },
-  { n: 3, name: "Leila", label: "Leila", av: [85, 75.6], mic: [90.5, 80], dots: [88.6, 84.5] },
-  { n: 4, name: "Yann", label: "Yann", av: [50.1, 86.8], mic: [58.5, 90.7], dots: [55.3, 95.7] },
-  { n: 5, name: "Aïcha", label: "Aïcha", av: [15.1, 75.6], mic: [22.8, 80], dots: [20, 84.5] },
-  { n: 6, name: "Marc", label: "Marc", av: [15.1, 46.6], mic: [22.6, 52.3], dots: [20, 57.4] },
+const SEAT_SPOTS = [
+  { n: 1, av: [50, 33], mic: [58.3, 36.6], dots: [55.4, 41.5] },
+  { n: 2, av: [79, 40.8], mic: [86.9, 45.3], dots: [83.8, 49.2] },
+  { n: 3, av: [85, 75.6], mic: [90.5, 80], dots: [88.6, 84.5] },
+  { n: 4, av: [50.1, 86.8], mic: [58.5, 90.7], dots: [55.3, 95.7] },
+  { n: 5, av: [15.1, 75.6], mic: [22.8, 80], dots: [20, 84.5] },
+  { n: 6, av: [15.1, 46.6], mic: [22.6, 52.3], dots: [20, 57.4] },
 ] as const;
 
+type Seat = {
+  n: number;
+  name: string | null;
+  label: string;
+  you?: boolean;
+  host?: boolean;
+};
+
+const SEATS0: Seat[] = [
+  { n: 1, name: "Deena", label: "Deena (Toi)", you: true },
+  { n: 2, name: "Sarah", label: "Sarah — ★ HÔTE", host: true },
+  { n: 3, name: "Leïla", label: "Leïla" },
+  { n: 4, name: "Yann", label: "Yann" },
+  { n: 5, name: "Aïcha", label: "Aïcha" },
+  { n: 6, name: "Marc", label: "Marc" },
+];
+
 const QUESTIONS = [
-  "Quelle est la chose que tu as déjà pardonnée en amour et que tu ne pardonnerais plus jamais ?",
-  "Peux-tu aimer sans confiance ?",
+  "Peut-on réellement pardonner une infidélité et retrouver la même confiance ?",
   "L'argent a-t-il déjà changé une de tes relations ?",
+  "Peut-on aimer sans confiance ?",
   "Quel est le pardon le plus difficile que tu aies accordé ?",
 ];
+
+const QUEUE0 = ["Moussa", "Karim", "Emma"];
 
 const CHAT0 = [
   { id: 1, name: "Ben", time: "21:33", text: "Intéressant ça Deena ! Hâte d'entendre ta réponse" },
@@ -96,16 +138,41 @@ const DICE_DOTS: Record<number, [number, number][]> = {
   ],
 };
 
+type Phase = "roll" | "card" | "answers" | "vote" | "result" | "promote";
+
+const STEPS: { key: Phase | "card"; Icon: typeof Dices; label: string }[] = [
+  { key: "roll", Icon: Dices, label: "Dé" },
+  { key: "card", Icon: Sparkles, label: "Carte" },
+  { key: "answers", Icon: Mic, label: "Parole" },
+  { key: "vote", Icon: Vote, label: "Vote" },
+  { key: "result", Icon: ArrowDown, label: "Sortie" },
+  { key: "promote", Icon: ArrowUp, label: "Montée" },
+];
+
+/** % de vote mock, attribués par rang aléatoire aux invités */
+const VOTE_SHARES = [31, 24, 18, 14, 4];
+
 function TableRoom() {
   const navigate = useNavigate();
 
-  const [turn, setTurn] = useState(0);
+  const [seats, setSeats] = useState<Seat[]>(SEATS0);
+  const [queue, setQueue] = useState(QUEUE0);
+  const [phase, setPhase] = useState<Phase>("roll");
+  const [roller, setRoller] = useState(0); // index dans seats
+  const [answerIdx, setAnswerIdx] = useState(0); // position dans l'ordre de parole
   const [seconds, setSeconds] = useState(45);
-  const [muted, setMuted] = useState<Record<number, boolean>>({});
+  const [voteSeconds, setVoteSeconds] = useState(15);
+  const [spectatorView, setSpectatorView] = useState(false);
+  const [myVote, setMyVote] = useState<number | null>(null);
+  const [votes, setVotes] = useState<Record<number, number>>({});
+  const [leaving, setLeaving] = useState<string | null>(null);
+
+  const [mutedManual, setMutedManual] = useState<Record<number, boolean>>({});
   const [seatMenu, setSeatMenu] = useState<number | null>(null);
   const [rulesOpen, setRulesOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [qIndex, setQIndex] = useState(0);
+  const [cardOut, setCardOut] = useState(false);
   const [flip, setFlip] = useState(false);
   const [dice, setDice] = useState(4);
   const [rolling, setRolling] = useState(false);
@@ -115,40 +182,142 @@ function TableRoom() {
   const [floats, setFloats] = useState<{ id: number; i: number; x: number }[]>([]);
   const endRef = useRef<HTMLDivElement>(null);
 
+  /** ordre de parole : à partir du lanceur, puis sièges suivants (occupés) */
+  const speakOrder = useMemo(() => {
+    const order: number[] = [];
+    for (let k = 0; k < seats.length; k++) {
+      const i = (roller + k) % seats.length;
+      if (seats[i]!.name) order.push(i);
+    }
+    return order;
+  }, [seats, roller]);
+
+  const activeIdx =
+    phase === "answers" ? (speakOrder[answerIdx] ?? roller) : roller;
+  const activeSeat = seats[activeIdx] ?? seats[0]!;
+  const guests = seats.filter((s) => s.name && !s.host);
+
+  const nextAnswer = useCallback(() => {
+    setAnswerIdx((i) => {
+      if (i + 1 >= speakOrder.length) {
+        setPhase("vote");
+        setVoteSeconds(15);
+        setVotes({});
+        setMyVote(null);
+        return i;
+      }
+      setSeconds(45);
+      return i + 1;
+    });
+  }, [speakOrder.length]);
+
+  /** chrono de parole */
   useEffect(() => {
+    if (phase !== "answers") return;
     const t = setTimeout(() => {
-      if (seconds <= 1) {
-        setSeconds(45);
-        setTurn((v) => (v + 1) % SEATS.length);
-      } else setSeconds((s) => s - 1);
+      if (seconds <= 1) nextAnswer();
+      else setSeconds((s) => s - 1);
     }, 1000);
     return () => clearTimeout(t);
-  }, [seconds]);
+  }, [phase, seconds, nextAnswer]);
+
+  /** chrono de vote + barres qui montent */
+  useEffect(() => {
+    if (phase !== "vote") return;
+    const t = setTimeout(() => {
+      if (voteSeconds <= 1) {
+        const shares = guests.map((g, i) => [g.n, VOTE_SHARES[i] ?? 5] as const);
+        setVotes(Object.fromEntries(shares));
+        setPhase("result");
+        const last = shares.reduce((a, b) => (b[1] < a[1] ? b : a));
+        const seat = seats.find((s) => s.n === last[0]);
+        setLeaving(seat?.name ?? null);
+        return;
+      }
+      setVoteSeconds((s) => s - 1);
+      setVotes((v) => {
+        const next: Record<number, number> = { ...v };
+        guests.forEach((g, i) => {
+          const target = VOTE_SHARES[i] ?? 5;
+          next[g.n] = Math.min(target, (v[g.n] ?? 0) + Math.ceil(target / 14));
+        });
+        return next;
+      });
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [phase, voteSeconds, guests, seats]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
   }, [chat]);
 
-  const active = SEATS[turn]!;
   const mmss = `00:${String(seconds).padStart(2, "0")}`;
 
+  const isMuted = (s: Seat) => {
+    if (!s.name) return false;
+    if (mutedManual[s.n]) return true;
+    if (phase !== "answers") return true;
+    return s.n !== activeSeat.n;
+  };
+
   const roll = () => {
-    if (rolling) return;
+    if (rolling || phase !== "roll") return;
     navigator.vibrate?.(20);
     setRolling(true);
     setTimeout(() => {
-      setDice(1 + Math.floor(Math.random() * 6));
+      const face = 1 + Math.floor(Math.random() * 6);
+      setDice(face);
       setRolling(false);
+      setPhase("card");
+      setCardOut(true);
+      setFlip(true);
+      setTimeout(() => {
+        setQIndex((face - 1) % QUESTIONS.length);
+        setFlip(false);
+      }, 260);
+      setTimeout(() => {
+        setPhase("answers");
+        setAnswerIdx(0);
+        setSeconds(45);
+      }, 1500);
     }, 800);
   };
 
-  const drawCard = () => {
+  const skipToVote = () => {
+    navigator.vibrate?.(10);
+    setPhase("vote");
+    setVoteSeconds(15);
+    setVotes({});
+    setMyVote(null);
+  };
+
+  const promote = (name: string) => {
     navigator.vibrate?.(15);
-    setFlip(true);
+    setSeats((ss) => {
+      const free = ss.findIndex((s) => !s.name);
+      if (free < 0) return ss;
+      const copy = [...ss];
+      copy[free] = { n: copy[free]!.n, name, label: name };
+      return copy;
+    });
+    setQueue((q) => q.filter((x) => x !== name));
     setTimeout(() => {
-      setQIndex((i) => (i + 1) % QUESTIONS.length);
-      setFlip(false);
-    }, 220);
+      setRoller((r) => {
+        for (let k = 1; k <= seats.length; k++) {
+          const i = (r + k) % seats.length;
+          if (seats[i]!.name || seats[i]!.name === null) return i;
+        }
+        return r;
+      });
+      setPhase("roll");
+      setLeaving(null);
+    }, 700);
+  };
+
+  const confirmLeave = () => {
+    navigator.vibrate?.(15);
+    setSeats((ss) => ss.map((s) => (s.name === leaving ? { ...s, name: null, label: "Place libre" } : s)));
+    setPhase("promote");
   };
 
   const send = () => {
@@ -165,6 +334,9 @@ function TableRoom() {
     setFloats((f) => [...f, { id, i, x: 8 + i * 20 }]);
     setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 1100);
   };
+
+  const occupied = seats.filter((s) => s.name).length;
+  const stepIndex = STEPS.findIndex((s) => s.key === phase);
 
   return (
     <div className="flex min-h-full flex-col overflow-x-hidden bg-[oklch(0.03_0_0)]">
@@ -194,7 +366,7 @@ function TableRoom() {
           style={{ left: "67.8%", top: "6.2%", width: "29.8%", height: "12.6%" }}
         />
 
-        {/* TOUR DE … + chrono réel (on recouvre la zone dessinée) */}
+        {/* TOUR DE … + chrono réel */}
         <div
           className="absolute flex flex-col items-center justify-start"
           style={{
@@ -205,17 +377,19 @@ function TableRoom() {
             background: "oklch(0.035 0.003 60)",
           }}
         >
-          <span className="text-[8px] font-semibold tracking-[0.2em] text-gold/80">TOUR DE</span>
+          <span className="text-[8px] font-semibold tracking-[0.2em] text-gold/80">
+            {phase === "answers" ? "PAROLE À" : "TOUR DE"}
+          </span>
           <motion.span
-            key={active.name}
+            key={activeSeat.name ?? "libre"}
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[17px] leading-tight font-extrabold tracking-wide text-gold uppercase"
+            className="text-[15px] leading-tight font-extrabold tracking-wide text-gold uppercase"
           >
-            {active.name}
+            {activeSeat.name ?? "—"}
           </motion.span>
           <span className="mt-[2px] rounded-full border border-gold/60 px-2.5 py-[2px] text-[11px] font-bold text-gold tabular-nums">
-            {mmss}
+            {phase === "answers" ? mmss : phase === "vote" ? `00:${String(voteSeconds).padStart(2, "0")}` : "—:—"}
           </span>
         </div>
 
@@ -223,9 +397,9 @@ function TableRoom() {
         <motion.span
           className="pointer-events-none absolute rounded-full"
           animate={{
-            left: `${active.av[0] - 6.6}%`,
-            top: `${active.av[1] - 7.3}%`,
-            opacity: [0.55, 1, 0.55],
+            left: `${SEAT_SPOTS[activeIdx]!.av[0] - 6.6}%`,
+            top: `${SEAT_SPOTS[activeIdx]!.av[1] - 7.3}%`,
+            opacity: activeSeat.name ? [0.55, 1, 0.55] : 0,
             scale: [1, 1.05, 1],
           }}
           transition={{
@@ -243,63 +417,104 @@ function TableRoom() {
         />
 
         {/* Sièges : zone tappable + micro + ⋮ */}
-        {SEATS.map((s) => (
-          <div key={s.n}>
-            <Pressable
-              aria-label={`Profil de ${s.label}`}
-              onClick={() => setSeatMenu(s.n)}
-              className="absolute rounded-full"
-              style={{
-                left: `${s.av[0] - 6.2}%`,
-                top: `${s.av[1] - 6.9}%`,
-                width: "12.4%",
-                aspectRatio: "1 / 1",
-              }}
-            />
-            <Pressable
-              aria-label={`${muted[s.n] ? "Activer" : "Couper"} le micro de ${s.name}`}
-              onClick={() => {
-                navigator.vibrate?.(10);
-                setMuted((m) => ({ ...m, [s.n]: !m[s.n] }));
-              }}
-              className="absolute flex items-center justify-center rounded-full"
-              style={{
-                left: `${s.mic[0] - 3.4}%`,
-                top: `${s.mic[1] - 3.8}%`,
-                width: "6.8%",
-                aspectRatio: "1 / 1",
-                background: muted[s.n] ? "oklch(0.12 0.02 30 / 92%)" : "transparent",
-              }}
-            >
-              {muted[s.n] && <MicOff size={12} className="text-gold" />}
-            </Pressable>
-            <Pressable
-              aria-label={`Options pour ${s.name}`}
-              onClick={() => setSeatMenu(s.n)}
-              className="absolute rounded-md"
-              style={{
-                left: `${s.dots[0] - 2.4}%`,
-                top: `${s.dots[1] - 2.7}%`,
-                width: "4.8%",
-                aspectRatio: "1 / 1.1",
-              }}
-            />
-          </div>
-        ))}
+        {seats.map((s, i) => {
+          const spot = SEAT_SPOTS[i]!;
+          return (
+            <div key={s.n}>
+              {!s.name && (
+                <span
+                  className="pointer-events-none absolute flex items-center justify-center rounded-full text-[8px] font-bold tracking-wide text-gold/80"
+                  style={{
+                    left: `${spot.av[0] - 6.6}%`,
+                    top: `${spot.av[1] - 7.3}%`,
+                    width: "13.2%",
+                    aspectRatio: "1 / 1",
+                    background: "oklch(0.05 0.004 60 / 96%)",
+                    border: "1px dashed oklch(0.7 0.12 85 / 60%)",
+                  }}
+                >
+                  PLACE
+                  <br />
+                  LIBRE
+                </span>
+              )}
+              {s.name && leaving === s.name && phase === "result" && (
+                <motion.span
+                  className="pointer-events-none absolute rounded-full"
+                  animate={{ y: [0, 10, 0], opacity: [1, 0.35, 1] }}
+                  transition={{ duration: 1.2, repeat: Infinity }}
+                  style={{
+                    left: `${spot.av[0] - 6.6}%`,
+                    top: `${spot.av[1] - 7.3}%`,
+                    width: "13.2%",
+                    aspectRatio: "1 / 1",
+                    border: "2px solid oklch(0.7 0.18 25)",
+                  }}
+                />
+              )}
+              <Pressable
+                aria-label={`Profil de ${s.label}`}
+                onClick={() => s.name && setSeatMenu(s.n)}
+                className="absolute rounded-full"
+                style={{
+                  left: `${spot.av[0] - 6.2}%`,
+                  top: `${spot.av[1] - 6.9}%`,
+                  width: "12.4%",
+                  aspectRatio: "1 / 1",
+                }}
+              />
+              <Pressable
+                aria-label={`${isMuted(s) ? "Activer" : "Couper"} le micro de ${s.name ?? "la place"}`}
+                onClick={() => {
+                  if (!s.name) return;
+                  navigator.vibrate?.(10);
+                  setMutedManual((m) => ({ ...m, [s.n]: !m[s.n] }));
+                }}
+                className="absolute flex items-center justify-center rounded-full"
+                style={{
+                  left: `${spot.mic[0] - 3.4}%`,
+                  top: `${spot.mic[1] - 3.8}%`,
+                  width: "6.8%",
+                  aspectRatio: "1 / 1",
+                  background: isMuted(s) ? "oklch(0.12 0.02 30 / 94%)" : "transparent",
+                }}
+              >
+                {isMuted(s) && <MicOff size={12} className="text-gold" />}
+              </Pressable>
+              <Pressable
+                aria-label={`Options pour ${s.name ?? "la place"}`}
+                onClick={() => s.name && setSeatMenu(s.n)}
+                className="absolute rounded-md"
+                style={{
+                  left: `${spot.dots[0] - 2.4}%`,
+                  top: `${spot.dots[1] - 2.7}%`,
+                  width: "4.8%",
+                  aspectRatio: "1 / 1.1",
+                }}
+              />
+            </div>
+          );
+        })}
 
         {/* Paquet de cartes tappable */}
         <Pressable
-          aria-label="Tirer une nouvelle carte question"
-          onClick={drawCard}
+          aria-label="Paquet Relations"
+          onClick={() => setRulesOpen(true)}
           className="absolute rounded-xl"
           style={{ left: "35.2%", top: "48.6%", width: "10%", height: "14.4%" }}
-        />
+        >
+          <motion.span
+            animate={cardOut ? { x: [0, 6, 0], rotate: [0, -6, 0] } : {}}
+            transition={{ duration: 0.5 }}
+            className="block h-full w-full rounded-xl"
+          />
+        </Pressable>
 
-        {/* Texte de la carte question (vrai bloc, remplaçable) */}
+        {/* Texte de la carte question */}
         <motion.div
           animate={{ rotateY: flip ? 80 : 0, opacity: flip ? 0.25 : 1 }}
-          transition={{ duration: 0.22 }}
-          className="absolute flex items-center justify-center px-1 text-center"
+          transition={{ duration: 0.24 }}
+          className="absolute flex flex-col items-center justify-center gap-[2px] px-1 text-center"
           style={{
             left: "48.2%",
             top: "55.4%",
@@ -308,15 +523,15 @@ function TableRoom() {
             background: "oklch(0.055 0.004 60)",
           }}
         >
-          <span className="text-[8.5px] leading-[1.35] font-medium text-white/90">
-            {QUESTIONS[qIndex]}
-          </span>
+          <span className="text-[6.5px] font-bold tracking-[0.12em] text-gold">RELATIONS</span>
+          <span className="text-[7.6px] leading-[1.3] font-medium text-white/90">{QUESTIONS[qIndex]}</span>
         </motion.div>
 
         {/* Vrai dé tappable */}
         <Pressable
           aria-label="Lancer le dé"
           onClick={roll}
+          disabled={phase !== "roll"}
           className="absolute"
           style={{ left: "27.8%", top: "62.2%", width: "9%", aspectRatio: "1 / 1" }}
         >
@@ -324,9 +539,15 @@ function TableRoom() {
             animate={
               rolling
                 ? { rotate: [0, -90, 120, -160, 0], scale: [1, 1.12, 0.95, 1.08, 1] }
-                : { rotate: 0, scale: [1.14, 1] }
+                : { rotate: 0, scale: phase === "roll" ? [1, 1.06, 1] : 1 }
             }
-            transition={{ duration: rolling ? 0.8 : 0.22 }}
+            transition={
+              rolling
+                ? { duration: 0.8 }
+                : phase === "roll"
+                  ? { duration: 1.4, repeat: Infinity }
+                  : { duration: 0.22 }
+            }
             className="relative block h-full w-full rounded-[22%]"
             style={{
               background: "linear-gradient(150deg, oklch(0.16 0.01 60), oklch(0.07 0.005 60))",
@@ -347,6 +568,257 @@ function TableRoom() {
 
       {/* ============ BAS VIVANT ============ */}
       <div className="relative flex flex-1 flex-col gap-3 bg-[oklch(0.03_0_0)] px-3 pt-3">
+        {/* BARRE D'ÉTAPES */}
+        <div className="flex items-center justify-between rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] px-2.5 py-2">
+          {STEPS.map((s, i) => (
+            <div key={s.key} className="flex items-center gap-1">
+              <span
+                className={`flex h-6 w-6 items-center justify-center rounded-full border ${
+                  i === stepIndex
+                    ? "border-gold bg-gold-gradient text-[oklch(0.16_0.02_60)]"
+                    : i < stepIndex
+                      ? "border-gold/50 text-gold"
+                      : "border-border text-muted-foreground"
+                }`}
+              >
+                <s.Icon size={12} />
+              </span>
+              {i < STEPS.length - 1 && <span className="h-[1px] w-2 bg-border" />}
+            </div>
+          ))}
+          <span className="ml-1 flex items-center gap-1 rounded-full border border-gold/30 px-2 py-[2px] text-[11px] font-bold text-gold">
+            <Users size={11} /> {occupied}/6
+          </span>
+        </div>
+
+        {/* ===== PANNEAU DE JEU ===== */}
+        <AnimatePresence mode="wait">
+          <motion.section
+            key={phase}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-2xl border border-gold/25 bg-[oklch(0.07_0.005_60)] p-3"
+          >
+            {phase === "roll" && (
+              <div className="flex flex-col items-center gap-2 text-center">
+                <p className="text-[11px] font-bold tracking-[0.18em] text-gold/80">
+                  TOUR DE {activeSeat.name?.toUpperCase()}
+                </p>
+                <p className="text-[12px] text-muted-foreground">
+                  Le dé choisit la carte du deck « Relations ».
+                </p>
+                <Pressable
+                  onClick={roll}
+                  className="mt-1 flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 text-[13.5px] font-extrabold text-[oklch(0.16_0.02_60)]"
+                >
+                  <Dices size={16} /> Lancer le dé
+                </Pressable>
+              </div>
+            )}
+
+            {phase === "card" && (
+              <div className="flex flex-col items-center gap-1.5 text-center">
+                <span className="flex items-center gap-1.5 text-[12px] font-extrabold tracking-[0.16em] text-gold">
+                  <Sparkles size={13} /> RELATIONS
+                </span>
+                <p className="text-[13px] leading-snug font-semibold text-foreground/90">{QUESTIONS[qIndex]}</p>
+                <p className="text-[11px] text-muted-foreground">Dé : {dice} — la carte se retourne…</p>
+              </div>
+            )}
+
+            {phase === "answers" && (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex min-w-0 items-center gap-1.5 text-[12.5px] font-bold text-gold">
+                    <Mic size={13} className="shrink-0" />
+                    <span className="truncate">{activeSeat.name} répond</span>
+                  </span>
+                  <span className="shrink-0 rounded-full border border-gold/50 px-2.5 py-[2px] text-[12px] font-bold text-gold tabular-nums">
+                    {mmss}
+                  </span>
+                </div>
+                <div className="h-[3px] overflow-hidden rounded-full bg-white/10">
+                  <motion.div
+                    className="h-full bg-gold-gradient"
+                    animate={{ width: `${(seconds / 45) * 100}%` }}
+                    transition={{ duration: 0.4 }}
+                  />
+                </div>
+                <p className="text-[11.5px] text-muted-foreground">
+                  Ordre de parole : {speakOrder.map((i) => seats[i]!.name).join(" · ")} ({answerIdx + 1}/
+                  {speakOrder.length})
+                </p>
+                <div className="flex items-center gap-2">
+                  <Pressable
+                    onClick={() => {
+                      navigator.vibrate?.(10);
+                      nextAnswer();
+                    }}
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-gold/40 py-2 text-[12.5px] font-bold text-gold"
+                  >
+                    <SkipForward size={13} /> Passer
+                  </Pressable>
+                  <Pressable
+                    onClick={skipToVote}
+                    className="flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[11.5px] font-semibold text-muted-foreground"
+                  >
+                    <FastForward size={12} /> Accélérer (démo)
+                  </Pressable>
+                </div>
+              </div>
+            )}
+
+            {phase === "vote" && (
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h2 className="text-[12.5px] font-extrabold tracking-[0.1em] text-gold">
+                      QUI MÉRITE DE RESTER À LA TABLE ?
+                    </h2>
+                    <p className="text-[11.5px] text-muted-foreground">
+                      Votez pour votre intervention préférée
+                    </p>
+                  </div>
+                  <span className="shrink-0 rounded-full border border-gold/50 px-2.5 py-[2px] text-[12px] font-bold text-gold tabular-nums">
+                    00:{String(voteSeconds).padStart(2, "0")}
+                  </span>
+                </div>
+
+                <Pressable
+                  onClick={() => setSpectatorView((v) => !v)}
+                  className="flex items-center justify-center gap-1.5 self-start rounded-full border border-gold/40 px-3 py-1.5 text-[11.5px] font-bold text-gold"
+                >
+                  {spectatorView ? <Eye size={12} /> : <Users size={12} />}
+                  {spectatorView ? "Vue spectateur" : "Vue joueur"}
+                </Pressable>
+
+                <p className="text-[11px] text-muted-foreground">
+                  {spectatorView
+                    ? "Touche un invité pour voter."
+                    : "Tu es à la table : tu ne votes pas, tu regardes les résultats en direct."}
+                </p>
+
+                <div className="flex flex-col gap-2">
+                  {seats
+                    .filter((s) => s.name)
+                    .map((s) => {
+                      const immune = !!s.host;
+                      const pct = votes[s.n] ?? 0;
+                      const picked = myVote === s.n;
+                      return (
+                        <Pressable
+                          key={s.n}
+                          disabled={immune || !spectatorView}
+                          onClick={() => {
+                            navigator.vibrate?.(10);
+                            setMyVote(s.n);
+                          }}
+                          className={`flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left ${
+                            picked ? "border-gold bg-gold/10" : "border-border bg-[oklch(0.09_0.004_60)]"
+                          }`}
+                        >
+                          <img
+                            src={photoUrl(s.name!)}
+                            alt=""
+                            className={`h-8 w-8 shrink-0 rounded-full object-cover ${picked ? "ring-2 ring-gold" : ""}`}
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="flex items-center justify-between gap-2">
+                              <span className="truncate text-[12.5px] font-bold text-white">{s.name}</span>
+                              {immune ? (
+                                <span className="flex shrink-0 items-center gap-1 text-[10.5px] font-bold text-gold/80">
+                                  <Shield size={11} /> Immunisée
+                                </span>
+                              ) : (
+                                <span className="shrink-0 text-[12px] font-bold text-gold tabular-nums">{pct}%</span>
+                              )}
+                            </span>
+                            {!immune && (
+                              <span className="mt-1 block h-[4px] overflow-hidden rounded-full bg-white/10">
+                                <motion.span
+                                  className="block h-full bg-gold-gradient"
+                                  animate={{ width: `${pct * 2.5}%` }}
+                                  transition={{ duration: 0.5 }}
+                                />
+                              </span>
+                            )}
+                          </span>
+                        </Pressable>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+
+            {phase === "result" && (
+              <div className="flex flex-col gap-2.5">
+                <h2 className="text-[12.5px] font-extrabold tracking-[0.12em] text-gold">RÉSULTAT DU VOTE</h2>
+                <div className="flex flex-col gap-1.5">
+                  {seats
+                    .filter((s) => s.name && !s.host)
+                    .slice()
+                    .sort((a, b) => (votes[b.n] ?? 0) - (votes[a.n] ?? 0))
+                    .map((s, i) => (
+                      <div key={s.n} className="flex items-center gap-2">
+                        <span className="w-4 text-[11.5px] font-bold text-gold/70">{i + 1}</span>
+                        <img src={photoUrl(s.name!)} alt="" className="h-7 w-7 rounded-full object-cover" />
+                        <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-white">
+                          {s.name}
+                        </span>
+                        <span className="text-[12px] font-bold text-gold tabular-nums">{votes[s.n] ?? 0}%</span>
+                      </div>
+                    ))}
+                </div>
+                <div className="rounded-xl border border-[oklch(0.7_0.18_25_/_45%)] bg-[oklch(0.1_0.02_25)] p-2.5">
+                  <p className="flex items-center gap-1.5 text-[12.5px] font-extrabold text-[oklch(0.78_0.16_25)]">
+                    <ArrowDown size={13} /> {leaving} quitte la table
+                  </p>
+                  <p className="mt-1 text-[11.5px] text-foreground/75">
+                    Elle reste dans le Live et rejoint les spectateurs.
+                  </p>
+                </div>
+                <Pressable
+                  onClick={confirmLeave}
+                  className="flex items-center justify-center gap-1.5 rounded-full bg-gold-gradient py-2.5 text-[13px] font-extrabold text-[oklch(0.16_0.02_60)]"
+                >
+                  <ArrowDown size={14} /> Libérer la place
+                </Pressable>
+              </div>
+            )}
+
+            {phase === "promote" && (
+              <div className="flex flex-col gap-2.5">
+                <h2 className="flex items-center gap-1.5 text-[12.5px] font-extrabold tracking-[0.12em] text-gold">
+                  <ArrowUp size={14} /> 1 PLACE DISPONIBLE
+                </h2>
+                <p className="text-[11.5px] text-muted-foreground">
+                  File d'attente — l'hôte fait monter un spectateur.
+                </p>
+                {queue.map((name) => (
+                  <div
+                    key={name}
+                    className="flex items-center gap-2.5 rounded-xl border border-border bg-[oklch(0.09_0.004_60)] px-2.5 py-2"
+                  >
+                    <img src={photoUrl(name)} alt="" className="h-8 w-8 rounded-full object-cover" />
+                    <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-white">{name}</span>
+                    <Pressable
+                      onClick={() => promote(name)}
+                      className="shrink-0 rounded-full bg-gold-gradient px-3 py-1.5 text-[11.5px] font-extrabold text-[oklch(0.16_0.02_60)]"
+                    >
+                      Faire monter
+                    </Pressable>
+                  </div>
+                ))}
+                {queue.length === 0 && (
+                  <p className="text-[12px] text-muted-foreground">File d'attente vide.</p>
+                )}
+              </div>
+            )}
+          </motion.section>
+        </AnimatePresence>
+
         {/* CHAT */}
         <section className="rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] p-3">
           <div className="flex items-center justify-between">
@@ -388,7 +860,7 @@ function TableRoom() {
             </span>
           </div>
           <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-semibold text-gold/90">
-            <Clock size={12} /> En attente de monter : 3
+            <Clock size={12} /> En attente de monter : {queue.length}
           </p>
           <p className="mt-1 text-[11.5px] text-muted-foreground">
             Un spectateur monte dès qu'une place se libère.
@@ -468,6 +940,10 @@ function TableRoom() {
             <li>Chacun son tour</li>
             <li>Pas d'attaque personnelle</li>
           </ul>
+          <p className="mt-3 text-[12.5px] text-muted-foreground">
+            Boucle : dé → carte → 45 s de parole par joueur → vote → le moins voté descend → un spectateur monte.
+            L'hôte est immunisée.
+          </p>
         </div>
       </BottomSheet>
 
@@ -494,14 +970,14 @@ function TableRoom() {
       <BottomSheet open={seatMenu !== null} onClose={() => setSeatMenu(null)}>
         <div className="px-4 pt-2 pb-4">
           <p className="px-3 pb-2 text-[12px] font-bold tracking-[0.14em] text-gold uppercase">
-            {SEATS.find((s) => s.n === seatMenu)?.label ?? ""}
+            {seats.find((s) => s.n === seatMenu)?.label ?? ""}
           </p>
           {["Voir le profil", "Couper le son", "Signaler"].map((label) => (
             <Pressable
               key={label}
               onClick={() => {
                 if (label === "Couper le son" && seatMenu)
-                  setMuted((m) => ({ ...m, [seatMenu]: true }));
+                  setMutedManual((m) => ({ ...m, [seatMenu]: true }));
                 setSeatMenu(null);
               }}
               className="w-full rounded-xl px-3 py-3 text-left text-[14px] font-semibold text-foreground/90"
