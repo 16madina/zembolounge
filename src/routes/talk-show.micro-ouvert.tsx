@@ -413,14 +413,18 @@ function MicroOuvertLive() {
   return (
     <div className="relative flex h-full flex-col overflow-hidden bg-black">
       {/* ══ DÉCOR + OVERLAYS ══ */}
-      <div className="relative w-full shrink-0">
+      {/* Le fond est UNE seule couche : l'image est cadrée (crop d'affichage) pour
+          exclure la bande droite où les cœurs sont dessinés. Aucun cache opaque. */}
+      <div
+        className="relative w-full shrink-0 overflow-hidden"
+        style={{ aspectRatio: "856 / 785" }}
+      >
         <img
           src={stage}
           alt="Micro Ouvert : Deena anime le live avec quatre invités"
-          width={941}
-          height={785}
-          className="block w-full"
+          className="absolute inset-y-0 left-0 block h-full w-auto max-w-none"
         />
+
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[34%] bg-gradient-to-b from-black/95 via-black/72 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[12%] bg-gradient-to-t from-black/80 to-transparent" />
 
