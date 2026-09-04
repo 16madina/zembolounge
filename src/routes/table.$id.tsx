@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { ChevronRight, Clock, Globe, MicOff, Send, Smile } from "lucide-react";
+import { BadgeCheck, ChevronRight, Clock, Flame, Globe, Heart, Laugh, MicOff, PartyPopper, Send, Smile } from "lucide-react";
 import stage from "@/assets/zembo-table-stage.png";
 import { PhotoAvatar, photoUrl } from "@/components/zembo/PhotoAvatar";
 import { BottomSheet } from "@/components/zembo/Sheet";
@@ -46,18 +46,18 @@ const QUESTIONS = [
 ];
 
 const CHAT0 = [
-  { id: 1, name: "Ben", time: "21:33", text: "Intéressant ça Deena ! Hâte d'entendre ta réponse 👀" },
+  { id: 1, name: "Ben", time: "21:33", text: "Intéressant ça Deena ! Hâte d'entendre ta réponse" },
   { id: 2, name: "Emma", time: "21:34", text: "Moi je ne pardonne pas l'infidélité." },
   { id: 3, name: "Kader", time: "21:35", text: "On a tous nos limites, et c'est OK." },
   { id: 4, name: "Nadia", time: "21:36", text: "L'argent change beaucoup de choses malheureusement." },
 ];
 
 const REACTIONS = [
-  { emoji: "❤️", count: 12 },
-  { emoji: "🔥", count: 8 },
-  { emoji: "👏", count: 15 },
-  { emoji: "😂", count: 6 },
-  { emoji: "💯", count: 5 },
+  { key: "heart", Icon: Heart, count: 12, tint: "oklch(0.65 0.2 20)" },
+  { key: "flame", Icon: Flame, count: 8, tint: "oklch(0.75 0.17 55)" },
+  { key: "clap", Icon: PartyPopper, count: 15, tint: "oklch(0.86 0.14 88)" },
+  { key: "laugh", Icon: Laugh, count: 6, tint: "oklch(0.8 0.15 100)" },
+  { key: "hundred", Icon: BadgeCheck, count: 5, tint: "oklch(0.7 0.16 150)" },
 ];
 
 const SPECTATORS = ["Ben", "Emma", "Kader", "Nadia", "Ibrahim", "Awa"];
@@ -112,7 +112,7 @@ function TableRoom() {
   const [chat, setChat] = useState(CHAT0);
   const [draft, setDraft] = useState("");
   const [reactions, setReactions] = useState(REACTIONS.map((r) => r.count));
-  const [floats, setFloats] = useState<{ id: number; emoji: string; x: number }[]>([]);
+  const [floats, setFloats] = useState<{ id: number; i: number; x: number }[]>([]);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -162,7 +162,7 @@ function TableRoom() {
     navigator.vibrate?.(10);
     setReactions((r) => r.map((v, k) => (k === i ? v + 1 : v)));
     const id = Date.now() + i;
-    setFloats((f) => [...f, { id, emoji: REACTIONS[i]!.emoji, x: 8 + i * 20 }]);
+    setFloats((f) => [...f, { id, i, x: 8 + i * 20 }]);
     setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 1100);
   };
 
@@ -401,13 +401,13 @@ function TableRoom() {
           <div className="mt-2.5 flex items-center gap-2">
             {REACTIONS.map((r, i) => (
               <Pressable
-                key={r.emoji}
-                aria-label={`Réagir ${r.emoji}`}
+                key={r.key}
+                aria-label={`Réagir (${r.key})`}
                 onClick={() => react(i)}
                 whileTap={{ scale: 0.96 }}
                 className="flex flex-1 items-center justify-center gap-1 rounded-full border border-border bg-[oklch(0.09_0.004_60)] py-1.5 text-[12px] font-bold text-foreground/90"
               >
-                <span>{r.emoji}</span>
+                <r.Icon size={13} style={{ color: r.tint }} />
                 <span className="tabular-nums">{reactions[i]}</span>
               </Pressable>
             ))}
@@ -420,10 +420,13 @@ function TableRoom() {
                 animate={{ opacity: 0, y: -70 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.1 }}
-                className="pointer-events-none absolute bottom-8 text-[20px]"
+                className="pointer-events-none absolute bottom-8"
                 style={{ left: `${f.x}%` }}
               >
-                {f.emoji}
+                {(() => {
+                  const R = REACTIONS[f.i]!;
+                  return <R.Icon size={18} style={{ color: R.tint }} />;
+                })()}
               </motion.span>
             ))}
           </AnimatePresence>
@@ -435,7 +438,7 @@ function TableRoom() {
             e.preventDefault();
             send();
           }}
-          className="sticky bottom-[86px] z-10 mt-auto flex items-center gap-2 rounded-full border border-border bg-[oklch(0.08_0.004_60)] px-2 py-1.5"
+          className="sticky bottom-[86px] z-10 flex items-center gap-2 rounded-full border border-border bg-[oklch(0.08_0.004_60)] px-2 py-1.5"
         >
           <input
             value={draft}
@@ -453,7 +456,7 @@ function TableRoom() {
             <Send size={14} className="text-[oklch(0.16_0.02_60)]" />
           </Pressable>
         </form>
-        <div className="h-[100px] shrink-0" />
+        <div className="h-[26px] shrink-0" />
       </div>
 
       {/* Feuilles */}
