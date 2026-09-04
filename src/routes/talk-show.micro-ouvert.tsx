@@ -587,6 +587,20 @@ function MicroOuvertLive() {
             </motion.div>
           )}
         </AnimatePresence>
+        {role === "viewer" && (
+          <Pressable
+            onClick={() => {
+              if (!riseAsked) askRise();
+            }}
+            className={
+              riseAsked
+                ? "mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-full border border-gold/40 bg-black/60 py-2 text-[12px] font-bold text-gold backdrop-blur-md"
+                : "mb-1.5 flex w-full items-center justify-center gap-1.5 rounded-full bg-gold py-2 text-[12.5px] font-extrabold text-black shadow-[0_6px_18px_oklch(0.82_0.13_85_/_0.4)]"
+            }
+          >
+            {riseAsked ? "Demande envoyée ⏳ En attente de l'hôte" : "✋ Demander à monter"}
+          </Pressable>
+        )}
         <form
           onSubmit={(e) => {
             e.preventDefault();
