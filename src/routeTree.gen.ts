@@ -23,6 +23,7 @@ import { Route as PlayQuizRouteImport } from './routes/play_.quiz'
 import { Route as TableIdRouteImport } from './routes/table.$id'
 import { Route as TalkShowIndexRouteImport } from './routes/talk-show.index'
 import { Route as TalkShowIdRouteImport } from './routes/talk-show.$id'
+import { Route as TalkShowMicroOuvertRouteImport } from './routes/talk-show.micro-ouvert'
 import { Route as TalkShowOpenMicRouteImport } from './routes/talk-show.open-mic'
 import { Route as TalkShowSlamRouteImport } from './routes/talk-show.slam'
 import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
@@ -100,6 +101,11 @@ const TalkShowIdRoute = TalkShowIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => TalkShowRoute,
 } as any)
+const TalkShowMicroOuvertRoute = TalkShowMicroOuvertRouteImport.update({
+  id: '/micro-ouvert',
+  path: '/micro-ouvert',
+  getParentRoute: () => TalkShowRoute,
+} as any)
 const TalkShowOpenMicRoute = TalkShowOpenMicRouteImport.update({
   id: '/open-mic',
   path: '/open-mic',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/play/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
+  '/talk-show/micro-ouvert': typeof TalkShowMicroOuvertRoute
   '/talk-show/open-mic': typeof TalkShowOpenMicRoute
   '/talk-show/slam': typeof TalkShowSlamRoute
   '/talk-show/stand': typeof TalkShowStandRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/play/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
+  '/talk-show/micro-ouvert': typeof TalkShowMicroOuvertRoute
   '/talk-show/open-mic': typeof TalkShowOpenMicRoute
   '/talk-show/slam': typeof TalkShowSlamRoute
   '/talk-show/stand': typeof TalkShowStandRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/play_/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
+  '/talk-show/micro-ouvert': typeof TalkShowMicroOuvertRoute
   '/talk-show/open-mic': typeof TalkShowOpenMicRoute
   '/talk-show/slam': typeof TalkShowSlamRoute
   '/talk-show/stand': typeof TalkShowStandRoute
@@ -213,6 +222,7 @@ export interface FileRouteTypes {
     | '/play/quiz'
     | '/table/$id'
     | '/talk-show/$id'
+    | '/talk-show/micro-ouvert'
     | '/talk-show/open-mic'
     | '/talk-show/slam'
     | '/talk-show/stand'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
     | '/play/quiz'
     | '/table/$id'
     | '/talk-show/$id'
+    | '/talk-show/micro-ouvert'
     | '/talk-show/open-mic'
     | '/talk-show/slam'
     | '/talk-show/stand'
@@ -256,6 +267,7 @@ export interface FileRouteTypes {
     | '/play_/quiz'
     | '/table/$id'
     | '/talk-show/$id'
+    | '/talk-show/micro-ouvert'
     | '/talk-show/open-mic'
     | '/talk-show/slam'
     | '/talk-show/stand'
@@ -380,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalkShowIdRouteImport
       parentRoute: typeof TalkShowRoute
     }
+    '/talk-show/micro-ouvert': {
+      id: '/talk-show/micro-ouvert'
+      path: '/micro-ouvert'
+      fullPath: '/talk-show/micro-ouvert'
+      preLoaderRoute: typeof TalkShowMicroOuvertRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
     '/talk-show/open-mic': {
       id: '/talk-show/open-mic'
       path: '/open-mic'
@@ -427,6 +446,7 @@ declare module '@tanstack/react-router' {
 
 interface TalkShowRouteChildren {
   TalkShowIdRoute: typeof TalkShowIdRoute
+  TalkShowMicroOuvertRoute: typeof TalkShowMicroOuvertRoute
   TalkShowOpenMicRoute: typeof TalkShowOpenMicRoute
   TalkShowSlamRoute: typeof TalkShowSlamRoute
   TalkShowStandRoute: typeof TalkShowStandRoute
@@ -438,6 +458,7 @@ interface TalkShowRouteChildren {
 
 const TalkShowRouteChildren: TalkShowRouteChildren = {
   TalkShowIdRoute: TalkShowIdRoute,
+  TalkShowMicroOuvertRoute: TalkShowMicroOuvertRoute,
   TalkShowOpenMicRoute: TalkShowOpenMicRoute,
   TalkShowSlamRoute: TalkShowSlamRoute,
   TalkShowStandRoute: TalkShowStandRoute,
