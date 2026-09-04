@@ -1,9 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Globe } from "lucide-react";
 import { useEffect } from "react";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 import { hasWorldProfile } from "@/lib/world-profile";
 
 export const Route = createFileRoute("/world/")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "World Room — Zembo" },
@@ -23,10 +25,20 @@ export const Route = createFileRoute("/world/")({
 
 function WorldEntry() {
   const navigate = useNavigate();
+  const { session, loading } = useZemboAuth();
 
   useEffect(() => {
+    if (loading) return;
+
+    // Vérification 1 — compte Zembo actif ?
+    if (!session) {
+      navigate({ to: "/login", search: { redirect: "/world" }, replace: true });
+      return;
+    }
+
+    // Vérification 2 — profil World Room existant ?
     navigate({ to: hasWorldProfile() ? "/world/discover" : "/world/intro", replace: true });
-  }, [navigate]);
+  }, [loading, session, navigate]);
 
   return (
     <div className="flex h-[100dvh] items-center justify-center bg-[oklch(0.06_0.01_50)]">
