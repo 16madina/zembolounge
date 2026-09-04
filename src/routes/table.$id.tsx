@@ -1,455 +1,514 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, Dices, Globe, Heart, Info, Layers, Mic, MicOff, MoreVertical, Send, Smile, Users } from "lucide-react";
-import { AvatarStack, Pressable } from "@/components/zembo/ui";
-import { PhotoAvatar } from "@/components/zembo/PhotoAvatar";
+import { useEffect, useRef, useState } from "react";
+import { BadgeCheck, ChevronRight, Clock, Flame, Globe, Heart, Laugh, MicOff, PartyPopper, Send, Smile } from "lucide-react";
+import stage from "@/assets/zembo-table-stage.png";
+import { PhotoAvatar, photoUrl } from "@/components/zembo/PhotoAvatar";
 import { BottomSheet } from "@/components/zembo/Sheet";
-import { ZemboIcon } from "@/components/zembo/ZemboMark";
+import { Pressable } from "@/components/zembo/ui";
 
 export const Route = createFileRoute("/table/$id")({
   head: () => ({
     meta: [
-      { title: "Zembo Table — discussion en groupe" },
+      { title: "Zembo Table — discussion à 6 places" },
       {
         name: "description",
-        content: "Une table interactive Zembo : cartes à questions, tour de parole, chat et réactions.",
+        content:
+          "Zembo Table : 6 joueurs autour d'une table à questions, dé, tour de parole, chat et spectateurs en file d'attente.",
       },
-      { property: "og:title", content: "Zembo Table — discussion en groupe" },
+      { property: "og:title", content: "Zembo Table — discussion à 6 places" },
       {
         property: "og:description",
-        content: "Réunis 4 à 10 personnes autour d'une table de discussion interactive.",
+        content: "Cartes à questions, tour de parole chronométré, chat live et réactions.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: TableRoom,
 });
 
-const POOL = [
-  { n: 1, name: "Deena", you: true },
-  { n: 2, name: "Sarah", host: true },
-  { n: 3, name: "Leila" },
-  { n: 4, name: "Yann" },
-  { n: 5, name: "Aïcha" },
-  { n: 6, name: "Marc" },
-  { n: 7, name: "Kader" },
-  { n: 8, name: "Nadia" },
-  { n: 9, name: "Ben" },
-  { n: 10, name: "Emma" },
-] as { n: number; name: string; you?: boolean; host?: boolean }[];
+/** Sièges dessinés sur le décor — coordonnées en % du conteneur de l'image */
+const SEATS = [
+  { n: 1, name: "Deena", label: "Deena (Toi)", you: true, av: [50, 33], mic: [58.3, 36.6], dots: [55.4, 41.5] },
+  { n: 2, name: "Sarah", label: "Sarah", host: true, av: [79, 40.8], mic: [86.9, 45.3], dots: [83.8, 49.2] },
+  { n: 3, name: "Leila", label: "Leila", av: [85, 75.6], mic: [90.5, 80], dots: [88.6, 84.5] },
+  { n: 4, name: "Yann", label: "Yann", av: [50.1, 86.8], mic: [58.5, 90.7], dots: [55.3, 95.7] },
+  { n: 5, name: "Aïcha", label: "Aïcha", av: [15.1, 75.6], mic: [22.8, 80], dots: [20, 84.5] },
+  { n: 6, name: "Marc", label: "Marc", av: [15.1, 46.6], mic: [22.6, 52.3], dots: [20, 57.4] },
+] as const;
 
 const QUESTIONS = [
   "Quelle est la chose que tu as déjà pardonnée en amour et que tu ne pardonnerais plus jamais ?",
-  "Parle-t-on assez d'argent dans un couple ? Où mets-tu la limite ?",
-  "Est-ce qu'un compte commun est une preuve de confiance ou un risque ?",
-  "As-tu déjà renoncé à un rêve pour quelqu'un ? Le referais-tu ?",
-  "Qu'est-ce qui te ferait quitter une relation confortable ?",
-];
-
-const REACTIONS = [
-  { emoji: "❤️", count: 12 },
-  { emoji: "🔥", count: 8 },
-  { emoji: "👏", count: 15 },
-  { emoji: "😂", count: 6 },
-  { emoji: "💯", count: 5 },
+  "Peux-tu aimer sans confiance ?",
+  "L'argent a-t-il déjà changé une de tes relations ?",
+  "Quel est le pardon le plus difficile que tu aies accordé ?",
 ];
 
 const CHAT0 = [
-  { id: "c1", name: "Ben", time: "21:33", text: "Intéressant ça Deena ! Hâte d'entendre ta réponse !" },
-  { id: "c2", name: "Emma", time: "21:34", text: "Moi je ne pardonne pas l'infidélité." },
-  { id: "c3", name: "Kader", time: "21:35", text: "On a tous nos limites, et c'est OK." },
-  { id: "c4", name: "Nadia", time: "21:36", text: "L'argent change beaucoup de choses malheureusement." },
+  { id: 1, name: "Ben", time: "21:33", text: "Intéressant ça Deena ! Hâte d'entendre ta réponse" },
+  { id: 2, name: "Emma", time: "21:34", text: "Moi je ne pardonne pas l'infidélité." },
+  { id: 3, name: "Kader", time: "21:35", text: "On a tous nos limites, et c'est OK." },
+  { id: 4, name: "Nadia", time: "21:36", text: "L'argent change beaucoup de choses malheureusement." },
 ];
 
-const SIZES = [4, 6, 8, 10];
+const REACTIONS = [
+  { key: "heart", Icon: Heart, count: 12, tint: "oklch(0.65 0.2 20)" },
+  { key: "flame", Icon: Flame, count: 8, tint: "oklch(0.75 0.17 55)" },
+  { key: "clap", Icon: PartyPopper, count: 15, tint: "oklch(0.86 0.14 88)" },
+  { key: "laugh", Icon: Laugh, count: 6, tint: "oklch(0.8 0.15 100)" },
+  { key: "hundred", Icon: BadgeCheck, count: 5, tint: "oklch(0.7 0.16 150)" },
+];
+
+const SPECTATORS = ["Ben", "Emma", "Kader", "Nadia", "Ibrahim", "Awa"];
+
+const DICE_DOTS: Record<number, [number, number][]> = {
+  1: [[50, 50]],
+  2: [
+    [30, 30],
+    [70, 70],
+  ],
+  3: [
+    [28, 28],
+    [50, 50],
+    [72, 72],
+  ],
+  4: [
+    [30, 30],
+    [70, 30],
+    [30, 70],
+    [70, 70],
+  ],
+  5: [
+    [28, 28],
+    [72, 28],
+    [50, 50],
+    [28, 72],
+    [72, 72],
+  ],
+  6: [
+    [30, 24],
+    [70, 24],
+    [30, 50],
+    [70, 50],
+    [30, 76],
+    [70, 76],
+  ],
+};
 
 function TableRoom() {
   const navigate = useNavigate();
-  const [tableSize, setTableSize] = useState(10);
-  const [occupied, setOccupied] = useState(6);
+
   const [turn, setTurn] = useState(0);
   const [seconds, setSeconds] = useState(45);
-  const [qIndex, setQIndex] = useState(0);
   const [muted, setMuted] = useState<Record<number, boolean>>({});
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [seatMenu, setSeatMenu] = useState<number | null>(null);
   const [rulesOpen, setRulesOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [qIndex, setQIndex] = useState(0);
+  const [flip, setFlip] = useState(false);
+  const [dice, setDice] = useState(4);
+  const [rolling, setRolling] = useState(false);
   const [chat, setChat] = useState(CHAT0);
   const [draft, setDraft] = useState("");
-  const [counts, setCounts] = useState(REACTIONS.map((r) => r.count));
-  const [floats, setFloats] = useState<{ id: number; emoji: string; x: number }[]>([]);
+  const [reactions, setReactions] = useState(REACTIONS.map((r) => r.count));
+  const [floats, setFloats] = useState<{ id: number; i: number; x: number }[]>([]);
   const endRef = useRef<HTMLDivElement>(null);
 
-  const players = useMemo(() => POOL.slice(0, Math.min(occupied, tableSize)), [occupied, tableSize]);
-  const seatCount = tableSize;
-  const avatarSize = seatCount <= 4 ? 64 : seatCount <= 6 ? 56 : seatCount <= 8 ? 50 : 44;
-
   useEffect(() => {
-    const t = setInterval(() => {
-      setSeconds((s) => {
-        if (s > 0) return s - 1;
-        setTurn((k) => (k + 1) % Math.max(players.length, 1));
-        setQIndex((q) => (q + 1) % QUESTIONS.length);
-        return 45;
-      });
+    const t = setTimeout(() => {
+      if (seconds <= 1) {
+        setSeconds(45);
+        setTurn((v) => (v + 1) % SEATS.length);
+      } else setSeconds((s) => s - 1);
     }, 1000);
-    return () => clearInterval(t);
-  }, [players.length]);
+    return () => clearTimeout(t);
+  }, [seconds]);
 
   useEffect(() => {
-    if (turn >= players.length) setTurn(0);
-  }, [players.length, turn]);
+    endRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+  }, [chat]);
 
-  const turnName = players[turn]?.name ?? "—";
+  const active = SEATS[turn]!;
   const mmss = `00:${String(seconds).padStart(2, "0")}`;
 
-  function send(e: React.FormEvent) {
-    e.preventDefault();
+  const roll = () => {
+    if (rolling) return;
+    navigator.vibrate?.(20);
+    setRolling(true);
+    setTimeout(() => {
+      setDice(1 + Math.floor(Math.random() * 6));
+      setRolling(false);
+    }, 800);
+  };
+
+  const drawCard = () => {
+    navigator.vibrate?.(15);
+    setFlip(true);
+    setTimeout(() => {
+      setQIndex((i) => (i + 1) % QUESTIONS.length);
+      setFlip(false);
+    }, 220);
+  };
+
+  const send = () => {
     const text = draft.trim();
     if (!text) return;
-    setChat((c) => [...c, { id: `me-${Date.now()}`, name: "Deena", time: "21:37", text }]);
+    setChat((c) => [...c, { id: Date.now(), name: "Deena", time: "21:37", text }]);
     setDraft("");
-    requestAnimationFrame(() => endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
-  }
+  };
 
-  function react(i: number) {
-    navigator.vibrate?.(12);
-    setCounts((c) => c.map((v, k) => (k === i ? v + 1 : v)));
+  const react = (i: number) => {
+    navigator.vibrate?.(10);
+    setReactions((r) => r.map((v, k) => (k === i ? v + 1 : v)));
     const id = Date.now() + i;
-    setFloats((f) => [...f, { id, emoji: REACTIONS[i]!.emoji, x: i * 20 - 40 }]);
-    setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 1000);
-  }
-
-  function drawCard() {
-    navigator.vibrate?.(14);
-    setQIndex((q) => (q + 1) % QUESTIONS.length);
-  }
+    setFloats((f) => [...f, { id, i, x: 8 + i * 20 }]);
+    setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 1100);
+  };
 
   return (
-    <div className="overflow-x-hidden pb-[110px]">
-      {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-border/50 bg-background/85 px-3 pt-[max(env(safe-area-inset-top),12px)] pb-2.5 backdrop-blur-xl">
-        <div className="flex items-center gap-2">
-          <div className="flex shrink-0 items-center gap-1.5">
-            <ZemboIcon size={20} />
-            <span className="text-[11px] font-bold tracking-[0.18em] text-gold">ZEMBO</span>
-          </div>
-          <div className="min-w-0 flex-1 text-center">
-            <p className="truncate text-[12px] font-bold tracking-[0.16em] text-foreground uppercase">Zembo Table</p>
-            <p className="flex items-center justify-center gap-1 text-[10.5px] text-muted-foreground">
-              <Users size={11} /> {players.length} / {tableSize}
-            </p>
-          </div>
-          <Pressable
-            onClick={() => navigate({ to: "/live" })}
-            className="shrink-0 rounded-full border border-gold/60 px-2.5 py-1.5 text-[10.5px] font-semibold whitespace-nowrap text-gold"
+    <div className="flex min-h-full flex-col overflow-x-hidden bg-[oklch(0.03_0_0)]">
+      {/* ============ DÉCOR + ÉLÉMENTS VIVANTS ============ */}
+      <div className="relative w-full shrink-0 select-none">
+        <img src={stage} alt="Zembo Table — six joueurs autour de la table à questions" className="block w-full" />
+
+        {/* Quitter la table */}
+        <Pressable
+          aria-label="Quitter la table"
+          onClick={() => navigate({ to: "/live" })}
+          className="absolute rounded-full"
+          style={{ left: "75.2%", top: "1.9%", width: "16.2%", height: "5.2%" }}
+        />
+        {/* ⋮ haut droite */}
+        <Pressable
+          aria-label="Options de la table"
+          onClick={() => setMenuOpen(true)}
+          className="absolute rounded-full"
+          style={{ left: "92.4%", top: "1.9%", width: "5%", height: "5.2%" }}
+        />
+        {/* Carte Règles / Plus d'infos */}
+        <Pressable
+          aria-label="Règles de la table"
+          onClick={() => setRulesOpen(true)}
+          className="absolute rounded-2xl"
+          style={{ left: "67.8%", top: "6.2%", width: "29.8%", height: "12.6%" }}
+        />
+
+        {/* TOUR DE … + chrono réel (on recouvre la zone dessinée) */}
+        <div
+          className="absolute flex flex-col items-center justify-start"
+          style={{
+            left: "36%",
+            top: "10.6%",
+            width: "28%",
+            height: "15.4%",
+            background: "oklch(0.035 0.003 60)",
+          }}
+        >
+          <span className="text-[8px] font-semibold tracking-[0.2em] text-gold/80">TOUR DE</span>
+          <motion.span
+            key={active.name}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-[17px] leading-tight font-extrabold tracking-wide text-gold uppercase"
           >
-            Quitter la table
-          </Pressable>
-          <Pressable onClick={() => setMenuOpen(true)} aria-label="Plus d'options" className="shrink-0">
-            <MoreVertical size={18} className="text-muted-foreground" />
-          </Pressable>
-        </div>
-
-        <div className="mt-2.5 flex items-center gap-2">
-          <span className="flex shrink-0 items-center gap-1 rounded-full border border-border bg-surface-2/60 px-2.5 py-1 text-[10.5px] text-foreground/80"><Layers size={11} className="text-gold" /><Heart size={10} className="text-live" />
-            Deck : Relations
-          </span>
-          <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-            <span className="truncate text-[10px] font-bold tracking-[0.14em] text-muted-foreground uppercase">
-              Tour de {turnName}
-            </span>
-            <span className="shrink-0 rounded-full border border-gold/60 bg-gold/10 px-2 py-0.5 text-[11.5px] font-bold text-gold tabular-nums">
-              {mmss}
-            </span>
-          </div>
-        </div>
-        <p className="mt-1.5 truncate text-[10.5px] text-muted-foreground">
-          L'amour et l'argent : peut-on tout partager ?
-        </p>
-      </header>
-
-      {/* Table */}
-      <div className="relative mx-3 mt-3" style={{ aspectRatio: "1 / 1.16" }}>
-        <div className="absolute inset-0">
-          {/* wooden ring */}
-          <div
-            className="absolute inset-[9%] rounded-[50%]"
-            style={{
-              background: "linear-gradient(160deg, #3A2A1E 0%, #241811 55%, #1A120B 100%)",
-              border: "1px solid oklch(0.82 0.13 85 / 0.55)",
-              boxShadow:
-                "0 0 22px oklch(0.82 0.13 85 / 0.18), inset 0 1px 0 oklch(0.9 0.1 90 / 0.25), 0 18px 40px rgba(0,0,0,0.6)",
-            }}
-          />
-          {/* felt */}
-          <div
-            className="absolute inset-[15%] rounded-[50%]"
-            style={{
-              background: "radial-gradient(circle at 50% 40%, #1E1E1E 0%, #131313 55%, #0C0C0C 100%)",
-              border: "1px solid oklch(0.82 0.13 85 / 0.28)",
-              boxShadow: "inset 0 0 30px rgba(0,0,0,0.8)",
-            }}
-          />
-
-          {/* center: deck + dice + question card */}
-          <div className="absolute inset-[15%] flex flex-col items-center justify-center gap-2 px-3">
-            <div className="flex items-center gap-3">
-              <Pressable onClick={drawCard} aria-label="Tirer une carte" className="relative h-[38px] w-[28px]">
-                {[2, 1, 0].map((k) => (
-                  <span
-                    key={k}
-                    className="absolute inset-0 flex items-center justify-center rounded-[6px] border border-gold/45 bg-[#0B0B0B]"
-                    style={{ transform: `translate(${k * 2.5}px, ${-k * 2.5}px) rotate(${k * -4}deg)` }}
-                  >
-                    {k === 0 && <ZemboIcon size={13} />}
-                  </span>
-                ))}
-              </Pressable>
-              <span className="flex h-[26px] w-[26px] items-center justify-center rounded-[7px] border border-gold/40 bg-[#0B0B0B] text-gold">
-                <Dices size={15} />
-              </span>
-            </div>
-
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={qIndex}
-                initial={{ rotateY: -90, opacity: 0 }}
-                animate={{ rotateY: 0, opacity: 1 }}
-                exit={{ rotateY: 90, opacity: 0 }}
-                transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
-                className="w-full max-w-[150px] rounded-xl border border-gold/55 bg-black/85 px-2 py-2 text-center"
-                style={{ boxShadow: "0 0 18px oklch(0.82 0.13 85 / 0.15)" }}
-              >
-                <p className="text-[8.5px] font-bold tracking-[0.2em] text-gold uppercase">Question</p>
-                <p className="text-[13px] leading-none font-bold text-gold/80">?</p>
-                <p className="mt-1 text-[9.5px] leading-snug text-white/85">{QUESTIONS[qIndex]}</p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* seats */}
-          {Array.from({ length: seatCount }).map((_, i) => {
-            const angle = (-90 + i * (360 / seatCount)) * (Math.PI / 180);
-            const rx = seatCount <= 4 ? 32 : seatCount <= 6 ? 36 : 38;
-            const left = 50 + Math.cos(angle) * rx;
-            const top = 50 + Math.sin(angle) * 41;
-            const p = players[i];
-            const active = p && i === turn;
-            return (
-              <div
-                key={i}
-                className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1"
-                style={{ left: `${left}%`, top: `${top}%`, width: avatarSize }}
-              >
-                {p ? (
-                  <>
-                    <div className="relative" style={{ width: avatarSize, height: avatarSize }}>
-                      {active && (
-                        <motion.span
-                          animate={{ opacity: [0.35, 1, 0.35], scale: [1, 1.06, 1] }}
-                          transition={{ duration: 1.8, repeat: Infinity }}
-                          className="absolute -inset-[5px] rounded-full border-2 border-gold"
-                          style={{ boxShadow: "0 0 16px oklch(0.82 0.13 85 / 0.6)" }}
-                        />
-                      )}
-                      <PhotoAvatar name={p.name} size={avatarSize} ring={!active} />
-                      <span className="absolute -top-1 -left-1 flex h-[15px] w-[15px] items-center justify-center rounded-full border border-gold/50 bg-black text-[8.5px] font-bold text-gold">
-                        {p.n}
-                      </span>
-                      <Pressable
-                        aria-label={`Micro de ${p.name}`}
-                        onClick={() => setMuted((m) => ({ ...m, [p.n]: !m[p.n] }))}
-                        className="absolute -right-1 -bottom-1 flex h-[19px] w-[19px] items-center justify-center rounded-full border border-border bg-black"
-                      >
-                        {muted[p.n] ? (
-                          <MicOff size={10} className="text-live" />
-                        ) : (
-                          <Mic size={10} className="text-emerald" />
-                        )}
-                      </Pressable>
-                    </div>
-                    <span
-                      className={`flex items-center gap-0.5 rounded-full border px-1.5 py-[2px] text-[9px] font-semibold whitespace-nowrap ${
-                        active ? "border-gold bg-gold/15 text-gold" : "border-gold/35 bg-black/80 text-white/85"
-                      }`}
-                    >
-                      <span className="whitespace-nowrap">
-                        {p.name}
-                        {p.you ? " (Toi)" : ""}
-                      </span>
-                      <MoreVertical size={9} className="shrink-0 text-white/40" />
-                    </span>
-                    {p.host && (
-                      <span className="rounded-md bg-violet px-1 py-[1px] text-[7.5px] font-bold text-white">
-                        ★ HÔTE
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <Pressable
-                    className="flex flex-col items-center justify-center rounded-full border border-dashed border-white/25 text-[7.5px] leading-tight font-semibold text-white/45"
-                    style={{ width: avatarSize, height: avatarSize }}
-                  >
-                    <span className="text-[12px]">+</span>
-                    Place
-                    <span>libre</span>
-                  </Pressable>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Chat */}
-      <div className="card-surface mx-3 mt-3 rounded-2xl p-3">
-        <div className="flex items-center justify-between">
-          <p className="text-[12px] font-bold tracking-wide text-foreground/85 uppercase">Chat</p>
-          <span className="flex items-center gap-1 rounded-full border border-border px-2 py-1 text-[10.5px] text-muted-foreground">
-            <Globe size={11} /> Tout le monde ▾
+            {active.name}
+          </motion.span>
+          <span className="mt-[2px] rounded-full border border-gold/60 px-2.5 py-[2px] text-[11px] font-bold text-gold tabular-nums">
+            {mmss}
           </span>
         </div>
-        <div className="mt-2.5 space-y-2.5">
-          {chat.map((m) => (
-            <div key={m.id} className="flex items-start gap-2">
-              <PhotoAvatar name={m.name} size={26} ring={false} />
-              <div className="min-w-0 flex-1">
-                <p className="flex justify-between text-[11px] font-semibold text-gold/85">
-                  {m.name} <span className="text-muted-foreground">{m.time}</span>
-                </p>
-                <p className="text-[12.5px] break-words text-foreground/85">{m.text}</p>
-              </div>
-            </div>
-          ))}
-          <div ref={endRef} />
-        </div>
-        <form onSubmit={send} className="mt-3 flex items-center gap-2">
-          <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full border border-border bg-surface-2/70 px-3 py-2">
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              placeholder="Écris ton message…"
-              className="min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
-            />
-            <Smile size={16} className="shrink-0 text-muted-foreground" />
-          </div>
-          <Pressable
-            type="submit"
-            aria-label="Envoyer"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-gradient text-[oklch(0.16_0.02_60)]"
-          >
-            <Send size={16} />
-          </Pressable>
-        </form>
-      </div>
 
-      {/* Spectateurs */}
-      <Pressable className="card-surface mx-3 mt-3 flex w-[calc(100%-24px)] items-center justify-between rounded-2xl p-3">
-        <div className="min-w-0">
-          <p className="text-left text-[12px] font-bold tracking-wide text-foreground/85 uppercase">
-            Spectateurs (23)
-          </p>
-          <div className="mt-2">
-            <AvatarStack names={["Ben", "Emma", "Kader", "Nadia", "Inès", "Marc"]} extra={17} size={26} />
-          </div>
-        </div>
-        <ChevronRight size={18} className="shrink-0 text-muted-foreground" />
-      </Pressable>
+        {/* Anneau or pulsant sur le joueur actif */}
+        <motion.span
+          className="pointer-events-none absolute rounded-full"
+          animate={{
+            left: `${active.av[0] - 6.6}%`,
+            top: `${active.av[1] - 7.3}%`,
+            opacity: [0.55, 1, 0.55],
+            scale: [1, 1.05, 1],
+          }}
+          transition={{
+            left: { type: "spring", stiffness: 180, damping: 22 },
+            top: { type: "spring", stiffness: 180, damping: 22 },
+            opacity: { duration: 1.6, repeat: Infinity },
+            scale: { duration: 1.6, repeat: Infinity },
+          }}
+          style={{
+            width: "13.2%",
+            aspectRatio: "1 / 1",
+            border: "2px solid oklch(0.86 0.14 88)",
+            boxShadow: "0 0 18px 2px oklch(0.86 0.14 88 / 55%)",
+          }}
+        />
 
-      {/* Réagir */}
-      <div className="card-surface relative mx-3 mt-3 rounded-2xl p-3">
-        <p className="text-[12px] font-bold tracking-wide text-foreground/85 uppercase">Réagir</p>
-        <div className="mt-2 flex gap-2">
-          {REACTIONS.map((r, i) => (
+        {/* Sièges : zone tappable + micro + ⋮ */}
+        {SEATS.map((s) => (
+          <div key={s.n}>
             <Pressable
-              key={r.emoji}
-              onClick={() => react(i)}
-              className="flex flex-1 flex-col items-center rounded-xl border border-border bg-surface-2/60 py-2"
+              aria-label={`Profil de ${s.label}`}
+              onClick={() => setSeatMenu(s.n)}
+              className="absolute rounded-full"
+              style={{
+                left: `${s.av[0] - 6.2}%`,
+                top: `${s.av[1] - 6.9}%`,
+                width: "12.4%",
+                aspectRatio: "1 / 1",
+              }}
+            />
+            <Pressable
+              aria-label={`${muted[s.n] ? "Activer" : "Couper"} le micro de ${s.name}`}
+              onClick={() => {
+                navigator.vibrate?.(10);
+                setMuted((m) => ({ ...m, [s.n]: !m[s.n] }));
+              }}
+              className="absolute flex items-center justify-center rounded-full"
+              style={{
+                left: `${s.mic[0] - 3.4}%`,
+                top: `${s.mic[1] - 3.8}%`,
+                width: "6.8%",
+                aspectRatio: "1 / 1",
+                background: muted[s.n] ? "oklch(0.12 0.02 30 / 92%)" : "transparent",
+              }}
             >
-              <span className="text-[16px]">{r.emoji}</span>
-              <span className="text-[10.5px] text-muted-foreground tabular-nums">{counts[i]}</span>
+              {muted[s.n] && <MicOff size={12} className="text-gold" />}
             </Pressable>
-          ))}
-        </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center">
+            <Pressable
+              aria-label={`Options pour ${s.name}`}
+              onClick={() => setSeatMenu(s.n)}
+              className="absolute rounded-md"
+              style={{
+                left: `${s.dots[0] - 2.4}%`,
+                top: `${s.dots[1] - 2.7}%`,
+                width: "4.8%",
+                aspectRatio: "1 / 1.1",
+              }}
+            />
+          </div>
+        ))}
+
+        {/* Paquet de cartes tappable */}
+        <Pressable
+          aria-label="Tirer une nouvelle carte question"
+          onClick={drawCard}
+          className="absolute rounded-xl"
+          style={{ left: "35.2%", top: "48.6%", width: "10%", height: "14.4%" }}
+        />
+
+        {/* Texte de la carte question (vrai bloc, remplaçable) */}
+        <motion.div
+          animate={{ rotateY: flip ? 80 : 0, opacity: flip ? 0.25 : 1 }}
+          transition={{ duration: 0.22 }}
+          className="absolute flex items-center justify-center px-1 text-center"
+          style={{
+            left: "48.2%",
+            top: "55.4%",
+            width: "19.4%",
+            height: "18.6%",
+            background: "oklch(0.055 0.004 60)",
+          }}
+        >
+          <span className="text-[8.5px] leading-[1.35] font-medium text-white/90">
+            {QUESTIONS[qIndex]}
+          </span>
+        </motion.div>
+
+        {/* Vrai dé tappable */}
+        <Pressable
+          aria-label="Lancer le dé"
+          onClick={roll}
+          className="absolute"
+          style={{ left: "27.8%", top: "62.2%", width: "9%", aspectRatio: "1 / 1" }}
+        >
+          <motion.span
+            animate={
+              rolling
+                ? { rotate: [0, -90, 120, -160, 0], scale: [1, 1.12, 0.95, 1.08, 1] }
+                : { rotate: 0, scale: [1.14, 1] }
+            }
+            transition={{ duration: rolling ? 0.8 : 0.22 }}
+            className="relative block h-full w-full rounded-[22%]"
+            style={{
+              background: "linear-gradient(150deg, oklch(0.16 0.01 60), oklch(0.07 0.005 60))",
+              border: "1px solid oklch(0.7 0.12 85 / 60%)",
+              boxShadow: "0 0 14px -2px oklch(0.86 0.14 88 / 45%)",
+            }}
+          >
+            {DICE_DOTS[dice]!.map(([x, y], i) => (
+              <span
+                key={i}
+                className="absolute rounded-full bg-gold"
+                style={{ left: `${x}%`, top: `${y}%`, width: "17%", aspectRatio: "1/1", transform: "translate(-50%,-50%)" }}
+              />
+            ))}
+          </motion.span>
+        </Pressable>
+      </div>
+
+      {/* ============ BAS VIVANT ============ */}
+      <div className="relative flex flex-1 flex-col gap-3 bg-[oklch(0.03_0_0)] px-3 pt-3">
+        {/* CHAT */}
+        <section className="rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] p-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[12px] font-extrabold tracking-[0.16em] text-gold">CHAT</h2>
+            <span className="flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-[11px] text-foreground/80">
+              <Globe size={12} className="text-gold" /> Tout le monde ▾
+            </span>
+          </div>
+          <div className="mt-2.5 space-y-2.5">
+            {chat.map((c) => (
+              <div key={c.id} className="flex gap-2">
+                <img src={photoUrl(c.name)} alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span
+                      className={`truncate text-[12.5px] font-bold ${c.name === "Deena" ? "text-gold" : "text-white"}`}
+                    >
+                      {c.name}
+                    </span>
+                    <span className="shrink-0 text-[10.5px] text-muted-foreground">{c.time}</span>
+                  </div>
+                  <p className="text-[12.5px] leading-snug text-foreground/85">{c.text}</p>
+                </div>
+              </div>
+            ))}
+            <div ref={endRef} />
+          </div>
+        </section>
+
+        {/* SPECTATEURS */}
+        <section className="rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] p-3">
+          <h2 className="text-[12px] font-extrabold tracking-[0.16em] text-gold">SPECTATEURS (23)</h2>
+          <div className="mt-2.5 flex items-center gap-1.5">
+            {SPECTATORS.map((s) => (
+              <PhotoAvatar key={s} name={s} size={34} />
+            ))}
+            <span className="ml-auto flex items-center gap-1 text-[12px] font-bold text-gold">
+              +17 <ChevronRight size={14} />
+            </span>
+          </div>
+          <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-semibold text-gold/90">
+            <Clock size={12} /> En attente de monter : 3
+          </p>
+          <p className="mt-1 text-[11.5px] text-muted-foreground">
+            Un spectateur monte dès qu'une place se libère.
+          </p>
+        </section>
+
+        {/* RÉAGIR */}
+        <section className="relative rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] p-3">
+          <h2 className="text-[12px] font-extrabold tracking-[0.16em] text-gold">RÉAGIR</h2>
+          <div className="mt-2.5 flex items-center gap-2">
+            {REACTIONS.map((r, i) => (
+              <Pressable
+                key={r.key}
+                aria-label={`Réagir (${r.key})`}
+                onClick={() => react(i)}
+                whileTap={{ scale: 0.96 }}
+                className="flex flex-1 items-center justify-center gap-1 rounded-full border border-border bg-[oklch(0.09_0.004_60)] py-1.5 text-[12px] font-bold text-foreground/90"
+              >
+                <r.Icon size={13} style={{ color: r.tint }} />
+                <span className="tabular-nums">{reactions[i]}</span>
+              </Pressable>
+            ))}
+          </div>
           <AnimatePresence>
             {floats.map((f) => (
               <motion.span
                 key={f.id}
-                initial={{ opacity: 1, y: 0, x: f.x }}
+                initial={{ opacity: 1, y: 0 }}
                 animate={{ opacity: 0, y: -70 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.9 }}
-                className="absolute text-[20px]"
+                transition={{ duration: 1.1 }}
+                className="pointer-events-none absolute bottom-8"
+                style={{ left: `${f.x}%` }}
               >
-                {f.emoji}
+                {(() => {
+                  const R = REACTIONS[f.i]!;
+                  return <R.Icon size={18} style={{ color: R.tint }} />;
+                })()}
               </motion.span>
             ))}
           </AnimatePresence>
-        </div>
+        </section>
+
+        {/* Barre de saisie collée en bas, au-dessus du dock */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            send();
+          }}
+          className="sticky bottom-[86px] z-10 flex items-center gap-2 rounded-full border border-border bg-[oklch(0.08_0.004_60)] px-2 py-1.5"
+        >
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Écris ton message…"
+            className="min-w-0 flex-1 bg-transparent px-2 text-[13px] outline-none placeholder:text-muted-foreground"
+          />
+          <Smile size={18} className="shrink-0 text-muted-foreground" />
+          <Pressable
+            type="submit"
+            aria-label="Envoyer"
+            whileTap={{ scale: 0.96 }}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-gradient"
+          >
+            <Send size={14} className="text-[oklch(0.16_0.02_60)]" />
+          </Pressable>
+        </form>
+        <div className="h-[26px] shrink-0" />
       </div>
 
-      {/* Menu ⋮ */}
+      {/* Feuilles */}
+      <BottomSheet open={rulesOpen} onClose={() => setRulesOpen(false)}>
+        <div className="px-5 pt-2 pb-4">
+          <h2 className="text-[16px] font-extrabold tracking-wide text-gold">RÈGLES DE LA TABLE</h2>
+          <ul className="mt-3 space-y-2 text-[13.5px] text-foreground/85">
+            <li>Respect &amp; bienveillance</li>
+            <li>Chacun son tour</li>
+            <li>Pas d'attaque personnelle</li>
+          </ul>
+        </div>
+      </BottomSheet>
+
       <BottomSheet open={menuOpen} onClose={() => setMenuOpen(false)}>
-        <div className="px-5 pt-1">
-          <p className="text-[12px] font-bold tracking-[0.16em] text-muted-foreground uppercase">Options</p>
+        <div className="px-4 pt-2 pb-4">
           <Pressable
             onClick={() => {
               setMenuOpen(false);
               setRulesOpen(true);
             }}
-            className="mt-3 flex w-full items-center gap-2 rounded-2xl border border-border bg-surface-2/60 px-4 py-3 text-[14px] font-semibold"
+            className="w-full rounded-xl px-3 py-3 text-left text-[14px] font-semibold text-foreground/90"
           >
-            <Info size={16} className="text-gold" /> Règles
+            Règles
           </Pressable>
-
-          <p className="mt-5 text-[12px] font-bold tracking-[0.16em] text-muted-foreground uppercase">
-            Taille de la table (démo)
-          </p>
-          <div className="mt-2 flex gap-2">
-            {SIZES.map((s) => (
-              <Pressable
-                key={s}
-                onClick={() => {
-                  setTableSize(s);
-                  setOccupied(Math.min(occupied, s));
-                  setTurn(0);
-                }}
-                className={`flex-1 rounded-xl border py-2.5 text-[14px] font-bold ${
-                  tableSize === s
-                    ? "border-transparent bg-gold-gradient text-[oklch(0.16_0.02_60)]"
-                    : "border-border bg-surface-2/60 text-foreground/75"
-                }`}
-              >
-                {s}
-              </Pressable>
-            ))}
-          </div>
-          <div className="mt-3 flex gap-2">
-            <Pressable
-              onClick={() => setOccupied((o) => Math.max(1, o - 1))}
-              className="flex-1 rounded-xl border border-border py-2 text-[12.5px] font-semibold text-foreground/75"
-            >
-              − un participant
-            </Pressable>
-            <Pressable
-              onClick={() => setOccupied((o) => Math.min(tableSize, o + 1))}
-              className="flex-1 rounded-xl border border-border py-2 text-[12.5px] font-semibold text-foreground/75"
-            >
-              + un participant
-            </Pressable>
-          </div>
+          <Pressable
+            onClick={() => navigate({ to: "/live" })}
+            className="w-full rounded-xl px-3 py-3 text-left text-[14px] font-semibold text-[oklch(0.7_0.18_25)]"
+          >
+            Quitter la table
+          </Pressable>
         </div>
       </BottomSheet>
 
-      <BottomSheet open={rulesOpen} onClose={() => setRulesOpen(false)}>
-        <div className="px-5 pt-1 pb-2">
-          <p className="text-[16px] font-extrabold text-gold">Règles de la table</p>
-          <ul className="mt-3 space-y-2 text-[13.5px] text-foreground/85">
-            <li>· Respect &amp; bienveillance</li>
-            <li>· Chacun son tour</li>
-            <li>· Pas d'attaque personnelle</li>
-          </ul>
+      <BottomSheet open={seatMenu !== null} onClose={() => setSeatMenu(null)}>
+        <div className="px-4 pt-2 pb-4">
+          <p className="px-3 pb-2 text-[12px] font-bold tracking-[0.14em] text-gold uppercase">
+            {SEATS.find((s) => s.n === seatMenu)?.label ?? ""}
+          </p>
+          {["Voir le profil", "Couper le son", "Signaler"].map((label) => (
+            <Pressable
+              key={label}
+              onClick={() => {
+                if (label === "Couper le son" && seatMenu)
+                  setMuted((m) => ({ ...m, [seatMenu]: true }));
+                setSeatMenu(null);
+              }}
+              className="w-full rounded-xl px-3 py-3 text-left text-[14px] font-semibold text-foreground/90"
+            >
+              {label}
+            </Pressable>
+          ))}
         </div>
       </BottomSheet>
     </div>
