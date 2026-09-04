@@ -412,8 +412,9 @@ function MicroOuvertLive() {
           );
         })}
 
-        {/* ══ COLONNE DROITE ══ */}
-        <div className="absolute right-1.5 bottom-[30%] z-40 flex flex-col items-center gap-1.5">
+        {/* ══ COLONNE DROITE (démarre au niveau de la rangée des invités) ══ */}
+        <div className="absolute top-[74%] right-1.5 z-40 flex flex-col items-center gap-2">
+
           <div className="relative flex flex-col items-center">
             <AnimatePresence>
               {hearts.map((h) => (
