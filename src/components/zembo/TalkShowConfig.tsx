@@ -356,8 +356,8 @@ export function TalkShowConfigScreen({ format }: { format: FormatId }) {
 
 export function FormatIcon({ format, size = 22 }: { format: FormatId; size?: number }) {
   const cls = "text-gold";
-  if (format === "storytime") return <BookIcon size={size} className={cls} />;
-  if (format === "open-mic") return <MicVocalIcon size={size} className={cls} />;
+  if (format === "storytime") return <BookOpen size={size} className={cls} />;
+  if (format === "open-mic") return <MicVocal size={size} className={cls} />;
   if (format === "stand") return <Users size={size} className={cls} />;
-  return <MicIcon size={size} className={cls} />;
+  return <Mic size={size} className={cls} />;
 }
