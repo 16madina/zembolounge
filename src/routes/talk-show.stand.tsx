@@ -469,9 +469,9 @@ function StandLive() {
         </div>
       </div>
 
-      {/* BOUTON QUESTIONS */}
-      <div className="absolute left-3 z-20 bottom-[212px]">
-        {host ? (
+      {/* BOUTON QUESTIONS (HÔTE) */}
+      {host && (
+        <div className="absolute left-3 z-20 bottom-[300px]">
           <Pressable
             onClick={() => {
               tap();
@@ -486,19 +486,8 @@ function StandLive() {
               {counts.p}
             </span>
           </Pressable>
-        ) : (
-          <Pressable
-            onClick={() => {
-              tap();
-              setAsk(true);
-            }}
-            className="flex items-center gap-1.5 rounded-full bg-gold px-3 py-2 text-[12px] font-extrabold text-black shadow-[0_8px_20px_rgba(0,0,0,0.45)]"
-            aria-label="Poser une question"
-          >
-            <HelpCircle size={14} /> Poser une question
-          </Pressable>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* CHAT LIVE */}
       <div className="absolute inset-x-0 bottom-[64px] z-10 px-3">
