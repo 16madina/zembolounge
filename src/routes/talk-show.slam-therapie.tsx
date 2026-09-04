@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Avatar, Pressable } from "@/components/zembo/ui";
-import { ZemboMark } from "@/components/zembo/ZemboMark";
+import { ZemboIcon } from "@/components/zembo/ZemboMark";
 import stage from "@/assets/zembo-slam-stage.png";
 
 export const Route = createFileRoute("/talk-show/slam-therapie")({
@@ -165,7 +165,7 @@ function SlamTherapieLive() {
         {/* EN-TÊTE */}
         <div className="absolute inset-x-0 top-0 px-3 pt-[max(10px,env(safe-area-inset-top))]">
           <div className="flex items-start gap-2">
-            <ZemboMark size={26} />
+            <ZemboIcon size={26} />
             <div className="min-w-0 flex-1">
               <p
                 className="truncate text-[19px] leading-none text-gold"
@@ -346,7 +346,7 @@ function SlamTherapieLive() {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-start gap-1.5 rounded-xl bg-black/45 px-2 py-1 backdrop-blur-sm"
               >
-                <Avatar name={m.user} size={20} ring={m.me} />
+                <Avatar name={m.user} size={20} ring={m.me === true} />
                 <p className="min-w-0 text-[11.5px] leading-snug text-white/90">
                   <span className={`font-bold ${m.tint}`}>{m.user}</span>{" "}
                   <span className="break-words">{m.text}</span>
