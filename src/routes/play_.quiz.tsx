@@ -116,7 +116,7 @@ function Quiz() {
   return (
     <div className="flex h-full flex-col bg-[oklch(0.03_0_0)]">
       {/* Décor du plateau (haut) + rangée de réponses réelle + décor (bas) */}
-      <div className="flex max-h-[60%] shrink-0 flex-col overflow-hidden bg-[oklch(0.03_0_0)] select-none">
+      <div className="flex max-h-[62%] shrink-0 flex-col overflow-hidden bg-[oklch(0.03_0_0)] select-none">
         <div className="relative">
           <img
             src={stageTop}
