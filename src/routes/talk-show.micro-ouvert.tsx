@@ -254,22 +254,33 @@ function MicroOuvertLive() {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[26%] bg-gradient-to-b from-black/92 via-black/55 to-transparent" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[12%] bg-gradient-to-t from-black/80 to-transparent" />
 
-        {/* 1) Bandeau */}
-        <div className="absolute inset-x-0 top-[max(env(safe-area-inset-top),6px)] z-20 flex items-start justify-between px-2.5">
-          <div className="flex items-center gap-1.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gold/15 text-[13px] font-black text-gold">
+        {/* 1) EN-TÊTE — 2 lignes */}
+        <div className="absolute inset-x-0 top-[max(env(safe-area-inset-top),6px)] z-20 flex items-start justify-between gap-2 px-2.5">
+          <div className="flex min-w-0 items-start gap-1.5">
+            <span className="mt-[1px] flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold/15 text-[13px] font-black text-gold">
               Z
             </span>
-            <div className="leading-tight">
+            <div className="min-w-0 leading-tight">
               <p className="text-[13px] font-black tracking-tight text-gold">MICRO OUVERT</p>
-              <p className="text-[9.5px] font-semibold text-white/70">Ta voix compte !</p>
+              <p className="mt-[2px] line-clamp-2 text-[9.5px] leading-snug font-semibold text-white/75">
+                Sujet : Amour, amitié ou argent : qu'est-ce qui rend vraiment heureux ?
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1.5">
             <span className="flex items-center gap-1 rounded-full bg-black/55 px-2 py-[3px] text-[10px] font-bold text-white/90 backdrop-blur-md">
               <Eye size={11} className="text-gold" /> {viewers}
               <span className="font-medium text-white/55">en direct</span>
             </span>
+            <Pressable
+              onClick={() => {
+                tap();
+                setRole((r) => (r === "host" ? "guest" : "host"));
+              }}
+              className="rounded-full border border-white/20 bg-black/60 px-2 py-[3px] text-[10px] font-bold whitespace-nowrap text-white/85 backdrop-blur-md"
+            >
+              {role === "host" ? "👑 Vue" : "🙋 Vue"}
+            </Pressable>
             <Pressable
               aria-label="Plus d'options"
               onClick={() => {
@@ -283,34 +294,27 @@ function MicroOuvertLive() {
           </div>
         </div>
 
-        {/* pill thème */}
-        <div className="absolute top-[14%] left-1/2 z-20 -translate-x-1/2">
-          <span className="rounded-full border border-gold/40 bg-black/55 px-2.5 py-[3px] text-[10px] font-bold whitespace-nowrap text-gold backdrop-blur-md">
-            Parle • Partage • Exprime-toi
+        {/* 2) LIVE + chrono, juste sous l'en-tête */}
+        <div className="absolute top-[17%] left-2.5 z-20 flex items-center gap-1.5 rounded-full bg-black/50 p-[2px] pr-2 backdrop-blur-md">
+          <span className="flex items-center gap-1 rounded-full bg-live px-1.5 py-[2px] text-[9px] font-black text-white">
+            <motion.span
+              animate={{ opacity: [1, 0.2, 1] }}
+              transition={{ duration: 1.2, repeat: Infinity }}
+              className="h-1 w-1 rounded-full bg-white"
+            />
+            LIVE
           </span>
+          <span className="text-[10px] font-bold tabular-nums text-white/90">{fmt(seconds)}</span>
         </div>
 
-        {/* bascule de rôle */}
-        <div className="absolute top-[13.5%] right-2.5 z-20">
-          <Pressable
-            onClick={() => {
-              tap();
-              setRole((r) => (r === "host" ? "guest" : "host"));
-            }}
-            className="flex items-center gap-1 rounded-full border border-white/20 bg-black/60 px-2.5 py-[3px] text-[10px] font-bold text-white/85 backdrop-blur-md"
-          >
-            {role === "host" ? "👑 Vue Hôte" : "🙋 Vue Invité"}
-          </Pressable>
-        </div>
-
-        {/* 2) Pastille hôte */}
-        <div className="absolute top-[22%] left-2.5 z-20 flex items-center gap-1.5 rounded-full bg-black/60 p-1 pr-2 backdrop-blur-md">
-          <Avatar name="Deena" size={30} />
+        {/* 3) Pastille hôte */}
+        <div className="absolute top-[24%] left-2.5 z-20 flex items-center gap-1.5 rounded-full bg-black/60 p-1 pr-2 backdrop-blur-md">
+          <Avatar name="Deena" size={26} />
           <div className="leading-tight">
-            <p className="flex items-center gap-1 text-[12px] font-extrabold text-white">
-              Deena <Crown size={12} className="text-gold" fill="currentColor" />
+            <p className="flex items-center gap-1 text-[11px] font-extrabold text-white">
+              Deena <Crown size={11} className="text-gold" fill="currentColor" />
             </p>
-            <p className="text-[9.5px] font-semibold text-white/60">Hôte</p>
+            <p className="text-[9px] font-semibold text-white/60">Hôte</p>
           </div>
           {role === "guest" && (
             <Pressable
@@ -320,8 +324,8 @@ function MicroOuvertLive() {
               }}
               className={
                 follow
-                  ? "ml-0.5 rounded-full border border-white/25 px-2 py-[3px] text-[10px] font-bold text-white/80"
-                  : "ml-0.5 rounded-full bg-gold px-2 py-[3px] text-[10px] font-extrabold text-black"
+                  ? "ml-0.5 rounded-full border border-white/25 px-2 py-[2px] text-[9.5px] font-bold text-white/80"
+                  : "ml-0.5 rounded-full bg-gold px-2 py-[2px] text-[9.5px] font-extrabold text-black"
               }
             >
               {follow ? "Suivi ✓" : "+ Suivre"}
@@ -329,29 +333,6 @@ function MicroOuvertLive() {
           )}
         </div>
 
-        {/* LIVE + chrono */}
-        <div className="absolute top-[40%] left-2.5 z-20 flex items-center gap-1.5 rounded-full bg-black/55 p-[3px] pr-2.5 backdrop-blur-md">
-          <span className="flex items-center gap-1 rounded-full bg-live px-2 py-[2px] text-[10px] font-black text-white">
-            <motion.span
-              animate={{ opacity: [1, 0.2, 1] }}
-              transition={{ duration: 1.2, repeat: Infinity }}
-              className="h-1.5 w-1.5 rounded-full bg-white"
-            />
-            LIVE
-          </span>
-          <span className="text-[11px] font-bold tabular-nums text-white">{fmt(seconds)}</span>
-        </div>
-
-        {/* 3) Sujet du moment */}
-        <div className="absolute top-[23%] right-2.5 z-10 w-[50%] rounded-2xl border border-gold/35 bg-black/62 p-2 backdrop-blur-md">
-          <p className="text-[10px] font-bold text-gold">🔥 Sujet du moment</p>
-          {liveTitle ? (
-            <p className="truncate text-[8.5px] font-semibold text-white/55">{liveTitle}</p>
-          ) : null}
-          <p className="mt-0.5 text-[10.5px] leading-snug font-semibold text-white/92">
-            Amour, amitié ou argent : qu'est-ce qui rend vraiment heureux ?
-          </p>
-        </div>
 
         {/* ══ 4 PLACES INVITÉS ══ */}
         {guests.map((g) => {
