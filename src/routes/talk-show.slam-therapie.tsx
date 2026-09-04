@@ -495,15 +495,23 @@ function SlamTherapieLive() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setDrawer(false)}
-              className="absolute inset-0 z-40 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 z-40 bg-black/50 backdrop-blur-sm"
             />
             <motion.aside
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-              className="absolute inset-y-0 right-0 z-50 flex w-[88%] flex-col bg-[oklch(0.09_0.01_60)] ring-1 ring-white/10"
+              transition={{ type: "spring", stiffness: 320, damping: 34, mass: 0.9 }}
+              drag="x"
+              dragDirectionLock
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={{ left: 0, right: 0.9 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.x > 90 || info.velocity.x > 500) setDrawer(false);
+              }}
+              className="absolute inset-y-0 right-0 z-50 flex w-[86%] touch-pan-y flex-col bg-[oklch(0.09_0.01_60)] shadow-[-16px_0_40px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
             >
+              <span className="pointer-events-none absolute left-1 top-1/2 h-12 w-1 -translate-y-1/2 rounded-full bg-white/20" />
               <div className="flex items-center gap-2 border-b border-white/8 px-3 py-3 pt-[max(12px,env(safe-area-inset-top))]">
                 <Mic size={15} className="text-gold" />
                 <p className="min-w-0 flex-1 truncate text-[13px] font-extrabold text-foreground">
