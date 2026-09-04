@@ -97,6 +97,7 @@ function ConnexionScreen() {
           </Link>
 
           <Pressable
+            type="button"
             onClick={() => void signOut()}
             className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-border px-5 py-3 text-sm font-medium text-foreground"
           >
@@ -143,6 +144,7 @@ function ConnexionScreen() {
               className="w-full bg-transparent py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
             <Pressable
+              type="button"
               onClick={() => setShowPassword((v) => !v)}
               className="shrink-0 p-1 text-muted-foreground"
             >
