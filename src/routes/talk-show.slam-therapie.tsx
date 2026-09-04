@@ -241,8 +241,9 @@ function SlamTherapieLive() {
               <Pressable
                 onClick={() => {
                   tap();
-                  showToast("Options du live");
+                  setSheet("menu");
                 }}
+
                 className="grid h-7 w-7 place-items-center rounded-full bg-white/12 text-white/90 backdrop-blur"
                 aria-label="Plus d'options"
               >
