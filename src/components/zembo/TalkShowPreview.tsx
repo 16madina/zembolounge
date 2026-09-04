@@ -58,7 +58,7 @@ export function TalkShowPreviewScreen({ format }: { format: FormatId }) {
   const launch = () => {
     tap();
     if (format === "storytime") navigate({ to: "/talk-show/storytime" });
-    else if (format === "open-mic") navigate({ to: "/talk-show/open-mic" });
+    else if (format === "open-mic") navigate({ to: "/talk-show/micro-ouvert" });
     else if (format === "stand") navigate({ to: "/talk-show/stand" });
     else navigate({ to: "/talk-show/slam" });
   };

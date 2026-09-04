@@ -15,7 +15,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isTable = pathname.startsWith("/table/");
   const isGame = pathname.startsWith("/play/") || pathname.startsWith("/face-a-face");
   const isSetup = pathname.startsWith("/talk-show/config") || pathname.startsWith("/talk-show/preview");
-  const isLiveShow = pathname.startsWith("/talk-show/storytime");
+  const isLiveShow =
+    pathname.startsWith("/talk-show/storytime") || pathname.startsWith("/talk-show/micro-ouvert");
   const noDock = isThread || isGame || isLiveShow;
 
   return (
