@@ -19,7 +19,7 @@ const CONFETTI_COLORS = [
   "oklch(0.68 0.19 350)",
 ];
 
-function Confetti() {
+export function Confetti() {
   const pieces = useMemo(
     () =>
       Array.from({ length: 42 }, (_, i) => ({
