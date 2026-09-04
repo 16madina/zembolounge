@@ -602,6 +602,140 @@ function SlamTherapieLive() {
         )}
       </AnimatePresence>
 
+      {/* ── CADEAU QUI S'ENVOLE ── */}
+      <AnimatePresence>
+        {giftFly && (
+          <motion.div
+            key={giftFly.id}
+            initial={{ opacity: 0, scale: 0.4, y: 40 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0.4, 1.6, 1.4, 1.2], y: -120 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.7, ease: "easeOut" }}
+            className="pointer-events-none absolute bottom-[38%] left-1/2 z-[55] -translate-x-1/2 text-[64px]"
+          >
+            {giftFly.emoji}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── FEUILLES ── */}
+      <AnimatePresence>
+        {sheet && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSheet(null)}
+              className="absolute inset-0 z-[58] bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+              className="absolute inset-x-0 bottom-0 z-[59] rounded-t-3xl bg-[oklch(0.09_0.01_60)] px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))] ring-1 ring-white/10"
+            >
+              <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/20" />
+
+              {sheet === "share" && (
+                <>
+                  <p className="text-[15px] font-extrabold text-foreground">Partager le live</p>
+                  <div className="mt-3 flex flex-col gap-1.5">
+                    {[
+                      { icon: "🔗", label: "Copier le lien", t: "Lien du live copié" },
+                      { icon: "💬", label: "Envoyer en message", t: "Partagé en message" },
+                      { icon: "📲", label: "Partager sur WhatsApp", t: "Partagé sur WhatsApp" },
+                      { icon: "📸", label: "Ajouter à ma story", t: "Ajouté à ta story" },
+                    ].map((o) => (
+                      <Pressable
+                        key={o.label}
+                        onClick={() => {
+                          tap();
+                          setSheet(null);
+                          showToast(o.t);
+                        }}
+                        className="flex items-center gap-3 rounded-2xl bg-white/[0.05] px-3 py-3 text-[13px] font-semibold text-foreground"
+                      >
+                        <span className="text-[18px]">{o.icon}</span> {o.label}
+                      </Pressable>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {sheet === "gift" && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[15px] font-extrabold text-foreground">Offrir un cadeau</p>
+                    <p className="text-[12px] font-bold text-gold">Solde : 3 250 Z</p>
+                  </div>
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {GIFTS.map((g) => (
+                      <Pressable
+                        key={g.name}
+                        onClick={() => sendGift(g)}
+                        className="flex flex-col items-center gap-0.5 rounded-2xl bg-white/[0.05] py-2.5 ring-1 ring-white/8"
+                      >
+                        <span className="text-[26px]">{g.emoji}</span>
+                        <span className="text-[10px] font-semibold text-foreground">{g.name}</span>
+                        <span className="text-[10px] font-bold text-gold">{g.cost} Z</span>
+                      </Pressable>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {sheet === "zems" && (
+                <>
+                  <p className="text-[15px] font-extrabold text-foreground">
+                    Envoyer des Zems à Moussa
+                  </p>
+                  <p className="mt-1 text-[11.5px] text-muted-foreground">
+                    Soutiens sa performance — Solde : 3 250 Z
+                  </p>
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {ZEM_AMOUNTS.map((a) => (
+                      <Pressable
+                        key={a}
+                        onClick={() => sendZems(a)}
+                        className="grid place-items-center rounded-2xl bg-gradient-to-br from-gold/25 to-transparent py-3 ring-1 ring-gold/30"
+                      >
+                        <span className="text-[15px] font-extrabold text-gold">{a} Z</span>
+                      </Pressable>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {sheet === "menu" && (
+                <div className="flex flex-col gap-1.5">
+                  {[
+                    { icon: <Shield size={16} className="text-gold" />, label: "Règles de la scène", t: "Règles : respect, zéro jugement, 1 ou 3 minutes" },
+                    { icon: <Flag size={16} className="text-white/80" />, label: "Signaler", t: "Signalement envoyé à la modération" },
+                    { icon: <LogOut size={16} className="text-[oklch(0.65_0.2_25)]" />, label: "Quitter le live", t: "À bientôt sur Zembo 🤍" },
+                  ].map((o) => (
+                    <Pressable
+                      key={o.label}
+                      onClick={() => {
+                        tap();
+                        setSheet(null);
+                        showToast(o.t);
+                      }}
+                      className="flex items-center gap-3 rounded-2xl bg-white/[0.05] px-3 py-3 text-[13px] font-semibold text-foreground"
+                    >
+                      {o.icon} {o.label}
+                    </Pressable>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+
+
       <AnimatePresence>
         {toast && (
           <motion.div
