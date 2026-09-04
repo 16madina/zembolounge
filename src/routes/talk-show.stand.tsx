@@ -23,7 +23,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Avatar, Pressable } from "@/components/zembo/ui";
 import { ZemboIcon } from "@/components/zembo/ZemboMark";
-import decor from "@/assets/zembo-stand-decor.png.asset.json";
+import decor from "@/assets/zembo-stand-live.png.asset.json";
 
 export const Route = createFileRoute("/talk-show/stand")({
   head: () => ({
