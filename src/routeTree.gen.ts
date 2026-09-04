@@ -27,6 +27,7 @@ import { Route as TalkShowOpenMicRouteImport } from './routes/talk-show.open-mic
 import { Route as TalkShowSlamRouteImport } from './routes/talk-show.slam'
 import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
 import { Route as TalkShowStorytellingRouteImport } from './routes/talk-show.storytelling'
+import { Route as TalkShowStorytimeRouteImport } from './routes/talk-show.storytime'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -118,6 +119,11 @@ const TalkShowStorytellingRoute = TalkShowStorytellingRouteImport.update({
   path: '/storytelling',
   getParentRoute: () => TalkShowRoute,
 } as any)
+const TalkShowStorytimeRoute = TalkShowStorytimeRouteImport.update({
+  id: '/storytime',
+  path: '/storytime',
+  getParentRoute: () => TalkShowRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/talk-show/slam': typeof TalkShowSlamRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytelling': typeof TalkShowStorytellingRoute
+  '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show/': typeof TalkShowIndexRoute
 }
 export interface FileRoutesByTo {
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/talk-show/slam': typeof TalkShowSlamRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytelling': typeof TalkShowStorytellingRoute
+  '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show': typeof TalkShowIndexRoute
 }
 export interface FileRoutesById {
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/talk-show/slam': typeof TalkShowSlamRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytelling': typeof TalkShowStorytellingRoute
+  '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show/': typeof TalkShowIndexRoute
 }
 export interface FileRouteTypes {
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/talk-show/slam'
     | '/talk-show/stand'
     | '/talk-show/storytelling'
+    | '/talk-show/storytime'
     | '/talk-show/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -218,6 +228,7 @@ export interface FileRouteTypes {
     | '/talk-show/slam'
     | '/talk-show/stand'
     | '/talk-show/storytelling'
+    | '/talk-show/storytime'
     | '/talk-show'
   id:
     | '__root__'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/talk-show/slam'
     | '/talk-show/stand'
     | '/talk-show/storytelling'
+    | '/talk-show/storytime'
     | '/talk-show/'
   fileRoutesById: FileRoutesById
 }
@@ -384,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalkShowStorytellingRouteImport
       parentRoute: typeof TalkShowRoute
     }
+    '/talk-show/storytime': {
+      id: '/talk-show/storytime'
+      path: '/storytime'
+      fullPath: '/talk-show/storytime'
+      preLoaderRoute: typeof TalkShowStorytimeRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
   }
 }
 
@@ -393,6 +412,7 @@ interface TalkShowRouteChildren {
   TalkShowSlamRoute: typeof TalkShowSlamRoute
   TalkShowStandRoute: typeof TalkShowStandRoute
   TalkShowStorytellingRoute: typeof TalkShowStorytellingRoute
+  TalkShowStorytimeRoute: typeof TalkShowStorytimeRoute
   TalkShowIndexRoute: typeof TalkShowIndexRoute
 }
 
@@ -402,6 +422,7 @@ const TalkShowRouteChildren: TalkShowRouteChildren = {
   TalkShowSlamRoute: TalkShowSlamRoute,
   TalkShowStandRoute: TalkShowStandRoute,
   TalkShowStorytellingRoute: TalkShowStorytellingRoute,
+  TalkShowStorytimeRoute: TalkShowStorytimeRoute,
   TalkShowIndexRoute: TalkShowIndexRoute,
 }
 

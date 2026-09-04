@@ -39,7 +39,7 @@ export const Route = createFileRoute("/talk-show/storytime")({
 
 type Msg = { id: number; user: string; text: string; tint: string; me?: boolean };
 
-const TINTS = [
+const TINTS: string[] = [
   "text-[oklch(0.78_0.13_85)]",
   "text-[oklch(0.75_0.15_300)]",
   "text-[oklch(0.75_0.14_160)]",
@@ -48,10 +48,10 @@ const TINTS = [
 ];
 
 const INITIAL: Msg[] = [
-  { id: 1, user: "Fatou", text: "Ton histoire m'inspire 🙏", tint: TINTS[1] },
-  { id: 2, user: "Ben", text: "Continue Deena ! 🔥", tint: TINTS[2] },
-  { id: 3, user: "QueenVee", text: "Trop fort ce parcours 👏", tint: TINTS[4] },
-  { id: 4, user: "Momo", text: "Merci pour ce partage ✨", tint: TINTS[3] },
+  { id: 1, user: "Fatou", text: "Ton histoire m'inspire 🙏", tint: TINTS[1]! },
+  { id: 2, user: "Ben", text: "Continue Deena ! 🔥", tint: TINTS[2]! },
+  { id: 3, user: "QueenVee", text: "Trop fort ce parcours 👏", tint: TINTS[4]! },
+  { id: 4, user: "Momo", text: "Merci pour ce partage ✨", tint: TINTS[3]! },
 ];
 
 const AUTO: Array<[string, string]> = [
@@ -103,12 +103,12 @@ function StorytimeLive() {
 
   useEffect(() => {
     const t = setInterval(() => {
-      const [user, text] = AUTO[Math.floor(Math.random() * AUTO.length)];
+      const [user, text] = AUTO[Math.floor(Math.random() * AUTO.length)]!;
       seq.current += 1;
       const id = seq.current;
       setMsgs((m) => [
         ...m.slice(-24),
-        { id, user, text, tint: TINTS[id % TINTS.length] },
+        { id, user, text, tint: TINTS[id % TINTS.length]! },
       ]);
     }, 3000);
     return () => clearInterval(t);
@@ -127,7 +127,7 @@ function StorytimeLive() {
     if (!text) return;
     tap();
     seq.current += 1;
-    setMsgs((m) => [...m, { id: seq.current, user: "Deena", text, tint: TINTS[0], me: true }]);
+    setMsgs((m) => [...m, { id: seq.current, user: "Deena", text, tint: TINTS[0]!, me: true }]);
     setDraft("");
     setEmojiOpen(false);
   };
