@@ -27,6 +27,7 @@ import { Route as TalkShowOpenMicRouteImport } from './routes/talk-show.open-mic
 import { Route as TalkShowSlamRouteImport } from './routes/talk-show.slam'
 import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
 import { Route as TalkShowStorytimeRouteImport } from './routes/talk-show.storytime'
+import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.config.$format'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -118,6 +119,11 @@ const TalkShowStorytimeRoute = TalkShowStorytimeRouteImport.update({
   path: '/storytime',
   getParentRoute: () => TalkShowRoute,
 } as any)
+const TalkShowConfigFormatRoute = TalkShowConfigFormatRouteImport.update({
+  id: '/config/$format',
+  path: '/config/$format',
+  getParentRoute: () => TalkShowRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show/': typeof TalkShowIndexRoute
+  '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show': typeof TalkShowIndexRoute
+  '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show/': typeof TalkShowIndexRoute
+  '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/talk-show/'
+    | '/talk-show/config/$format'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/talk-show'
+    | '/talk-show/config/$format'
   id:
     | '__root__'
     | '/'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/talk-show/'
+    | '/talk-show/config/$format'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -384,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalkShowStorytimeRouteImport
       parentRoute: typeof TalkShowRoute
     }
+    '/talk-show/config/$format': {
+      id: '/talk-show/config/$format'
+      path: '/config/$format'
+      fullPath: '/talk-show/config/$format'
+      preLoaderRoute: typeof TalkShowConfigFormatRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
   }
 }
 
@@ -394,6 +413,7 @@ interface TalkShowRouteChildren {
   TalkShowStandRoute: typeof TalkShowStandRoute
   TalkShowStorytimeRoute: typeof TalkShowStorytimeRoute
   TalkShowIndexRoute: typeof TalkShowIndexRoute
+  TalkShowConfigFormatRoute: typeof TalkShowConfigFormatRoute
 }
 
 const TalkShowRouteChildren: TalkShowRouteChildren = {
@@ -403,6 +423,7 @@ const TalkShowRouteChildren: TalkShowRouteChildren = {
   TalkShowStandRoute: TalkShowStandRoute,
   TalkShowStorytimeRoute: TalkShowStorytimeRoute,
   TalkShowIndexRoute: TalkShowIndexRoute,
+  TalkShowConfigFormatRoute: TalkShowConfigFormatRoute,
 }
 
 const TalkShowRouteWithChildren = TalkShowRoute._addFileChildren(
