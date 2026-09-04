@@ -16,6 +16,7 @@ import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as TalkShowRouteImport } from './routes/talk-show'
+import { Route as AdminSoundsRouteImport } from './routes/admin.sounds'
 import { Route as MessagesIdRouteImport } from './routes/messages_.$id'
 import { Route as PlayFaceAFaceRouteImport } from './routes/play_.face-a-face'
 import { Route as PlayHotSeatRouteImport } from './routes/play_.hot-seat'
@@ -65,6 +66,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const TalkShowRoute = TalkShowRouteImport.update({
   id: '/talk-show',
   path: '/talk-show',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSoundsRoute = AdminSoundsRouteImport.update({
+  id: '/admin/sounds',
+  path: '/admin/sounds',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesIdRoute = MessagesIdRouteImport.update({
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
   '/talk-show': typeof TalkShowRouteWithChildren
+  '/admin/sounds': typeof AdminSoundsRoute
   '/messages/$id': typeof MessagesIdRoute
   '/play/face-a-face': typeof PlayFaceAFaceRoute
   '/play/hot-seat': typeof PlayHotSeatRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/admin/sounds': typeof AdminSoundsRoute
   '/messages/$id': typeof MessagesIdRoute
   '/play/face-a-face': typeof PlayFaceAFaceRoute
   '/play/hot-seat': typeof PlayHotSeatRoute
@@ -199,6 +207,7 @@ export interface FileRoutesById {
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
   '/talk-show': typeof TalkShowRouteWithChildren
+  '/admin/sounds': typeof AdminSoundsRoute
   '/messages_/$id': typeof MessagesIdRoute
   '/play_/face-a-face': typeof PlayFaceAFaceRoute
   '/play_/hot-seat': typeof PlayHotSeatRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/profile'
     | '/talk-show'
+    | '/admin/sounds'
     | '/messages/$id'
     | '/play/face-a-face'
     | '/play/hot-seat'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/play'
     | '/profile'
+    | '/admin/sounds'
     | '/messages/$id'
     | '/play/face-a-face'
     | '/play/hot-seat'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/profile'
     | '/talk-show'
+    | '/admin/sounds'
     | '/messages_/$id'
     | '/play_/face-a-face'
     | '/play_/hot-seat'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   PlayRoute: typeof PlayRoute
   ProfileRoute: typeof ProfileRoute
   TalkShowRoute: typeof TalkShowRouteWithChildren
+  AdminSoundsRoute: typeof AdminSoundsRoute
   MessagesIdRoute: typeof MessagesIdRoute
   PlayFaceAFaceRoute: typeof PlayFaceAFaceRoute
   PlayHotSeatRoute: typeof PlayHotSeatRoute
@@ -353,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/talk-show'
       fullPath: '/talk-show'
       preLoaderRoute: typeof TalkShowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/sounds': {
+      id: '/admin/sounds'
+      path: '/admin/sounds'
+      fullPath: '/admin/sounds'
+      preLoaderRoute: typeof AdminSoundsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages_/$id': {
@@ -501,6 +521,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlayRoute: PlayRoute,
   ProfileRoute: ProfileRoute,
   TalkShowRoute: TalkShowRouteWithChildren,
+  AdminSoundsRoute: AdminSoundsRoute,
   MessagesIdRoute: MessagesIdRoute,
   PlayFaceAFaceRoute: PlayFaceAFaceRoute,
   PlayHotSeatRoute: PlayHotSeatRoute,
