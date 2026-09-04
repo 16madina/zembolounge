@@ -346,9 +346,9 @@ function SlamTherapieLive() {
         className="absolute bottom-[62px] left-2 w-[62%]"
         style={{
           maskImage:
-            "linear-gradient(to top, transparent 4%, black 26%, black 100%)",
+            "linear-gradient(to bottom, transparent 0%, black 16%, black 100%)",
           WebkitMaskImage:
-            "linear-gradient(to top, transparent 4%, black 26%, black 100%)",
+            "linear-gradient(to bottom, transparent 0%, black 16%, black 100%)",
         }}
       >
         <div className="app-scroll no-scrollbar flex max-h-[44vh] flex-col gap-1.5">
