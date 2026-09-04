@@ -17,7 +17,7 @@ import { BottomSheet } from "@/components/zembo/Sheet";
 import { Pressable } from "@/components/zembo/ui";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { cn } from "@/lib/utils";
-import decor from "@/assets/world-room-discover.png.asset.json";
+import decor from "@/assets/world-room-elena.png";
 
 export const Route = createFileRoute("/world/discover")({
   head: () => ({
@@ -72,7 +72,7 @@ const POOL: WorldCard[] = [
     sunday: "Plage, bon repas et coucher de soleil",
     redFlag: "Le manque de communication",
     travel: "Le Japon",
-    photo: decor.url,
+    photo: decor,
   },
   {
     id: "moussa",
