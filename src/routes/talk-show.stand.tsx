@@ -268,21 +268,21 @@ function StandLive() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[48%] bg-gradient-to-t from-black/92 via-black/45 to-transparent" />
 
       {/* EN-TÊTE */}
-      <div className="absolute inset-x-0 top-0 px-3 pt-[max(10px,env(safe-area-inset-top))]">
-        <div className="flex items-start gap-2">
-          <ZemboIcon size={26} />
+      <div className="absolute inset-x-0 top-0 px-3 pt-[max(8px,env(safe-area-inset-top))]">
+        <div className="flex items-start gap-1.5">
+          <ZemboIcon size={18} />
           <div className="min-w-0 flex-1">
             <p
-              className="truncate text-[20px] leading-none text-gold"
+              className="truncate text-[15px] leading-none text-gold"
               style={{ fontFamily: "'Brush Script MT', cursive" }}
             >
               Stand
             </p>
-            <p className="mt-[3px] text-[8.5px] font-semibold tracking-[0.18em] text-white/70">
+            <p className="mt-[1px] text-[7px] font-semibold tracking-[0.16em] text-white/60">
               PARTAGE • APPRENDS • ÉVOLUE
             </p>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <Pressable
               onClick={() => {
                 tap();
@@ -290,16 +290,16 @@ function StandLive() {
                 setDrawer(false);
                 setAsk(false);
               }}
-              className="flex items-center gap-1 rounded-full bg-black/55 px-2 py-1 text-[9.5px] font-bold text-white/90 ring-1 ring-gold/40 backdrop-blur"
+              className="flex items-center gap-1 rounded-full bg-black/55 px-1.5 py-[3px] text-[8.5px] font-bold text-white/90 ring-1 ring-gold/40 backdrop-blur"
               aria-label="Changer de vue"
             >
               {host ? (
                 <>
-                  <Crown size={11} className="text-gold" /> Vue Hôte
+                  <Crown size={10} className="text-gold" /> Vue Hôte
                 </>
               ) : (
                 <>
-                  <Eye size={11} className="text-gold" /> Vue Spectateur
+                  <Eye size={10} className="text-gold" /> Vue Spectateur
                 </>
               )}
             </Pressable>
@@ -308,41 +308,41 @@ function StandLive() {
                 tap();
                 setSheet("menu");
               }}
-              className="grid h-7 w-7 place-items-center rounded-full bg-white/12 text-white/90 backdrop-blur"
+              className="grid h-6 w-6 place-items-center rounded-full bg-white/12 text-white/90 backdrop-blur"
               aria-label="Plus d'options"
             >
-              <MoreHorizontal size={16} />
+              <MoreHorizontal size={14} />
             </Pressable>
           </div>
         </div>
 
-        <div className="mt-1.5 flex items-center gap-1.5">
-          <span className="flex items-center gap-1 rounded-md bg-[oklch(0.55_0.22_25)] px-1.5 py-[2px] text-[9px] font-extrabold text-white">
-            <span className="h-[5px] w-[5px] rounded-full bg-white" /> LIVE
+        <div className="mt-1 flex items-center gap-1.5">
+          <span className="flex items-center gap-1 rounded-md bg-[oklch(0.55_0.22_25)] px-1.5 py-[2px] text-[8px] font-extrabold text-white">
+            <span className="h-[4px] w-[4px] rounded-full bg-white" /> LIVE
           </span>
-          <span className="flex items-center gap-1 rounded-md bg-black/50 px-1.5 py-[2px] text-[9px] font-bold text-white/90 backdrop-blur">
-            <Users size={10} /> 1.2K
+          <span className="flex items-center gap-1 rounded-md bg-black/50 px-1.5 py-[2px] text-[8px] font-bold text-white/90 backdrop-blur">
+            <Users size={9} /> 1.2K
           </span>
         </div>
 
         {/* BLOC TITRE */}
-        <div className="mt-2 max-w-[74%]">
-          <span className="inline-block rounded-md bg-gold px-2 py-[2px] text-[8.5px] font-extrabold tracking-wide text-black">
+        <div className="mt-1.5 max-w-[74%]">
+          <span className="inline-block rounded-md bg-gold px-1.5 py-[1px] text-[7.5px] font-extrabold tracking-wide text-black">
             STAND
           </span>
-          <p className="mt-1 text-[21px] leading-[1.05] font-extrabold text-white drop-shadow">
+          <p className="mt-0.5 text-[20px] leading-[1.05] font-extrabold text-white drop-shadow">
             Reprendre confiance en soi
           </p>
-          <p className="mt-[3px] text-[11px] italic text-white/85">
+          <p className="mt-[2px] text-[10px] italic text-white/80">
             Conseils, outils et vos questions
           </p>
-          <div className="mt-2 flex items-center gap-2 rounded-full bg-black/55 px-2 py-1 backdrop-blur ring-1 ring-white/10">
-            <Avatar name="Deena" size={26} ring />
+          <div className="mt-1.5 flex items-center gap-1.5 rounded-full bg-black/55 px-1.5 py-[3px] backdrop-blur ring-1 ring-white/10">
+            <Avatar name="Deena" size={20} ring />
             <div className="min-w-0">
-              <p className="flex items-center gap-1 text-[11.5px] font-bold text-white">
-                Deena <Crown size={10} className="text-gold" />
+              <p className="flex items-center gap-1 text-[10px] font-bold text-white">
+                Deena <Crown size={9} className="text-gold" />
               </p>
-              <p className="text-[9px] text-white/60">Hôte</p>
+              <p className="text-[8px] text-white/60">Hôte</p>
             </div>
             {!host && (
               <Pressable
@@ -350,7 +350,7 @@ function StandLive() {
                   tap();
                   showToast("Tu suis Deena ✓");
                 }}
-                className="ml-1 rounded-full bg-gold px-2.5 py-1 text-[10px] font-extrabold text-black"
+                className="ml-1 rounded-full bg-gold px-2 py-[3px] text-[9px] font-extrabold text-black"
               >
                 Suivre
               </Pressable>
@@ -450,6 +450,21 @@ function StandLive() {
           </span>
           <span className="mt-[2px] text-[8.5px] font-bold text-white/90">Zems</span>
         </Pressable>
+        {!host && (
+          <Pressable
+            onClick={() => {
+              tap();
+              setAsk(true);
+            }}
+            className="flex flex-col items-center"
+            aria-label="Poser une question"
+          >
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-white/14 backdrop-blur">
+              <HelpCircle size={19} className="text-gold" />
+            </span>
+            <span className="mt-[2px] text-[8.5px] font-bold text-white/90">Question</span>
+          </Pressable>
+        )}
 
         <div className="pointer-events-none absolute right-3 bottom-[36px]">
           <AnimatePresence>
@@ -469,9 +484,9 @@ function StandLive() {
         </div>
       </div>
 
-      {/* BOUTON QUESTIONS */}
-      <div className="absolute left-3 z-20 bottom-[212px]">
-        {host ? (
+      {/* BOUTON QUESTIONS (HÔTE) */}
+      {host && (
+        <div className="absolute left-3 z-20 bottom-[300px]">
           <Pressable
             onClick={() => {
               tap();
@@ -486,19 +501,8 @@ function StandLive() {
               {counts.p}
             </span>
           </Pressable>
-        ) : (
-          <Pressable
-            onClick={() => {
-              tap();
-              setAsk(true);
-            }}
-            className="flex items-center gap-1.5 rounded-full bg-gold px-3 py-2 text-[12px] font-extrabold text-black shadow-[0_8px_20px_rgba(0,0,0,0.45)]"
-            aria-label="Poser une question"
-          >
-            <HelpCircle size={14} /> Poser une question
-          </Pressable>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* CHAT LIVE */}
       <div className="absolute inset-x-0 bottom-[64px] z-10 px-3">
