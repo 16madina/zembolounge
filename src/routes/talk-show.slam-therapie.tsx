@@ -85,11 +85,35 @@ const AUTO: Array<[string, string]> = [
   ["QueenVee", "On guérit en écoutant 🙏"],
 ];
 
-const QUEUE = [
-  { n: 1, name: "Sarah", title: "Je me suis choisie", music: "🎸 Guitare", time: "01:00" },
-  { n: 2, name: "Kevin", title: "Père absent", music: "〰 Émotion", time: "03:00" },
-  { n: 3, name: "Aïssatou", title: "Ma renaissance", music: "🥁 Afro douce", time: "01:00" },
+type Slot = {
+  id: number;
+  name: string;
+  title: string;
+  mood: string;
+  sound: string | null;
+  duration: SlamDuration;
+  me?: boolean;
+};
+
+const QUEUE0: Slot[] = [
+  { id: 1, name: "Moussa", title: "Les blessures invisibles", mood: "piano", sound: "Renaissance", duration: 3 },
+  { id: 2, name: "Sarah", title: "Je me suis choisie", mood: "guitare", sound: "Racines", duration: 1 },
+  { id: 3, name: "Kevin", title: "Père absent", mood: "emotion", sound: "Silence plein", duration: 3 },
 ];
+
+const REQUESTS0: Slot[] = [
+  { id: 51, name: "Aïssatou", title: "Ma renaissance", mood: "afro", sound: "Mama", duration: 1 },
+  { id: 52, name: "Lina", title: "Ce que je n'ai jamais dit", mood: "melancolique", sound: "Absence", duration: 3 },
+];
+
+const STAGE0: Slot = {
+  id: 0,
+  name: "Deena",
+  title: "Je me suis relevée",
+  mood: "piano",
+  sound: "Renaissance",
+  duration: 3,
+};
 
 const GIFTS = [
   { emoji: "🌹", name: "Rose", cost: 5 },
