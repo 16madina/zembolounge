@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Globe, Heart, Users } from "lucide-react";
-import worldRoomImg from "@/assets/world-room-official.png.asset.json";
+import worldGlobe from "@/assets/world-room-globe.png.asset.json";
 import { Pressable } from "@/components/zembo/ui";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 
 export const Route = createFileRoute("/world/intro")({
   head: () => ({
@@ -45,6 +46,9 @@ const ARGS = [
 
 function WorldIntro() {
   const navigate = useNavigate();
+  const { session } = useZemboAuth();
+  const connected = !!session;
+
 
   return (
     <div className="app-scroll no-scrollbar relative h-[100dvh] overflow-hidden bg-[oklch(0.06_0.01_50)]">
@@ -93,21 +97,20 @@ function WorldIntro() {
           </p>
         </div>
 
-        {/* Visuel central : globe + avatars (image officielle) */}
-        <div className="relative mx-auto mt-4 flex justify-center" style={{ width: 260, height: 340 }}>
-          {/* glow */}
+        {/* Visuel central : globe + avatars (image officielle, unique) */}
+        <div className="relative mx-auto mt-5 flex justify-center" style={{ width: 300 }}>
           <div
             className="pointer-events-none absolute inset-0 rounded-full blur-2xl"
             style={{
               background:
-                "radial-gradient(circle, oklch(0.78 0.13 82 / 40%), transparent 68%)",
+                "radial-gradient(circle, oklch(0.78 0.13 82 / 38%), transparent 68%)",
             }}
           />
           <img
-            src={worldRoomImg.url}
+            src={worldGlobe.url}
             alt="Globe terrestre avec avatars — World Room"
-            className="relative z-10 h-full w-full rounded-[24px] object-cover"
-            style={{ filter: "drop-shadow(0 8px 30px oklch(0.82 0.13 85 / 28%))" }}
+            className="relative z-10 w-full rounded-[20px] object-contain"
+            style={{ filter: "drop-shadow(0 8px 30px oklch(0.82 0.13 85 / 26%))" }}
           />
         </div>
 
@@ -128,24 +131,33 @@ function WorldIntro() {
           ))}
         </div>
 
-        {/* Bouton principal */}
-        <Pressable
-          onClick={() => navigate({ to: "/world/onboarding/1" })}
-          className="glow-gold mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[15px] font-bold text-[oklch(0.16_0.02_60)]"
-        >
-          Créer mon profil <span className="text-[17px] leading-none">›</span>
-        </Pressable>
-
-        {/* Déjà inscrit */}
-        <div className="mt-4 mb-6 text-center text-[13px]">
-          <span className="text-muted-foreground">Déjà inscrit ? </span>
+        {/* Bouton principal + compte Zembo */}
+        {connected ? (
           <Pressable
-            onClick={() => navigate({ to: "/world/login" })}
-            className="font-semibold text-gold underline-offset-2"
+            onClick={() => navigate({ to: "/world/onboarding/1" })}
+            className="glow-gold mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[15px] font-bold text-[oklch(0.16_0.02_60)]"
           >
-            Se connecter
+            Créer mon profil <span className="text-[17px] leading-none">›</span>
           </Pressable>
-        </div>
+        ) : (
+          <>
+            <Pressable
+              onClick={() => navigate({ to: "/signup" })}
+              className="glow-gold mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[15px] font-bold text-[oklch(0.16_0.02_60)]"
+            >
+              Créer mon profil <span className="text-[17px] leading-none">›</span>
+            </Pressable>
+            <div className="mt-4 mb-6 text-center text-[13px]">
+              <span className="text-muted-foreground">Déjà inscrit ? </span>
+              <Pressable
+                onClick={() => navigate({ to: "/login" })}
+                className="font-semibold text-gold underline-offset-2"
+              >
+                Se connecter
+              </Pressable>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
