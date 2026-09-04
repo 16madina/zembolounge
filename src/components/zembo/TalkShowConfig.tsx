@@ -68,14 +68,13 @@ function Section({
     <section className="mt-4 px-4">
       <div className="rounded-[20px] border border-border/45 bg-surface/35 p-3">
         <h2 className="flex items-center gap-2 text-[13.5px] font-bold text-foreground">
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-gold/60 text-[10px] font-extrabold text-gold">
-            {n}
-          </span>
-          {n}. {title}
+          <span className="text-gold">{n}.</span>
+          {title}
         </h2>
         <div className="mt-2.5">{children}</div>
       </div>
     </section>
+
   );
 }
 
