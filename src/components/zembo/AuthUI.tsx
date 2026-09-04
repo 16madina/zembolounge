@@ -82,7 +82,7 @@ export function SocialRow() {
         onClick={() => soon("Apple")}
         className="flex items-center justify-center gap-1.5 rounded-2xl border border-white/15 bg-black py-3 text-[13px] font-semibold text-white"
       >
-        <span className="text-[15px]"></span> Apple
+        <span className="text-[15px] font-black">⌘</span> Apple
       </Pressable>
       <Pressable
         onClick={() => soon("Google")}
