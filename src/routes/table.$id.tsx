@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, Dices, Globe, Info, Mic, MicOff, MoreVertical, Send, Smile, Users } from "lucide-react";
+import { ChevronRight, Dices, Globe, Heart, Info, Layers, Mic, MicOff, MoreVertical, Send, Smile, Users } from "lucide-react";
 import { AvatarStack, Pressable } from "@/components/zembo/ui";
 import { PhotoAvatar } from "@/components/zembo/PhotoAvatar";
 import { BottomSheet } from "@/components/zembo/Sheet";
@@ -55,7 +55,7 @@ const REACTIONS = [
 ];
 
 const CHAT0 = [
-  { id: "c1", name: "Ben", time: "21:33", text: "Intéressant ça Deena ! Hâte d'entendre ta réponse 👀" },
+  { id: "c1", name: "Ben", time: "21:33", text: "Intéressant ça Deena ! Hâte d'entendre ta réponse !" },
   { id: "c2", name: "Emma", time: "21:34", text: "Moi je ne pardonne pas l'infidélité." },
   { id: "c3", name: "Kader", time: "21:35", text: "On a tous nos limites, et c'est OK." },
   { id: "c4", name: "Nadia", time: "21:36", text: "L'argent change beaucoup de choses malheureusement." },
@@ -151,8 +151,8 @@ function TableRoom() {
         </div>
 
         <div className="mt-2.5 flex items-center gap-2">
-          <span className="shrink-0 rounded-full border border-border bg-surface-2/60 px-2.5 py-1 text-[10.5px] text-foreground/80">
-            🎴 Deck : Relations ❤️
+          <span className="flex shrink-0 items-center gap-1 rounded-full border border-border bg-surface-2/60 px-2.5 py-1 text-[10.5px] text-foreground/80"><Layers size={11} className="text-gold" /><Heart size={10} className="text-live" />
+            Deck : Relations
           </span>
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
             <span className="truncate text-[10px] font-bold tracking-[0.14em] text-muted-foreground uppercase">
@@ -230,7 +230,8 @@ function TableRoom() {
           {/* seats */}
           {Array.from({ length: seatCount }).map((_, i) => {
             const angle = (-90 + i * (360 / seatCount)) * (Math.PI / 180);
-            const left = 50 + Math.cos(angle) * 39;
+            const rx = seatCount <= 4 ? 32 : seatCount <= 6 ? 36 : 38;
+            const left = 50 + Math.cos(angle) * rx;
             const top = 50 + Math.sin(angle) * 41;
             const p = players[i];
             const active = p && i === turn;
@@ -238,7 +239,7 @@ function TableRoom() {
               <div
                 key={i}
                 className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1"
-                style={{ left: `${left}%`, top: `${top}%`, width: avatarSize + 26 }}
+                style={{ left: `${left}%`, top: `${top}%`, width: avatarSize }}
               >
                 {p ? (
                   <>
@@ -268,11 +269,11 @@ function TableRoom() {
                       </Pressable>
                     </div>
                     <span
-                      className={`flex max-w-full items-center gap-0.5 rounded-full border px-1.5 py-[2px] text-[9px] font-semibold whitespace-nowrap ${
+                      className={`flex items-center gap-0.5 rounded-full border px-1.5 py-[2px] text-[9px] font-semibold whitespace-nowrap ${
                         active ? "border-gold bg-gold/15 text-gold" : "border-gold/35 bg-black/80 text-white/85"
                       }`}
                     >
-                      <span className="truncate">
+                      <span className="whitespace-nowrap">
                         {p.name}
                         {p.you ? " (Toi)" : ""}
                       </span>
