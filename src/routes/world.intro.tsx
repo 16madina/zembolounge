@@ -24,14 +24,6 @@ export const Route = createFileRoute("/world/intro")({
   component: WorldIntro,
 });
 
-// 5 avatars positionnés en cercle autour du globe (angles en degrés, -90 = haut)
-const RING = [
-  { seed: "amara", angle: -90 },
-  { seed: "kenji", angle: -18 },
-  { seed: "sofia", angle: 54 },
-  { seed: "yacine", angle: 126 },
-  { seed: "lina", angle: 198 },
-];
 
 const ARGS = [
   {
