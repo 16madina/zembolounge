@@ -7,6 +7,7 @@ import {
   ageFromBirthdate,
   intentionLabels,
   loadWorldProfile,
+  saveWorldProfile,
   type WorldProfileDraft,
 } from "@/lib/world-profile";
 
@@ -31,7 +32,10 @@ function Step6() {
       subtitle="Voici un aperçu de ce que les autres verront."
       back="/world/onboarding/5"
       cta="Entrer dans World Room"
-      onCta={() => navigate({ to: "/world/discover" })}
+      onCta={() => {
+        saveWorldProfile({ ...draft, completed: true });
+        navigate({ to: "/world/discover" });
+      }}
       secondary="Modifier"
       onSecondary={() => navigate({ to: "/world/onboarding/1" })}
     >
@@ -48,6 +52,9 @@ function Step6() {
               {draft.firstName || "Ton prénom"}
               {draft.showAge && age !== null ? `, ${age}` : ""}
             </p>
+            {draft.username && (
+              <p className="truncate text-[12.5px] font-semibold text-gold">@{draft.username}</p>
+            )}
             <p className="mt-1 flex items-center gap-1 truncate text-[12.5px] text-muted-foreground">
               <MapPin size={12} className="shrink-0 text-gold" />
               {[draft.city, draft.country].filter(Boolean).join(", ") || "Ta ville"}

@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Globe, Heart, Users } from "lucide-react";
+import { useEffect } from "react";
 import worldGlobe from "@/assets/world-room-globe.png.asset.json";
 import { Pressable } from "@/components/zembo/ui";
 import { useZemboAuth } from "@/lib/use-zembo-auth";
+import { hasWorldProfile } from "@/lib/world-profile";
 
 export const Route = createFileRoute("/world/intro")({
   head: () => ({
@@ -48,6 +50,11 @@ function WorldIntro() {
   const navigate = useNavigate();
   const { session } = useZemboAuth();
   const connected = !!session;
+
+  // Profil World Room déjà créé → on entre directement dans la découverte.
+  useEffect(() => {
+    if (hasWorldProfile()) navigate({ to: "/world/discover", replace: true });
+  }, [navigate]);
 
 
   return (

@@ -5,6 +5,8 @@ import { WorldStep, worldHead, worldInputCls } from "@/components/zembo/WorldSte
 import {
   EMPTY_WORLD_PROFILE,
   ageFromBirthdate,
+  checkUsername,
+  normalizeUsername,
   loadWorldProfile,
   saveWorldProfile,
   type WorldProfileDraft,
@@ -22,7 +24,9 @@ function Step1() {
 
   const set = (k: keyof WorldProfileDraft, v: string) => setDraft((d) => ({ ...d, [k]: v }));
   const age = ageFromBirthdate(draft.birthdate);
+  const userState = checkUsername(draft.username);
   const valid =
+    userState === "ok" &&
     draft.firstName.trim().length >= 2 &&
     draft.lastName.trim().length >= 2 &&
     age !== null &&
@@ -42,6 +46,47 @@ function Step1() {
       }}
     >
       <div className="flex flex-col gap-5">
+        <div>
+          <label className="mb-1.5 block text-[12.5px] font-semibold text-foreground">
+            Pseudo <span className="text-gold">*</span>
+          </label>
+          <div className="relative">
+            <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-[14px] font-bold text-gold">
+              @
+            </span>
+            <input
+              className={`${worldInputCls} pl-8`}
+              value={draft.username}
+              onChange={(e) => set("username", normalizeUsername(e.target.value))}
+              placeholder="deena"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              maxLength={20}
+            />
+          </div>
+          {userState === "ok" && (
+            <p className="mt-1.5 text-[11.5px] font-semibold text-[oklch(0.75_0.16_150)]">
+              ✓ Pseudo disponible
+            </p>
+          )}
+          {userState === "taken" && (
+            <p className="mt-1.5 text-[11.5px] font-semibold text-[oklch(0.65_0.2_25)]">
+              ✗ Ce pseudo est déjà pris
+            </p>
+          )}
+          {userState === "short" && (
+            <p className="mt-1.5 text-[11.5px] text-muted-foreground">
+              Au moins 3 caractères.
+            </p>
+          )}
+          {userState === "empty" && (
+            <p className="mt-1.5 text-[11.5px] text-muted-foreground">
+              Ton identifiant public, visible sur ta World Card.
+            </p>
+          )}
+        </div>
+
         <div>
           <label className="mb-1.5 block text-[12.5px] font-semibold text-foreground">
             Prénom <span className="text-gold">*</span>

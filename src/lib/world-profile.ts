@@ -1,5 +1,7 @@
 /** Profil de découverte World Room (mock, aucune authentification). */
 export type WorldProfileDraft = {
+  username: string;
+  completed: boolean;
   firstName: string;
   lastName: string;
   birthdate: string;
@@ -16,6 +18,8 @@ export type WorldProfileDraft = {
 const KEY = "zembo-world-profile-draft";
 
 export const EMPTY_WORLD_PROFILE: WorldProfileDraft = {
+  username: "",
+  completed: false,
   firstName: "",
   lastName: "",
   birthdate: "",
@@ -47,6 +51,38 @@ export function saveWorldProfile(draft: WorldProfileDraft) {
   } catch {
     /* ignore */
   }
+}
+
+/** Pseudos déjà utilisés (mock) — le pseudo World Room doit être unique. */
+export const TAKEN_USERNAMES = [
+  "deena_zembo",
+  "admin",
+  "zembo",
+  "worldroom",
+  "moussa",
+  "chloe",
+];
+
+export function normalizeUsername(v: string) {
+  return v
+    .toLowerCase()
+    .replace(/[^a-z0-9._]/g, "")
+    .slice(0, 20);
+}
+
+export type UsernameState = "empty" | "short" | "taken" | "ok";
+
+export function checkUsername(v: string): UsernameState {
+  const u = normalizeUsername(v);
+  if (!u) return "empty";
+  if (u.length < 3) return "short";
+  return TAKEN_USERNAMES.includes(u) ? "taken" : "ok";
+}
+
+/** Un profil World Room existe déjà (pseudo choisi + onboarding terminé). */
+export function hasWorldProfile() {
+  const p = loadWorldProfile();
+  return p.completed && p.username.trim().length > 0;
 }
 
 export function ageFromBirthdate(birthdate: string): number | null {
