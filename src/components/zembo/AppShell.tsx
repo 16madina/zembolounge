@@ -42,12 +42,13 @@ export function AppShell({ children }: { children: ReactNode }) {
               transition={{ duration: 0.24, ease: [0.32, 0.72, 0, 1] }}
               className={cn(
                 "h-full",
-                isThread || isTable || isLiveShow || isSetup || isSlam || isAdmin || isAuth
+                isThread || isTable || isLiveShow || isSetup || isSlam || isAdmin || isAuth || isWorldDiscover
                   ? "overflow-hidden"
                   : isGame || isWorld
                     ? "app-scroll"
                     : "app-scroll pb-[112px]",
               )}
+
             >
 
               {children}
