@@ -26,6 +26,7 @@ import { Route as TalkShowIdRouteImport } from './routes/talk-show.$id'
 import { Route as TalkShowMicroOuvertRouteImport } from './routes/talk-show.micro-ouvert'
 import { Route as TalkShowOpenMicRouteImport } from './routes/talk-show.open-mic'
 import { Route as TalkShowSlamRouteImport } from './routes/talk-show.slam'
+import { Route as TalkShowSlamTherapieRouteImport } from './routes/talk-show.slam-therapie'
 import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
 import { Route as TalkShowStorytimeRouteImport } from './routes/talk-show.storytime'
 import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.config.$format'
@@ -116,6 +117,11 @@ const TalkShowSlamRoute = TalkShowSlamRouteImport.update({
   path: '/slam',
   getParentRoute: () => TalkShowRoute,
 } as any)
+const TalkShowSlamTherapieRoute = TalkShowSlamTherapieRouteImport.update({
+  id: '/slam-therapie',
+  path: '/slam-therapie',
+  getParentRoute: () => TalkShowRoute,
+} as any)
 const TalkShowStandRoute = TalkShowStandRouteImport.update({
   id: '/stand',
   path: '/stand',
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/talk-show/micro-ouvert': typeof TalkShowMicroOuvertRoute
   '/talk-show/open-mic': typeof TalkShowOpenMicRoute
   '/talk-show/slam': typeof TalkShowSlamRoute
+  '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show/': typeof TalkShowIndexRoute
@@ -176,6 +183,7 @@ export interface FileRoutesByTo {
   '/talk-show/micro-ouvert': typeof TalkShowMicroOuvertRoute
   '/talk-show/open-mic': typeof TalkShowOpenMicRoute
   '/talk-show/slam': typeof TalkShowSlamRoute
+  '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show': typeof TalkShowIndexRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/talk-show/micro-ouvert': typeof TalkShowMicroOuvertRoute
   '/talk-show/open-mic': typeof TalkShowOpenMicRoute
   '/talk-show/slam': typeof TalkShowSlamRoute
+  '/talk-show/slam-therapie': typeof TalkShowSlamTherapieRoute
   '/talk-show/stand': typeof TalkShowStandRoute
   '/talk-show/storytime': typeof TalkShowStorytimeRoute
   '/talk-show/': typeof TalkShowIndexRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/talk-show/micro-ouvert'
     | '/talk-show/open-mic'
     | '/talk-show/slam'
+    | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/talk-show/'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/talk-show/micro-ouvert'
     | '/talk-show/open-mic'
     | '/talk-show/slam'
+    | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/talk-show'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/talk-show/micro-ouvert'
     | '/talk-show/open-mic'
     | '/talk-show/slam'
+    | '/talk-show/slam-therapie'
     | '/talk-show/stand'
     | '/talk-show/storytime'
     | '/talk-show/'
@@ -413,6 +425,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TalkShowSlamRouteImport
       parentRoute: typeof TalkShowRoute
     }
+    '/talk-show/slam-therapie': {
+      id: '/talk-show/slam-therapie'
+      path: '/slam-therapie'
+      fullPath: '/talk-show/slam-therapie'
+      preLoaderRoute: typeof TalkShowSlamTherapieRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
     '/talk-show/stand': {
       id: '/talk-show/stand'
       path: '/stand'
@@ -449,6 +468,7 @@ interface TalkShowRouteChildren {
   TalkShowMicroOuvertRoute: typeof TalkShowMicroOuvertRoute
   TalkShowOpenMicRoute: typeof TalkShowOpenMicRoute
   TalkShowSlamRoute: typeof TalkShowSlamRoute
+  TalkShowSlamTherapieRoute: typeof TalkShowSlamTherapieRoute
   TalkShowStandRoute: typeof TalkShowStandRoute
   TalkShowStorytimeRoute: typeof TalkShowStorytimeRoute
   TalkShowIndexRoute: typeof TalkShowIndexRoute
@@ -461,6 +481,7 @@ const TalkShowRouteChildren: TalkShowRouteChildren = {
   TalkShowMicroOuvertRoute: TalkShowMicroOuvertRoute,
   TalkShowOpenMicRoute: TalkShowOpenMicRoute,
   TalkShowSlamRoute: TalkShowSlamRoute,
+  TalkShowSlamTherapieRoute: TalkShowSlamTherapieRoute,
   TalkShowStandRoute: TalkShowStandRoute,
   TalkShowStorytimeRoute: TalkShowStorytimeRoute,
   TalkShowIndexRoute: TalkShowIndexRoute,
