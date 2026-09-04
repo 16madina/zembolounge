@@ -444,6 +444,8 @@ function SlamTherapieLive() {
       {/* SAISIE */}
       <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 px-3 pt-2 pb-[max(8px,env(safe-area-inset-bottom))]">
         <input
+          ref={inputRef}
+
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
