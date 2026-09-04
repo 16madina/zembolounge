@@ -560,370 +560,463 @@ function TableRoom() {
         </Pressable>
       </div>
 
-      {/* ============ BAS VIVANT ============ */}
-      <div className="relative flex flex-1 flex-col gap-3 bg-[oklch(0.03_0_0)] px-3 pt-3">
-        {/* BARRE D'ÉTAPES */}
-        <div className="flex items-center justify-between rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] px-2.5 py-2">
-          {STEPS.map((s, i) => (
-            <div key={s.key} className="flex items-center gap-1">
-              <span
-                className={`flex h-6 w-6 items-center justify-center rounded-full border ${
-                  i === stepIndex
-                    ? "border-gold bg-gold-gradient text-[oklch(0.16_0.02_60)]"
-                    : i < stepIndex
-                      ? "border-gold/50 text-gold"
-                      : "border-border text-muted-foreground"
-                }`}
+      {/* ============ PANNEAU LIVE ============ */}
+      <div className="relative flex min-h-0 flex-1 flex-col bg-[oklch(0.03_0_0)]">
+        {/* Onglets */}
+        <div className="flex shrink-0 items-stretch gap-0.5 rounded-2xl bg-[oklch(0.07_0.005_60)] p-1 mx-3 mt-2">
+          {TABS.map((t) => {
+            const active = t.id === tab;
+            return (
+              <Pressable
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                whileTap={{ scale: 0.96 }}
+                className="relative min-w-0 flex-1 rounded-xl px-1 py-1.5"
               >
-                <s.Icon size={12} />
-              </span>
-              {i < STEPS.length - 1 && <span className="h-[1px] w-2 bg-border" />}
-            </div>
-          ))}
-          <span className="ml-1 flex items-center gap-1 rounded-full border border-gold/30 px-2 py-[2px] text-[11px] font-bold text-gold">
-            <Users size={11} /> {occupied}/6
-          </span>
+                {active && (
+                  <motion.span
+                    layoutId="table-live-tab"
+                    className="bg-gold-gradient absolute inset-0 rounded-xl"
+                    transition={{ type: "spring", stiffness: 480, damping: 34 }}
+                  />
+                )}
+                <span
+                  className={`relative block truncate text-[11px] ${
+                    active ? "font-extrabold text-[oklch(0.16_0.02_60)]" : "font-medium text-foreground/75"
+                  }`}
+                >
+                  {t.id === "queue" ? `En attente (${queue.length})` : t.label}
+                </span>
+              </Pressable>
+            );
+          })}
         </div>
 
-        {/* ===== PANNEAU DE JEU ===== */}
-        <AnimatePresence mode="wait">
-          <motion.section
-            key={phase}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.2 }}
-            className="rounded-2xl border border-gold/25 bg-[oklch(0.07_0.005_60)] p-3"
-          >
-            {phase === "roll" && (
-              <div className="flex flex-col items-center gap-2 text-center">
-                <p className="text-[11px] font-bold tracking-[0.18em] text-gold/80">
-                  TOUR DE {activeSeat.name?.toUpperCase()}
-                </p>
-                <p className="text-[12px] text-muted-foreground">
-                  Le dé choisit la carte du deck « Relations ».
-                </p>
-                <Pressable
-                  onClick={roll}
-                  className="mt-1 flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 text-[13.5px] font-extrabold text-[oklch(0.16_0.02_60)]"
-                >
-                  <Dices size={16} /> Lancer le dé
-                </Pressable>
-              </div>
-            )}
-
-            {phase === "card" && (
-              <div className="flex flex-col items-center gap-1.5 text-center">
-                <span className="flex items-center gap-1.5 text-[12px] font-extrabold tracking-[0.16em] text-gold">
-                  <Sparkles size={13} /> RELATIONS
-                </span>
-                <p className="text-[13px] leading-snug font-semibold text-foreground/90">{QUESTIONS[qIndex]}</p>
-                <p className="text-[11px] text-muted-foreground">Dé : {dice} — la carte se retourne…</p>
-              </div>
-            )}
-
-            {phase === "answers" && (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="flex min-w-0 items-center gap-1.5 text-[12.5px] font-bold text-gold">
-                    <Mic size={13} className="shrink-0" />
-                    <span className="truncate">{activeSeat.name} répond</span>
-                  </span>
-                  <span className="shrink-0 rounded-full border border-gold/50 px-2.5 py-[2px] text-[12px] font-bold text-gold tabular-nums">
-                    {mmss}
-                  </span>
-                </div>
-                <div className="h-[3px] overflow-hidden rounded-full bg-white/10">
-                  <motion.div
-                    className="h-full bg-gold-gradient"
-                    animate={{ width: `${(seconds / 45) * 100}%` }}
-                    transition={{ duration: 0.4 }}
-                  />
-                </div>
-                <p className="text-[11.5px] text-muted-foreground">
-                  Ordre de parole : {speakOrder.map((i) => seats[i]!.name).join(" · ")} ({answerIdx + 1}/
-                  {speakOrder.length})
-                </p>
-                <div className="flex items-center gap-2">
-                  <Pressable
-                    onClick={() => {
-                      navigator.vibrate?.(10);
-                      nextAnswer();
-                    }}
-                    className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-gold/40 py-2 text-[12.5px] font-bold text-gold"
-                  >
-                    <SkipForward size={13} /> Passer
-                  </Pressable>
-                  <Pressable
-                    onClick={skipToVote}
-                    className="flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[11.5px] font-semibold text-muted-foreground"
-                  >
-                    <FastForward size={12} /> Accélérer (démo)
-                  </Pressable>
-                </div>
-              </div>
-            )}
-
-            {phase === "vote" && (
-              <div className="flex flex-col gap-2.5">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <h2 className="text-[12.5px] font-extrabold tracking-[0.1em] text-gold">
-                      QUI MÉRITE DE RESTER À LA TABLE ?
-                    </h2>
-                    <p className="text-[11.5px] text-muted-foreground">
-                      Votez pour votre intervention préférée
-                    </p>
-                  </div>
-                  <span className="shrink-0 rounded-full border border-gold/50 px-2.5 py-[2px] text-[12px] font-bold text-gold tabular-nums">
-                    00:{String(voteSeconds).padStart(2, "0")}
-                  </span>
-                </div>
-
-                <Pressable
-                  onClick={() => setSpectatorView((v) => !v)}
-                  className="flex items-center justify-center gap-1.5 self-start rounded-full border border-gold/40 px-3 py-1.5 text-[11.5px] font-bold text-gold"
-                >
-                  {spectatorView ? <Eye size={12} /> : <Users size={12} />}
-                  {spectatorView ? "Vue spectateur" : "Vue joueur"}
-                </Pressable>
-
-                <p className="text-[11px] text-muted-foreground">
-                  {spectatorView
-                    ? "Touche un invité pour voter."
-                    : "Tu es à la table : tu ne votes pas, tu regardes les résultats en direct."}
-                </p>
-
-                <div className="flex flex-col gap-2">
-                  {seats
-                    .filter((s) => s.name)
-                    .map((s) => {
-                      const immune = !!s.host;
-                      const pct = votes[s.n] ?? 0;
-                      const picked = myVote === s.n;
-                      return (
-                        <Pressable
-                          key={s.n}
-                          disabled={immune || !spectatorView}
-                          onClick={() => {
-                            navigator.vibrate?.(10);
-                            setMyVote(s.n);
-                          }}
-                          className={`flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left ${
-                            picked ? "border-gold bg-gold/10" : "border-border bg-[oklch(0.09_0.004_60)]"
-                          }`}
-                        >
-                          <img
-                            src={photoUrl(s.name!)}
-                            alt=""
-                            className={`h-8 w-8 shrink-0 rounded-full object-cover ${picked ? "ring-2 ring-gold" : ""}`}
-                          />
-                          <span className="min-w-0 flex-1">
-                            <span className="flex items-center justify-between gap-2">
-                              <span className="truncate text-[12.5px] font-bold text-white">{s.name}</span>
-                              {immune ? (
-                                <span className="flex shrink-0 items-center gap-1 text-[10.5px] font-bold text-gold/80">
-                                  <Shield size={11} /> Immunisée
-                                </span>
-                              ) : (
-                                <span className="shrink-0 text-[12px] font-bold text-gold tabular-nums">{pct}%</span>
-                              )}
-                            </span>
-                            {!immune && (
-                              <span className="mt-1 block h-[4px] overflow-hidden rounded-full bg-white/10">
-                                <motion.span
-                                  className="block h-full bg-gold-gradient"
-                                  animate={{ width: `${pct * 2.5}%` }}
-                                  transition={{ duration: 0.5 }}
-                                />
-                              </span>
-                            )}
-                          </span>
-                        </Pressable>
-                      );
-                    })}
-                </div>
-              </div>
-            )}
-
-            {phase === "result" && (
-              <div className="flex flex-col gap-2.5">
-                <h2 className="text-[12.5px] font-extrabold tracking-[0.12em] text-gold">RÉSULTAT DU VOTE</h2>
-                <div className="flex flex-col gap-1.5">
-                  {seats
-                    .filter((s) => s.name && !s.host)
-                    .slice()
-                    .sort((a, b) => (votes[b.n] ?? 0) - (votes[a.n] ?? 0))
-                    .map((s, i) => (
-                      <div key={s.n} className="flex items-center gap-2">
-                        <span className="w-4 text-[11.5px] font-bold text-gold/70">{i + 1}</span>
-                        <img src={photoUrl(s.name!)} alt="" className="h-7 w-7 rounded-full object-cover" />
-                        <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-white">
-                          {s.name}
-                        </span>
-                        <span className="text-[12px] font-bold text-gold tabular-nums">{votes[s.n] ?? 0}%</span>
-                      </div>
-                    ))}
-                </div>
-                <div className="rounded-xl border border-[oklch(0.7_0.18_25_/_45%)] bg-[oklch(0.1_0.02_25)] p-2.5">
-                  <p className="flex items-center gap-1.5 text-[12.5px] font-extrabold text-[oklch(0.78_0.16_25)]">
-                    <ArrowDown size={13} /> {leaving} quitte la table
-                  </p>
-                  <p className="mt-1 text-[11.5px] text-foreground/75">
-                    Elle reste dans le Live et rejoint les spectateurs.
-                  </p>
-                </div>
-                <Pressable
-                  onClick={confirmLeave}
-                  className="flex items-center justify-center gap-1.5 rounded-full bg-gold-gradient py-2.5 text-[13px] font-extrabold text-[oklch(0.16_0.02_60)]"
-                >
-                  <ArrowDown size={14} /> Libérer la place
-                </Pressable>
-              </div>
-            )}
-
-            {phase === "promote" && (
-              <div className="flex flex-col gap-2.5">
-                <h2 className="flex items-center gap-1.5 text-[12.5px] font-extrabold tracking-[0.12em] text-gold">
-                  <ArrowUp size={14} /> 1 PLACE DISPONIBLE
-                </h2>
-                <p className="text-[11.5px] text-muted-foreground">
-                  File d'attente — l'hôte fait monter un spectateur.
-                </p>
-                {queue.map((name) => (
-                  <div
-                    key={name}
-                    className="flex items-center gap-2.5 rounded-xl border border-border bg-[oklch(0.09_0.004_60)] px-2.5 py-2"
-                  >
-                    <img src={photoUrl(name)} alt="" className="h-8 w-8 rounded-full object-cover" />
-                    <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-white">{name}</span>
-                    <Pressable
-                      onClick={() => promote(name)}
-                      className="shrink-0 rounded-full bg-gold-gradient px-3 py-1.5 text-[11.5px] font-extrabold text-[oklch(0.16_0.02_60)]"
+        {/* Contenu scrollable interne */}
+        <div className="app-scroll min-h-0 flex-1 px-3 pt-2">
+          {tab === "chat" && (
+            <div className="flex flex-col gap-2.5 pb-2">
+              {/* BARRE D'ÉTAPES */}
+              <div className="flex items-center justify-between rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] px-2.5 py-2">
+                {STEPS.map((s, i) => (
+                  <div key={s.key} className="flex items-center gap-1">
+                    <span
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border ${
+                        i === stepIndex
+                          ? "border-gold bg-gold-gradient text-[oklch(0.16_0.02_60)]"
+                          : i < stepIndex
+                            ? "border-gold/50 text-gold"
+                            : "border-border text-muted-foreground"
+                      }`}
                     >
-                      Faire monter
-                    </Pressable>
+                      <s.Icon size={12} />
+                    </span>
+                    {i < STEPS.length - 1 && <span className="h-[1px] w-2 bg-border" />}
                   </div>
                 ))}
-                {queue.length === 0 && (
-                  <p className="text-[12px] text-muted-foreground">File d'attente vide.</p>
-                )}
+                <span className="ml-1 flex items-center gap-1 rounded-full border border-gold/30 px-2 py-[2px] text-[11px] font-bold text-gold">
+                  <Users size={11} /> {occupied}/6
+                </span>
               </div>
-            )}
-          </motion.section>
+
+              {/* ===== PANNEAU DE JEU ===== */}
+              <AnimatePresence mode="wait">
+                <motion.section
+                  key={phase}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                  className="rounded-2xl border border-gold/25 bg-[oklch(0.07_0.005_60)] p-3"
+                >
+                  {phase === "roll" && (
+                    <div className="flex flex-col items-center gap-2 text-center">
+                      <p className="text-[11px] font-bold tracking-[0.18em] text-gold/80">
+                        TOUR DE {activeSeat.name?.toUpperCase()}
+                      </p>
+                      <p className="text-[12px] text-muted-foreground">
+                        Le dé choisit la carte du deck « Relations ».
+                      </p>
+                      <Pressable
+                        onClick={roll}
+                        className="mt-1 flex items-center justify-center gap-2 rounded-full bg-gold-gradient px-5 py-2.5 text-[13.5px] font-extrabold text-[oklch(0.16_0.02_60)]"
+                      >
+                        <Dices size={16} /> Lancer le dé
+                      </Pressable>
+                    </div>
+                  )}
+
+                  {phase === "card" && (
+                    <div className="flex flex-col items-center gap-1.5 text-center">
+                      <span className="flex items-center gap-1.5 text-[12px] font-extrabold tracking-[0.16em] text-gold">
+                        <Sparkles size={13} /> RELATIONS
+                      </span>
+                      <p className="text-[13px] leading-snug font-semibold text-foreground/90">{QUESTIONS[qIndex]}</p>
+                      <p className="text-[11px] text-muted-foreground">Dé : {dice} — la carte se retourne…</p>
+                    </div>
+                  )}
+
+                  {phase === "answers" && (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="flex min-w-0 items-center gap-1.5 text-[12.5px] font-bold text-gold">
+                          <Mic size={13} className="shrink-0" />
+                          <span className="truncate">{activeSeat.name} répond</span>
+                        </span>
+                        <span className="shrink-0 rounded-full border border-gold/50 px-2.5 py-[2px] text-[12px] font-bold text-gold tabular-nums">
+                          {mmss}
+                        </span>
+                      </div>
+                      <div className="h-[3px] overflow-hidden rounded-full bg-white/10">
+                        <motion.div
+                          className="h-full bg-gold-gradient"
+                          animate={{ width: `${(seconds / 45) * 100}%` }}
+                          transition={{ duration: 0.4 }}
+                        />
+                      </div>
+                      <p className="text-[11.5px] text-muted-foreground">
+                        Ordre de parole : {speakOrder.map((i) => seats[i]!.name).join(" · ")} ({answerIdx + 1}/
+                        {speakOrder.length})
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Pressable
+                          onClick={() => {
+                            navigator.vibrate?.(10);
+                            nextAnswer();
+                          }}
+                          className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-gold/40 py-2 text-[12.5px] font-bold text-gold"
+                        >
+                          <SkipForward size={13} /> Passer
+                        </Pressable>
+                        <Pressable
+                          onClick={skipToVote}
+                          className="flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-[11.5px] font-semibold text-muted-foreground"
+                        >
+                          <FastForward size={12} /> Accélérer (démo)
+                        </Pressable>
+                      </div>
+                    </div>
+                  )}
+
+                  {phase === "vote" && (
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <h2 className="text-[12.5px] font-extrabold tracking-[0.1em] text-gold">
+                            QUI MÉRITE DE RESTER À LA TABLE ?
+                          </h2>
+                          <p className="text-[11.5px] text-muted-foreground">
+                            Votez pour votre intervention préférée
+                          </p>
+                        </div>
+                        <span className="shrink-0 rounded-full border border-gold/50 px-2.5 py-[2px] text-[12px] font-bold text-gold tabular-nums">
+                          00:{String(voteSeconds).padStart(2, "0")}
+                        </span>
+                      </div>
+
+                      <Pressable
+                        onClick={() => setSpectatorView((v) => !v)}
+                        className="flex items-center justify-center gap-1.5 self-start rounded-full border border-gold/40 px-3 py-1.5 text-[11.5px] font-bold text-gold"
+                      >
+                        {spectatorView ? <Eye size={12} /> : <Users size={12} />}
+                        {spectatorView ? "Vue spectateur" : "Vue joueur"}
+                      </Pressable>
+
+                      <p className="text-[11px] text-muted-foreground">
+                        {spectatorView
+                          ? "Touche un invité pour voter."
+                          : "Tu es à la table : tu ne votes pas, tu regardes les résultats en direct."}
+                      </p>
+
+                      <div className="flex flex-col gap-2">
+                        {seats
+                          .filter((s) => s.name)
+                          .map((s) => {
+                            const immune = !!s.host;
+                            const pct = votes[s.n] ?? 0;
+                            const picked = myVote === s.n;
+                            return (
+                              <Pressable
+                                key={s.n}
+                                disabled={immune || !spectatorView}
+                                onClick={() => {
+                                  navigator.vibrate?.(10);
+                                  setMyVote(s.n);
+                                }}
+                                className={`flex w-full items-center gap-2.5 rounded-xl border px-2.5 py-2 text-left ${
+                                  picked ? "border-gold bg-gold/10" : "border-border bg-[oklch(0.09_0.004_60)]"
+                                }`}
+                              >
+                                <img
+                                  src={photoUrl(s.name!)}
+                                  alt=""
+                                  className={`h-8 w-8 shrink-0 rounded-full object-cover ${picked ? "ring-2 ring-gold" : ""}`}
+                                />
+                                <span className="min-w-0 flex-1">
+                                  <span className="flex items-center justify-between gap-2">
+                                    <span className="truncate text-[12.5px] font-bold text-white">{s.name}</span>
+                                    {immune ? (
+                                      <span className="flex shrink-0 items-center gap-1 text-[10.5px] font-bold text-gold/80">
+                                        <Shield size={11} /> Immunisée
+                                      </span>
+                                    ) : (
+                                      <span className="shrink-0 text-[12px] font-bold text-gold tabular-nums">
+                                        {pct}%
+                                      </span>
+                                    )}
+                                  </span>
+                                  {!immune && (
+                                    <span className="mt-1 block h-[4px] overflow-hidden rounded-full bg-white/10">
+                                      <motion.span
+                                        className="block h-full bg-gold-gradient"
+                                        animate={{ width: `${pct * 2.5}%` }}
+                                        transition={{ duration: 0.5 }}
+                                      />
+                                    </span>
+                                  )}
+                                </span>
+                              </Pressable>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
+
+                  {phase === "result" && (
+                    <div className="flex flex-col gap-2.5">
+                      <h2 className="text-[12.5px] font-extrabold tracking-[0.12em] text-gold">RÉSULTAT DU VOTE</h2>
+                      <div className="flex flex-col gap-1.5">
+                        {seats
+                          .filter((s) => s.name && !s.host)
+                          .slice()
+                          .sort((a, b) => (votes[b.n] ?? 0) - (votes[a.n] ?? 0))
+                          .map((s, i) => (
+                            <div key={s.n} className="flex items-center gap-2">
+                              <span className="w-4 text-[11.5px] font-bold text-gold/70">{i + 1}</span>
+                              <img src={photoUrl(s.name!)} alt="" className="h-7 w-7 rounded-full object-cover" />
+                              <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-white">
+                                {s.name}
+                              </span>
+                              <span className="text-[12px] font-bold text-gold tabular-nums">{votes[s.n] ?? 0}%</span>
+                            </div>
+                          ))}
+                      </div>
+                      <div className="rounded-xl border border-[oklch(0.7_0.18_25_/_45%)] bg-[oklch(0.1_0.02_25)] p-2.5">
+                        <p className="flex items-center gap-1.5 text-[12.5px] font-extrabold text-[oklch(0.78_0.16_25)]">
+                          <ArrowDown size={13} /> {leaving} quitte la table
+                        </p>
+                        <p className="mt-1 text-[11.5px] text-foreground/75">
+                          Elle reste dans le Live et rejoint les spectateurs.
+                        </p>
+                      </div>
+                      <Pressable
+                        onClick={confirmLeave}
+                        className="flex items-center justify-center gap-1.5 rounded-full bg-gold-gradient py-2.5 text-[13px] font-extrabold text-[oklch(0.16_0.02_60)]"
+                      >
+                        <ArrowDown size={14} /> Libérer la place
+                      </Pressable>
+                    </div>
+                  )}
+
+                  {phase === "promote" && (
+                    <div className="flex flex-col gap-2.5">
+                      <h2 className="flex items-center gap-1.5 text-[12.5px] font-extrabold tracking-[0.12em] text-gold">
+                        <ArrowUp size={14} /> 1 PLACE DISPONIBLE
+                      </h2>
+                      <p className="text-[11.5px] text-muted-foreground">
+                        File d'attente — l'hôte fait monter un spectateur.
+                      </p>
+                      {queue.map((name) => (
+                        <div
+                          key={name}
+                          className="flex items-center gap-2.5 rounded-xl border border-border bg-[oklch(0.09_0.004_60)] px-2.5 py-2"
+                        >
+                          <img src={photoUrl(name)} alt="" className="h-8 w-8 rounded-full object-cover" />
+                          <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-white">{name}</span>
+                          <Pressable
+                            onClick={() => promote(name)}
+                            className="shrink-0 rounded-full bg-gold-gradient px-3 py-1.5 text-[11.5px] font-extrabold text-[oklch(0.16_0.02_60)]"
+                          >
+                            Faire monter
+                          </Pressable>
+                        </div>
+                      ))}
+                      {queue.length === 0 && <p className="text-[12px] text-muted-foreground">File d'attente vide.</p>}
+                    </div>
+                  )}
+                </motion.section>
+              </AnimatePresence>
+
+              {/* MESSAGES */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-[12px] font-extrabold tracking-[0.16em] text-gold">CHAT</h2>
+                <span className="flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-[11px] text-foreground/80">
+                  <Globe size={12} className="text-gold" /> Tout le monde ▾
+                </span>
+              </div>
+              {chat.map((c) => (
+                <div key={c.id} className="flex gap-2">
+                  <img src={photoUrl(c.name)} alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span
+                        className={`truncate text-[12.5px] font-bold ${c.name === "Deena" ? "text-gold" : "text-white"}`}
+                      >
+                        {c.name}
+                      </span>
+                      <span className="shrink-0 text-[10.5px] text-muted-foreground">{c.time}</span>
+                    </div>
+                    <p className="text-[12.5px] leading-snug text-foreground/85">{c.text}</p>
+                  </div>
+                </div>
+              ))}
+              <div ref={endRef} />
+            </div>
+          )}
+
+          {tab === "spectators" && (
+            <div className="pb-2">
+              <p className="mb-2 text-[11.5px] text-muted-foreground">
+                {SPECTATORS_23.length} personnes regardent la table.
+              </p>
+              <div className="grid grid-cols-5 gap-x-2 gap-y-3">
+                {SPECTATORS_23.map((s) => (
+                  <div key={s} className="flex min-w-0 flex-col items-center gap-1">
+                    <PhotoAvatar name={s} size={44} />
+                    <span className="w-full truncate text-center text-[10.5px] text-foreground/75">{s}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {tab === "queue" && (
+            <div className="flex flex-col gap-2 pb-2">
+              <p className="flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+                <Clock size={12} className="text-gold" /> Un spectateur monte dès qu'une place se libère.
+              </p>
+              {queue.map((name) => (
+                <div
+                  key={name}
+                  className="flex items-center gap-2.5 rounded-xl border border-border bg-[oklch(0.07_0.005_60)] px-2.5 py-2"
+                >
+                  <img src={photoUrl(name)} alt="" className="h-9 w-9 rounded-full object-cover" />
+                  <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-white">{name}</span>
+                  <Pressable
+                    onClick={() => promote(name)}
+                    whileTap={{ scale: 0.96 }}
+                    className="shrink-0 rounded-full bg-gold-gradient px-3 py-1.5 text-[11.5px] font-extrabold text-[oklch(0.16_0.02_60)]"
+                  >
+                    Faire monter
+                  </Pressable>
+                </div>
+              ))}
+              {queue.length === 0 && <p className="text-[12px] text-muted-foreground">File d'attente vide.</p>}
+            </div>
+          )}
+        </div>
+
+        {/* Emojis flottants (par-dessus tout) */}
+        <div className="pointer-events-none absolute inset-0 z-30 overflow-hidden">
+          <AnimatePresence>
+            {floats.map((f) => {
+              const R = REACTIONS[f.i]!;
+              return (
+                <motion.span
+                  key={f.id}
+                  initial={{ opacity: 1, y: 0, scale: 0.6 }}
+                  animate={{ opacity: 0, y: -220, scale: 1.2, x: f.x }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.4, ease: "easeOut" }}
+                  className="absolute right-6 bottom-[92px]"
+                >
+                  <R.Icon size={22} style={{ color: R.tint }} />
+                </motion.span>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+        {/* Sélecteur d'emojis */}
+        <AnimatePresence>
+          {emojiOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              className="absolute right-3 bottom-[142px] left-3 z-20 flex flex-wrap gap-1.5 rounded-2xl border border-gold/25 bg-[oklch(0.08_0.005_60)] p-2.5"
+            >
+              {EMOJIS.map((e) => (
+                <Pressable
+                  key={e}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => setDraft((d) => d + e)}
+                  className="rounded-xl px-2 py-1 text-[19px]"
+                >
+                  {e}
+                </Pressable>
+              ))}
+            </motion.div>
+          )}
         </AnimatePresence>
 
-        {/* CHAT */}
-        <section className="rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] p-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-[12px] font-extrabold tracking-[0.16em] text-gold">CHAT</h2>
-            <span className="flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-[11px] text-foreground/80">
-              <Globe size={12} className="text-gold" /> Tout le monde ▾
-            </span>
-          </div>
-          <div className="mt-2.5 space-y-2.5">
-            {chat.map((c) => (
-              <div key={c.id} className="flex gap-2">
-                <img src={photoUrl(c.name)} alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span
-                      className={`truncate text-[12.5px] font-bold ${c.name === "Deena" ? "text-gold" : "text-white"}`}
-                    >
-                      {c.name}
-                    </span>
-                    <span className="shrink-0 text-[10.5px] text-muted-foreground">{c.time}</span>
-                  </div>
-                  <p className="text-[12.5px] leading-snug text-foreground/85">{c.text}</p>
-                </div>
-              </div>
-            ))}
-            <div ref={endRef} />
-          </div>
-        </section>
+        {/* Bouton réaction flottant */}
+        <div className="pointer-events-none absolute right-3 bottom-[136px] z-20">
+          <Pressable
+            aria-label="Envoyer une réaction"
+            onClick={() => react(Math.floor(Math.random() * 3))}
+            whileTap={{ scale: 0.96 }}
+            className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full border border-gold/40 bg-[oklch(0.09_0.006_60)/0.9] backdrop-blur-sm"
+          >
+            <Heart size={18} className="text-[oklch(0.65_0.2_20)]" />
+          </Pressable>
+        </div>
 
-        {/* SPECTATEURS */}
-        <section className="rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] p-3">
-          <h2 className="text-[12px] font-extrabold tracking-[0.16em] text-gold">SPECTATEURS (23)</h2>
-          <div className="mt-2.5 flex items-center gap-1.5">
-            {SPECTATORS.map((s) => (
-              <PhotoAvatar key={s} name={s} size={34} />
-            ))}
-            <span className="ml-auto flex items-center gap-1 text-[12px] font-bold text-gold">
-              +17 <ChevronRight size={14} />
-            </span>
-          </div>
-          <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-semibold text-gold/90">
-            <Clock size={12} /> En attente de monter : {queue.length}
-          </p>
-          <p className="mt-1 text-[11.5px] text-muted-foreground">
-            Un spectateur monte dès qu'une place se libère.
-          </p>
-        </section>
-
-        {/* RÉAGIR */}
-        <section className="relative rounded-2xl border border-gold/20 bg-[oklch(0.06_0.004_60)] p-3">
-          <h2 className="text-[12px] font-extrabold tracking-[0.16em] text-gold">RÉAGIR</h2>
-          <div className="mt-2.5 flex items-center gap-2">
-            {REACTIONS.map((r, i) => (
-              <Pressable
-                key={r.key}
-                aria-label={`Réagir (${r.key})`}
-                onClick={() => react(i)}
-                whileTap={{ scale: 0.96 }}
-                className="flex flex-1 items-center justify-center gap-1 rounded-full border border-border bg-[oklch(0.09_0.004_60)] py-1.5 text-[12px] font-bold text-foreground/90"
-              >
-                <r.Icon size={13} style={{ color: r.tint }} />
-                <span className="tabular-nums">{reactions[i]}</span>
-              </Pressable>
-            ))}
-          </div>
-          <AnimatePresence>
-            {floats.map((f) => (
-              <motion.span
-                key={f.id}
-                initial={{ opacity: 1, y: 0 }}
-                animate={{ opacity: 0, y: -70 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.1 }}
-                className="pointer-events-none absolute bottom-8"
-                style={{ left: `${f.x}%` }}
-              >
-                {(() => {
-                  const R = REACTIONS[f.i]!;
-                  return <R.Icon size={18} style={{ color: R.tint }} />;
-                })()}
-              </motion.span>
-            ))}
-          </AnimatePresence>
-        </section>
-
-        {/* Barre de saisie collée en bas, au-dessus du dock */}
+        {/* Barre de saisie */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             send();
           }}
-          className="sticky bottom-[86px] z-10 flex items-center gap-2 rounded-full border border-border bg-[oklch(0.08_0.004_60)] px-2 py-1.5"
+          className="relative z-20 shrink-0 px-3 pt-2 pb-[94px]"
         >
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Écris ton message…"
-            className="min-w-0 flex-1 bg-transparent px-2 text-[13px] outline-none placeholder:text-muted-foreground"
-          />
-          <Smile size={18} className="shrink-0 text-muted-foreground" />
-          <Pressable
-            type="submit"
-            aria-label="Envoyer"
-            whileTap={{ scale: 0.96 }}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-gradient"
-          >
-            <Send size={14} className="text-[oklch(0.16_0.02_60)]" />
-          </Pressable>
+          <div className="flex items-center gap-2 rounded-full border border-border bg-[oklch(0.08_0.004_60)] px-2 py-1.5">
+            <Pressable
+              type="button"
+              aria-label="Emojis"
+              whileTap={{ scale: 0.96 }}
+              onClick={() => setEmojiOpen((v) => !v)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+            >
+              <Smile size={18} className="text-muted-foreground" />
+            </Pressable>
+            <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="Écris ton message…"
+              className="min-w-0 flex-1 bg-transparent px-1 text-[13px] outline-none placeholder:text-muted-foreground"
+            />
+            <Pressable
+              type="button"
+              aria-label="Envoyer un cadeau"
+              whileTap={{ scale: 0.96 }}
+              onClick={() => setGiftOpen(true)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+            >
+              <Gift size={18} className="text-gold" />
+            </Pressable>
+            <Pressable
+              type="submit"
+              aria-label="Envoyer"
+              whileTap={{ scale: 0.96 }}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-gradient"
+            >
+              <Send size={14} className="text-[oklch(0.16_0.02_60)]" />
+            </Pressable>
+          </div>
         </form>
-        <div className="h-[26px] shrink-0" />
       </div>
+
 
       {/* Feuilles */}
       <BottomSheet open={rulesOpen} onClose={() => setRulesOpen(false)}>
