@@ -15,12 +15,18 @@ import { Route as LiveRouteImport } from './routes/live'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as TalkShowRouteImport } from './routes/talk-show'
 import { Route as MessagesIdRouteImport } from './routes/messages_.$id'
 import { Route as PlayFaceAFaceRouteImport } from './routes/play_.face-a-face'
 import { Route as PlayHotSeatRouteImport } from './routes/play_.hot-seat'
 import { Route as PlayQuizRouteImport } from './routes/play_.quiz'
 import { Route as TableIdRouteImport } from './routes/table.$id'
+import { Route as TalkShowIndexRouteImport } from './routes/talk-show.index'
 import { Route as TalkShowIdRouteImport } from './routes/talk-show.$id'
+import { Route as TalkShowOpenMicRouteImport } from './routes/talk-show.open-mic'
+import { Route as TalkShowSlamRouteImport } from './routes/talk-show.slam'
+import { Route as TalkShowStandRouteImport } from './routes/talk-show.stand'
+import { Route as TalkShowStorytellingRouteImport } from './routes/talk-show.storytelling'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +58,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TalkShowRoute = TalkShowRouteImport.update({
+  id: '/talk-show',
+  path: '/talk-show',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MessagesIdRoute = MessagesIdRouteImport.update({
   id: '/messages_/$id',
   path: '/messages/$id',
@@ -77,10 +88,35 @@ const TableIdRoute = TableIdRouteImport.update({
   path: '/table/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TalkShowIndexRoute = TalkShowIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TalkShowRoute,
+} as any)
 const TalkShowIdRoute = TalkShowIdRouteImport.update({
-  id: '/talk-show/$id',
-  path: '/talk-show/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => TalkShowRoute,
+} as any)
+const TalkShowOpenMicRoute = TalkShowOpenMicRouteImport.update({
+  id: '/open-mic',
+  path: '/open-mic',
+  getParentRoute: () => TalkShowRoute,
+} as any)
+const TalkShowSlamRoute = TalkShowSlamRouteImport.update({
+  id: '/slam',
+  path: '/slam',
+  getParentRoute: () => TalkShowRoute,
+} as any)
+const TalkShowStandRoute = TalkShowStandRouteImport.update({
+  id: '/stand',
+  path: '/stand',
+  getParentRoute: () => TalkShowRoute,
+} as any)
+const TalkShowStorytellingRoute = TalkShowStorytellingRouteImport.update({
+  id: '/storytelling',
+  path: '/storytelling',
+  getParentRoute: () => TalkShowRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -90,12 +126,18 @@ export interface FileRoutesByFullPath {
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/talk-show': typeof TalkShowRouteWithChildren
   '/messages/$id': typeof MessagesIdRoute
   '/play/face-a-face': typeof PlayFaceAFaceRoute
   '/play/hot-seat': typeof PlayHotSeatRoute
   '/play/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
+  '/talk-show/open-mic': typeof TalkShowOpenMicRoute
+  '/talk-show/slam': typeof TalkShowSlamRoute
+  '/talk-show/stand': typeof TalkShowStandRoute
+  '/talk-show/storytelling': typeof TalkShowStorytellingRoute
+  '/talk-show/': typeof TalkShowIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +152,11 @@ export interface FileRoutesByTo {
   '/play/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
+  '/talk-show/open-mic': typeof TalkShowOpenMicRoute
+  '/talk-show/slam': typeof TalkShowSlamRoute
+  '/talk-show/stand': typeof TalkShowStandRoute
+  '/talk-show/storytelling': typeof TalkShowStorytellingRoute
+  '/talk-show': typeof TalkShowIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -119,12 +166,18 @@ export interface FileRoutesById {
   '/messages': typeof MessagesRoute
   '/play': typeof PlayRoute
   '/profile': typeof ProfileRoute
+  '/talk-show': typeof TalkShowRouteWithChildren
   '/messages_/$id': typeof MessagesIdRoute
   '/play_/face-a-face': typeof PlayFaceAFaceRoute
   '/play_/hot-seat': typeof PlayHotSeatRoute
   '/play_/quiz': typeof PlayQuizRoute
   '/table/$id': typeof TableIdRoute
   '/talk-show/$id': typeof TalkShowIdRoute
+  '/talk-show/open-mic': typeof TalkShowOpenMicRoute
+  '/talk-show/slam': typeof TalkShowSlamRoute
+  '/talk-show/stand': typeof TalkShowStandRoute
+  '/talk-show/storytelling': typeof TalkShowStorytellingRoute
+  '/talk-show/': typeof TalkShowIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -135,12 +188,18 @@ export interface FileRouteTypes {
     | '/messages'
     | '/play'
     | '/profile'
+    | '/talk-show'
     | '/messages/$id'
     | '/play/face-a-face'
     | '/play/hot-seat'
     | '/play/quiz'
     | '/table/$id'
     | '/talk-show/$id'
+    | '/talk-show/open-mic'
+    | '/talk-show/slam'
+    | '/talk-show/stand'
+    | '/talk-show/storytelling'
+    | '/talk-show/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +214,11 @@ export interface FileRouteTypes {
     | '/play/quiz'
     | '/table/$id'
     | '/talk-show/$id'
+    | '/talk-show/open-mic'
+    | '/talk-show/slam'
+    | '/talk-show/stand'
+    | '/talk-show/storytelling'
+    | '/talk-show'
   id:
     | '__root__'
     | '/'
@@ -163,12 +227,18 @@ export interface FileRouteTypes {
     | '/messages'
     | '/play'
     | '/profile'
+    | '/talk-show'
     | '/messages_/$id'
     | '/play_/face-a-face'
     | '/play_/hot-seat'
     | '/play_/quiz'
     | '/table/$id'
     | '/talk-show/$id'
+    | '/talk-show/open-mic'
+    | '/talk-show/slam'
+    | '/talk-show/stand'
+    | '/talk-show/storytelling'
+    | '/talk-show/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -178,12 +248,12 @@ export interface RootRouteChildren {
   MessagesRoute: typeof MessagesRoute
   PlayRoute: typeof PlayRoute
   ProfileRoute: typeof ProfileRoute
+  TalkShowRoute: typeof TalkShowRouteWithChildren
   MessagesIdRoute: typeof MessagesIdRoute
   PlayFaceAFaceRoute: typeof PlayFaceAFaceRoute
   PlayHotSeatRoute: typeof PlayHotSeatRoute
   PlayQuizRoute: typeof PlayQuizRoute
   TableIdRoute: typeof TableIdRoute
-  TalkShowIdRoute: typeof TalkShowIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -230,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/talk-show': {
+      id: '/talk-show'
+      path: '/talk-show'
+      fullPath: '/talk-show'
+      preLoaderRoute: typeof TalkShowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/messages_/$id': {
       id: '/messages_/$id'
       path: '/messages/$id'
@@ -265,15 +342,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TableIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/talk-show/': {
+      id: '/talk-show/'
+      path: '/'
+      fullPath: '/talk-show/'
+      preLoaderRoute: typeof TalkShowIndexRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
     '/talk-show/$id': {
       id: '/talk-show/$id'
-      path: '/talk-show/$id'
+      path: '/$id'
       fullPath: '/talk-show/$id'
       preLoaderRoute: typeof TalkShowIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
+    '/talk-show/open-mic': {
+      id: '/talk-show/open-mic'
+      path: '/open-mic'
+      fullPath: '/talk-show/open-mic'
+      preLoaderRoute: typeof TalkShowOpenMicRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
+    '/talk-show/slam': {
+      id: '/talk-show/slam'
+      path: '/slam'
+      fullPath: '/talk-show/slam'
+      preLoaderRoute: typeof TalkShowSlamRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
+    '/talk-show/stand': {
+      id: '/talk-show/stand'
+      path: '/stand'
+      fullPath: '/talk-show/stand'
+      preLoaderRoute: typeof TalkShowStandRouteImport
+      parentRoute: typeof TalkShowRoute
+    }
+    '/talk-show/storytelling': {
+      id: '/talk-show/storytelling'
+      path: '/storytelling'
+      fullPath: '/talk-show/storytelling'
+      preLoaderRoute: typeof TalkShowStorytellingRouteImport
+      parentRoute: typeof TalkShowRoute
     }
   }
 }
+
+interface TalkShowRouteChildren {
+  TalkShowIdRoute: typeof TalkShowIdRoute
+  TalkShowOpenMicRoute: typeof TalkShowOpenMicRoute
+  TalkShowSlamRoute: typeof TalkShowSlamRoute
+  TalkShowStandRoute: typeof TalkShowStandRoute
+  TalkShowStorytellingRoute: typeof TalkShowStorytellingRoute
+  TalkShowIndexRoute: typeof TalkShowIndexRoute
+}
+
+const TalkShowRouteChildren: TalkShowRouteChildren = {
+  TalkShowIdRoute: TalkShowIdRoute,
+  TalkShowOpenMicRoute: TalkShowOpenMicRoute,
+  TalkShowSlamRoute: TalkShowSlamRoute,
+  TalkShowStandRoute: TalkShowStandRoute,
+  TalkShowStorytellingRoute: TalkShowStorytellingRoute,
+  TalkShowIndexRoute: TalkShowIndexRoute,
+}
+
+const TalkShowRouteWithChildren = TalkShowRoute._addFileChildren(
+  TalkShowRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -282,12 +416,12 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesRoute: MessagesRoute,
   PlayRoute: PlayRoute,
   ProfileRoute: ProfileRoute,
+  TalkShowRoute: TalkShowRouteWithChildren,
   MessagesIdRoute: MessagesIdRoute,
   PlayFaceAFaceRoute: PlayFaceAFaceRoute,
   PlayHotSeatRoute: PlayHotSeatRoute,
   PlayQuizRoute: PlayQuizRoute,
   TableIdRoute: TableIdRoute,
-  TalkShowIdRoute: TalkShowIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
