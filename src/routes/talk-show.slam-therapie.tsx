@@ -1111,15 +1111,34 @@ function SlamTherapieLive() {
                   <p className="mt-1 text-[11.5px] text-muted-foreground">
                     Partage ton texte avec la communauté.
                   </p>
-                  <Pressable
-                    onClick={() => {
-                      tap();
-                      showToast("Bientôt : configure ton passage");
-                    }}
-                    className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-xl bg-gold py-2.5 text-[13px] font-extrabold text-black"
-                  >
-                    <Mic size={15} /> Demander à slamer
-                  </Pressable>
+                  {mine ? (
+                    <>
+                      <p className="mt-2 text-[11.5px] font-bold text-gold">
+                        Tu es déjà dans la file (#{myPos || 1}) — ~{etaMin} min
+                      </p>
+                      <Pressable
+                        onClick={() => {
+                          tap();
+                          setDrawer(false);
+                          setFlow("backstage");
+                        }}
+                        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl bg-gold py-2.5 text-[13px] font-extrabold text-black"
+                      >
+                        <Mic size={15} /> Préparer ma performance
+                      </Pressable>
+                    </>
+                  ) : (
+                    <Pressable
+                      onClick={() => {
+                        tap();
+                        setDrawer(false);
+                        setFlow("request");
+                      }}
+                      className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-xl bg-gold py-2.5 text-[13px] font-extrabold text-black"
+                    >
+                      <Mic size={15} /> Demander à slamer
+                    </Pressable>
+                  )}
                 </div>
 
                 <div className="mt-3 rounded-2xl bg-white/[0.035] p-3">
