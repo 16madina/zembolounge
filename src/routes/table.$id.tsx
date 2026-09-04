@@ -115,7 +115,7 @@ function TableRoom() {
     navigator.vibrate?.(12);
     setCounts((c) => c.map((v, k) => (k === i ? v + 1 : v)));
     const id = Date.now() + i;
-    setFloats((f) => [...f, { id, emoji: REACTIONS[i].emoji, x: i * 20 - 40 }]);
+    setFloats((f) => [...f, { id, emoji: REACTIONS[i]!.emoji, x: i * 20 - 40 }]);
     setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 1000);
   }
 
