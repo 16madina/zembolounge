@@ -18,7 +18,8 @@ import { Pressable } from "@/components/zembo/ui";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { cn } from "@/lib/utils";
 import decor from "@/assets/world-room-elena.png";
-import { resetWorldProfile } from "@/lib/world-profile";
+import { resetWorldProfile, loadWorldProfile } from "@/lib/world-profile";
+import { WorldHelloMatch, type HelloMatchPerson } from "@/components/zembo/WorldHelloMatch";
 
 export const Route = createFileRoute("/world/discover")({
   head: () => ({
@@ -137,6 +138,9 @@ const POOL: WorldCard[] = [
   },
 ];
 
+/** Mock : ces profils répondent Hello en retour (Hello mutuel). */
+const MUTUAL_IDS = ["elena", "moussa", "awa"];
+
 function CountryPill({ card }: { card: WorldCard }) {
   return (
     <div className="space-y-1.5">
@@ -214,6 +218,19 @@ function WorldDiscover() {
   const [intent, setIntent] = useState("Peu importe");
   const [ageRange, setAgeRange] = useState("25–35");
   const lockRef = useRef(0);
+  const [match, setMatch] = useState<WorldCard | null>(null);
+
+  const me: HelloMatchPerson = useMemo(() => {
+    const p = loadWorldProfile();
+    return {
+      name: p.username || "Toi",
+      age: Number(p.age) || 27,
+      flag: "🌍",
+      city: p.city || "Ta ville",
+      country: p.country || "",
+      photo: p.photos?.[0] || photoUrl("me", 320),
+    };
+  }, []);
 
   const card = useMemo(() => POOL[index % POOL.length]!, [index]);
 
@@ -390,8 +407,12 @@ function WorldDiscover() {
               emphasis
               onClick={() => {
                 tap();
-                toast.success(`👋 Hello envoyé à ${card.name}`);
-                next();
+                if (MUTUAL_IDS.includes(card.id)) {
+                  setMatch(card);
+                } else {
+                  toast.success(`👋 Hello envoyé à ${card.name}`);
+                  next();
+                }
               }}
               label="Dire Hello"
               hint="Lance la conversation"
@@ -455,6 +476,33 @@ function WorldDiscover() {
           <span className="text-[9px] text-white/70">Carte</span>
         </Pressable>
       </header>
+
+      <WorldHelloMatch
+        open={!!match}
+        me={me}
+        other={
+          match
+            ? {
+                name: match.name,
+                age: match.age,
+                flag: match.flag,
+                city: match.city,
+                country: match.country,
+                photo: match.photo ?? photoUrl(match.id, 320),
+              }
+            : me
+        }
+        onStartVideo={() => {
+          tap();
+          toast("Bientôt : la rencontre vidéo de 60 secondes");
+          setMatch(null);
+          next();
+        }}
+        onLater={() => {
+          setMatch(null);
+          next();
+        }}
+      />
 
       <BottomSheet open={filtersOpen} onClose={() => setFiltersOpen(false)}>
         <div className="space-y-4 px-4 pb-2">
