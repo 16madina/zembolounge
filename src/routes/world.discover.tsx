@@ -139,20 +139,22 @@ const POOL: WorldCard[] = [
 function CountryPill({ card }: { card: WorldCard }) {
   return (
     <div className="space-y-1.5">
-      <span className="inline-flex max-w-full items-center gap-1.5 truncate rounded-full border border-gold/25 bg-black/60 px-3 py-1.5 text-[12px] font-semibold text-white/90 backdrop-blur-md">
-        <span>{card.flag}</span>
-        <span className="truncate">
-          {card.city}, {card.country}
+      <span className="inline-flex max-w-full flex-col rounded-2xl border border-gold/25 bg-black/60 px-3 py-1.5 backdrop-blur-md">
+        <span className="flex items-center gap-1.5 text-[12px] font-semibold text-white/90">
+          <span>{card.flag}</span>
+          <span className="truncate">
+            {card.city}, {card.country}
+          </span>
         </span>
-        <span className="text-white/45">·</span>
-        <span className="shrink-0 text-[11px] font-medium text-white/60">
+        <span className="text-[10px] font-medium text-white/60">
           📍 À {card.distanceKm} km de toi
         </span>
       </span>
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald/40 bg-emerald/15 px-2.5 py-1 text-[11px] font-semibold text-emerald">
+      <span className="flex w-fit items-center gap-1.5 rounded-full border border-emerald/40 bg-emerald/15 px-2.5 py-1 text-[11px] font-semibold text-emerald">
         🟢 En ligne maintenant
       </span>
     </div>
+
   );
 }
 
