@@ -1,11 +1,13 @@
-/** Profil de découverte World Room (mock, aucune authentification). */
+/** Profil de découverte World Room (mock, greffé sur le compte Zembo — aucune authentification propre). */
 export type WorldProfileDraft = {
   username: string;
   completed: boolean;
-  firstName: string;
-  lastName: string;
-  birthdate: string;
   photos: string[];
+  age: string;
+  bio: string;
+  answerSunday: string;
+  answerRedFlag: string;
+  answerEscape: string;
   gender: "femme" | "homme" | "autre" | "";
   orientation: string;
   showAge: boolean;
@@ -20,10 +22,12 @@ const KEY = "zembo-world-profile-draft";
 export const EMPTY_WORLD_PROFILE: WorldProfileDraft = {
   username: "",
   completed: false,
-  firstName: "",
-  lastName: "",
-  birthdate: "",
   photos: [],
+  age: "",
+  bio: "",
+  answerSunday: "",
+  answerRedFlag: "",
+  answerEscape: "",
   gender: "",
   orientation: "",
   showAge: true,
@@ -48,6 +52,16 @@ export function saveWorldProfile(draft: WorldProfileDraft) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(KEY, JSON.stringify(draft));
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Démo : efface le profil World Room pour rejouer le parcours de création. */
+export function resetWorldProfile() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(KEY);
   } catch {
     /* ignore */
   }
@@ -85,15 +99,9 @@ export function hasWorldProfile() {
   return p.completed && p.username.trim().length > 0;
 }
 
-export function ageFromBirthdate(birthdate: string): number | null {
-  if (!birthdate) return null;
-  const d = new Date(birthdate);
-  if (Number.isNaN(d.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  const m = now.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
-  return age >= 0 && age < 120 ? age : null;
+export function ageNumber(age: string): number | null {
+  const n = Number.parseInt(age, 10);
+  return Number.isFinite(n) && n >= 18 && n <= 99 ? n : null;
 }
 
 export const ORIENTATIONS = [
