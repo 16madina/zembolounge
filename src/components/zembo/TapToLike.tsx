@@ -87,8 +87,9 @@ export function useTapToLike(initialLikes = 0) {
 
   /** Le bouton ❤️ de la colonne d'actions → même effet. */
   const likeFromButton = useCallback(
-    (e?: React.MouseEvent) => {
-      const el = e?.currentTarget as HTMLElement | undefined;
+    (e?: { currentTarget?: unknown }) => {
+      const t = e?.currentTarget;
+      const el = t instanceof HTMLElement ? t : undefined;
       const r = el?.getBoundingClientRect();
       const x = r ? r.left + r.width / 2 : window.innerWidth - 40;
       const y = r ? r.top + r.height / 2 : window.innerHeight * 0.6;
