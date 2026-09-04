@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Camera,
@@ -18,6 +18,8 @@ import {
   MoreHorizontal,
   Mic,
   Music2,
+  Pause,
+  Play,
   Send,
   Share2,
   Shield,
@@ -444,15 +446,39 @@ function SlamTherapieLive() {
                 tap();
                 showToast(
                   perf.sound
-                    ? `Musique : ${perf.sound} (${moodOf(perf.mood).label})`
+                    ? `🎵 ${perf.sound} (${moodOf(perf.mood).label}) — lecture simulée`
                     : "Sans musique — a cappella",
                 );
               }}
-              className="mt-1.5 flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold text-white/90 backdrop-blur"
+              style={{ opacity: perf.sound && left <= 5 ? Math.max(0.15, left / 5) : 1 }}
+              className="mt-1.5 max-w-[190px] rounded-2xl bg-black/55 px-2.5 py-1 text-left backdrop-blur transition-opacity duration-500"
             >
-              <Music2 size={11} className="text-gold" />{" "}
-              {perf.sound ? `${perf.sound} (${moodOf(perf.mood).label})` : "Sans musique"}
-              <ChevronRight size={12} className="text-white/60" />
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold text-white/90">
+                {perf.sound ? (
+                  <>
+                    <Music2 size={11} className="shrink-0 text-gold" />
+                    <span className="truncate">🎵 {perf.sound}</span>
+                    {running ? (
+                      <Play size={10} className="shrink-0 fill-gold text-gold" />
+                    ) : (
+                      <Pause size={10} className="shrink-0 text-white/60" />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Music2 size={11} className="shrink-0 text-gold" /> Sans musique
+                    <ChevronRight size={12} className="text-white/60" />
+                  </>
+                )}
+              </span>
+              {perf.sound && (
+                <span className="mt-1 block h-[2.5px] w-full overflow-hidden rounded-full bg-white/15">
+                  <span
+                    className="block h-full rounded-full bg-gold transition-[width] duration-1000 ease-linear"
+                    style={{ width: `${(1 - ratio) * 100}%` }}
+                  />
+                </span>
+              )}
             </Pressable>
           </div>
 
@@ -1283,6 +1309,16 @@ function SlamTherapieLive() {
                       {o.icon} {o.label}
                     </Pressable>
                   ))}
+                  <Link
+                    to="/admin/sounds"
+                    onClick={() => {
+                      tap();
+                      setSheet(null);
+                    }}
+                    className="mt-1 flex items-center gap-2 px-1 text-[10.5px] font-semibold text-white/35"
+                  >
+                    <Music2 size={12} /> Admin — Zembo Sounds (démo)
+                  </Link>
                 </div>
               )}
             </motion.div>

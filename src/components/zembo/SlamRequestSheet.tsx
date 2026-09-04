@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { Mic, Pause, Play, X } from "lucide-react";
+import { Check, Mic, Pause, Play, X } from "lucide-react";
 import { useState } from "react";
 import { Pressable } from "@/components/zembo/ui";
+import { useSoundPreview } from "@/lib/use-sound-preview";
 import { MOODS, type SlamDuration, type Sound, moodOf, soundsFor } from "@/lib/zembo-sounds";
 
 export type SlamRequest = {
@@ -22,17 +23,11 @@ export function SlamRequestSheet({
   const [duration, setDuration] = useState<SlamDuration | null>(null);
   const [mood, setMood] = useState<string | null>(null);
   const [sound, setSound] = useState<Sound | null>(null);
-  const [playing, setPlaying] = useState<string | null>(null);
+  const pv = useSoundPreview();
 
   const tracks = soundsFor(mood, duration);
   const noMusic = mood === "aucune";
   const ready = title.trim().length > 1 && duration !== null && mood !== null;
-
-  const preview = (s: Sound) => {
-    navigator.vibrate?.(15);
-    setPlaying(s.id);
-    setTimeout(() => setPlaying((p) => (p === s.id ? null : p)), 1800);
-  };
 
   return (
     <>
@@ -89,6 +84,7 @@ export function SlamRequestSheet({
                     navigator.vibrate?.(15);
                     setDuration(d);
                     setSound(null);
+                    pv.stop();
                   }}
                   className={`rounded-2xl py-4 text-center ring-1 ${
                     on
@@ -119,6 +115,7 @@ export function SlamRequestSheet({
                     navigator.vibrate?.(15);
                     setMood(m.id);
                     setSound(null);
+                    pv.stop();
                   }}
                   className={`rounded-full px-3 py-1.5 text-[11.5px] font-bold ring-1 ${
                     on
@@ -138,47 +135,75 @@ export function SlamRequestSheet({
               <p className="mt-4 text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
                 INSTRUMENTALES {moodOf(mood!).label.toUpperCase()} · {duration} MIN
               </p>
+              <p className="mt-0.5 text-[10px] text-muted-foreground">
+                Écoute les aperçus, puis touche un morceau pour le choisir.
+              </p>
               <div className="mt-1.5 flex flex-col gap-1.5">
                 {tracks.map((s) => {
                   const on = sound?.id === s.id;
-                  const isPlaying = playing === s.id;
+                  const isCurrent = pv.id === s.id;
+                  const isPlaying = isCurrent && pv.playing;
                   return (
                     <div
                       key={s.id}
-                      className={`flex items-center gap-2 rounded-2xl p-2.5 ring-1 ${
+                      className={`rounded-2xl p-2.5 ring-1 ${
                         on ? "bg-gold/15 ring-gold/60" : "bg-white/[0.035] ring-white/8"
                       }`}
                     >
-                      <Pressable
-                        onClick={() => {
-                          navigator.vibrate?.(15);
-                          setSound(s);
-                        }}
-                        className="min-w-0 flex-1 text-left"
-                      >
-                        <p className="truncate text-[13px] font-bold text-foreground">{s.name}</p>
-                        <p className="text-[10.5px] text-muted-foreground">
-                          {moodOf(s.mood).emoji} {moodOf(s.mood).label} ·{" "}
-                          {s.duration === 1 ? "1:00" : "3:00"}
-                        </p>
-                      </Pressable>
-                      <Pressable
-                        onClick={() => preview(s)}
-                        className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1.5 text-[10.5px] font-bold ${
-                          isPlaying ? "bg-gold text-black" : "bg-white/10 text-white/85"
-                        }`}
-                        aria-label={`Aperçu de ${s.name}`}
-                      >
-                        {isPlaying ? (
-                          <>
-                            <Pause size={12} /> lecture…
-                          </>
-                        ) : (
-                          <>
-                            <Play size={12} /> Aperçu
-                          </>
-                        )}
-                      </Pressable>
+                      <div className="flex items-center gap-2">
+                        <Pressable
+                          onClick={() => {
+                            navigator.vibrate?.(15);
+                            setSound(on ? null : s);
+                          }}
+                          className="min-w-0 flex-1 text-left"
+                        >
+                          <p className="flex items-center gap-1.5 truncate text-[13px] font-bold text-foreground">
+                            {on && (
+                              <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-gold text-black">
+                                <Check size={11} strokeWidth={3} />
+                              </span>
+                            )}
+                            {s.name}
+                          </p>
+                          <p className="text-[10.5px] text-muted-foreground">
+                            {moodOf(s.mood).emoji} {moodOf(s.mood).label} ·{" "}
+                            {s.duration === 1 ? "1:00" : "3:00"}
+                          </p>
+                        </Pressable>
+                        <Pressable
+                          onClick={() => pv.toggle(s.id, s.duration)}
+                          className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1.5 text-[10.5px] font-bold ${
+                            isCurrent ? "bg-gold text-black" : "bg-white/10 text-white/85"
+                          }`}
+                          aria-label={`Aperçu de ${s.name}`}
+                        >
+                          {isPlaying ? (
+                            <>
+                              <Pause size={12} /> lecture…
+                            </>
+                          ) : (
+                            <>
+                              <Play size={12} /> {isCurrent ? "reprendre" : "Aperçu"}
+                            </>
+                          )}
+                        </Pressable>
+                      </div>
+                      {isCurrent && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/12">
+                            <div
+                              className="h-full rounded-full bg-gold transition-[width] duration-150 ease-linear"
+                              style={{ width: `${pv.progress * 100}%` }}
+                            />
+                          </div>
+                          <span className="shrink-0 text-[9.5px] font-semibold text-white/60">
+                            {String(Math.floor(pv.elapsed / 60)).padStart(2, "0")}:
+                            {String(Math.floor(pv.elapsed % 60)).padStart(2, "0")} /{" "}
+                            {s.duration === 1 ? "01:00" : "03:00"}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -199,6 +224,7 @@ export function SlamRequestSheet({
             onClick={() => {
               if (!ready) return;
               navigator.vibrate?.(15);
+              pv.stop();
               onSubmit({ title: title.trim(), duration: duration!, mood: mood!, sound });
             }}
             className={`flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-[14px] font-extrabold ${

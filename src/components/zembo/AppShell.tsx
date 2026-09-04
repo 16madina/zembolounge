@@ -16,9 +16,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isGame = pathname.startsWith("/play/") || pathname.startsWith("/face-a-face");
   const isSetup = pathname.startsWith("/talk-show/config") || pathname.startsWith("/talk-show/preview");
   const isSlam = pathname.startsWith("/talk-show/slam-therapie");
+  const isAdmin = pathname.startsWith("/admin");
   const isLiveShow =
     pathname.startsWith("/talk-show/storytime") || pathname.startsWith("/talk-show/micro-ouvert");
-  const noDock = isThread || isGame || isLiveShow || isSlam;
+  const noDock = isThread || isGame || isLiveShow || isSlam || isAdmin;
 
   return (
     <div className="flex min-h-[100dvh] justify-center bg-[oklch(0.05_0_0)]">
@@ -33,7 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               transition={{ duration: 0.24, ease: [0.32, 0.72, 0, 1] }}
               className={cn(
                 "h-full",
-                isThread || isTable || isLiveShow || isSetup || isSlam
+                isThread || isTable || isLiveShow || isSetup || isSlam || isAdmin
                   ? "overflow-hidden"
                   : isGame
                     ? "app-scroll"
