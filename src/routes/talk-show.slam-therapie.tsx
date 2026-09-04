@@ -1,15 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Camera,
+  Check,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Crown,
   Flag,
   Gift,
+  GripVertical,
   LogOut,
-
   Heart,
   ListOrdered,
   MessageCircle,
+  MicOff,
   MoreHorizontal,
   Mic,
   Music2,
@@ -17,12 +22,19 @@ import {
   Share2,
   Shield,
   Smile,
+  SkipForward,
+  Sparkles,
+  StopCircle,
+  Trash2,
+  UserMinus,
   Users,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Avatar, Pressable } from "@/components/zembo/ui";
 import { ZemboIcon } from "@/components/zembo/ZemboMark";
+import { SlamRequestSheet, type SlamRequest } from "@/components/zembo/SlamRequestSheet";
+import { fmtDur, moodOf, type SlamDuration } from "@/lib/zembo-sounds";
 import stage from "@/assets/zembo-slam-stage.png";
 
 export const Route = createFileRoute("/talk-show/slam-therapie")({
@@ -73,11 +85,35 @@ const AUTO: Array<[string, string]> = [
   ["QueenVee", "On guérit en écoutant 🙏"],
 ];
 
-const QUEUE = [
-  { n: 1, name: "Sarah", title: "Je me suis choisie", music: "🎸 Guitare", time: "01:00" },
-  { n: 2, name: "Kevin", title: "Père absent", music: "〰 Émotion", time: "03:00" },
-  { n: 3, name: "Aïssatou", title: "Ma renaissance", music: "🥁 Afro douce", time: "01:00" },
+type Slot = {
+  id: number;
+  name: string;
+  title: string;
+  mood: string;
+  sound: string | null;
+  duration: SlamDuration;
+  me?: boolean;
+};
+
+const QUEUE0: Slot[] = [
+  { id: 1, name: "Moussa", title: "Les blessures invisibles", mood: "piano", sound: "Renaissance", duration: 3 },
+  { id: 2, name: "Sarah", title: "Je me suis choisie", mood: "guitare", sound: "Racines", duration: 1 },
+  { id: 3, name: "Kevin", title: "Père absent", mood: "emotion", sound: "Silence plein", duration: 3 },
 ];
+
+const REQUESTS0: Slot[] = [
+  { id: 51, name: "Aïssatou", title: "Ma renaissance", mood: "afro", sound: "Mama", duration: 1 },
+  { id: 52, name: "Lina", title: "Ce que je n'ai jamais dit", mood: "melancolique", sound: "Absence", duration: 3 },
+];
+
+const STAGE0: Slot = {
+  id: 0,
+  name: "Deena",
+  title: "Je me suis relevée",
+  mood: "piano",
+  sound: "Renaissance",
+  duration: 3,
+};
 
 const GIFTS = [
   { emoji: "🌹", name: "Rose", cost: 5 },
@@ -100,11 +136,9 @@ const tap = () => navigator.vibrate?.(15);
 function SlamTherapieLive() {
   const [msgs, setMsgs] = useState<Msg[]>(INITIAL);
   const [draft, setDraft] = useState("");
-  const [left, setLeft] = useState(167);
   const [likes, setLikes] = useState(4200);
   const [hearts, setHearts] = useState<number[]>([]);
   const [toast, setToast] = useState<string | null>(null);
-  const [ended, setEnded] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const [sheet, setSheet] = useState<"share" | "gift" | "zems" | "menu" | null>(null);
   const [giftFly, setGiftFly] = useState<{ id: number; emoji: string } | null>(null);
@@ -112,27 +146,67 @@ function SlamTherapieLive() {
   const inputRef = useRef<HTMLInputElement>(null);
   const seq = useRef(100);
 
+  // ── SCÈNE & FILE ──
+  const [perf, setPerf] = useState<Slot>(STAGE0);
+  const [left, setLeft] = useState(167);
+  const [running, setRunning] = useState(true);
+  const [queue, setQueue] = useState<Slot[]>(QUEUE0);
+  const [requests, setRequests] = useState<Slot[]>(REQUESTS0);
+  const [thanks, setThanks] = useState<Slot | null>(null);
+  const [nextUp, setNextUp] = useState<Slot | null>(null);
+  const [count, setCount] = useState<number | null>(null);
+
+  // ── MON PARCOURS ──
+  const [flow, setFlow] = useState<"request" | "confirm" | "notice" | "backstage" | null>(null);
+  const [mine, setMine] = useState<Slot | null>(null);
+  const [ready, setReady] = useState(false);
+  const [hostMode, setHostMode] = useState(true);
+
+  const total = perf.duration * 60;
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [msgs]);
 
+  // chrono de la performance : à 0 → merci → prochain passage
   useEffect(() => {
+    if (!running) return;
     const t = setInterval(() => {
       setLeft((s) => {
         if (s <= 1) {
-          setEnded(true);
-          setTimeout(() => {
-            setEnded(false);
-            setLeft(TOTAL);
-          }, 3200);
+          setRunning(false);
+          finish();
           return 0;
         }
         return s - 1;
       });
     }, 1000);
     return () => clearInterval(t);
-  }, []);
+  }, [running]);
+
+  // décompte 3 · 2 · 1 puis démarrage synchronisé chrono + musique
+  useEffect(() => {
+    if (count === null) return;
+    if (count === 0) {
+      const s = nextUp;
+      const t = setTimeout(() => {
+        if (s) {
+          setPerf(s);
+          setLeft(s.duration * 60);
+          setRunning(true);
+          if (s.me) {
+            setReady(false);
+            setMine(null);
+          }
+        }
+        setNextUp(null);
+        setCount(null);
+      }, 700);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setCount((c) => (c === null ? null : c - 1)), 900);
+    return () => clearTimeout(t);
+  }, [count, nextUp]);
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -200,12 +274,101 @@ function SlamTherapieLive() {
     inputRef.current?.focus();
   };
 
+  // ── CYCLE DES PASSAGES ──
+  function finish() {
+    setThanks(perf);
+    setTimeout(() => {
+      setThanks(null);
+      setQueue((q) => {
+        const [first, ...rest] = q;
+        if (first) {
+          setNextUp(first);
+          setCount(3);
+          return rest;
+        }
+        setPerf(STAGE0);
+        setLeft(STAGE0.duration * 60);
+        setRunning(true);
+        return q;
+      });
+    }, 2600);
+  }
 
+  const startNow = (s: Slot) => {
+    tap();
+    setRunning(false);
+    setQueue((q) => q.filter((x) => x.id !== s.id));
+    setNextUp(s);
+    setCount(3);
+  };
+
+  const accept = (s: Slot) => {
+    tap();
+    setRequests((r) => r.filter((x) => x.id !== s.id));
+    setQueue((q) => [...q, s]);
+    showToast(`${s.name} entre dans la file 🎉`);
+    if (s.me) {
+      setMine(s);
+      setFlow("confirm");
+    }
+  };
+
+  const refuse = (s: Slot) => {
+    tap();
+    setRequests((r) => r.filter((x) => x.id !== s.id));
+    showToast(`Demande de ${s.name} refusée`);
+  };
+
+  const move = (i: number, dir: -1 | 1) => {
+    tap();
+    setQueue((q) => {
+      const n = [...q];
+      const j = i + dir;
+      if (j < 0 || j >= n.length) return q;
+      [n[i], n[j]] = [n[j]!, n[i]!];
+      return n;
+    });
+  };
+
+  const removeFromQueue = (s: Slot) => {
+    tap();
+    setQueue((q) => q.filter((x) => x.id !== s.id));
+    showToast(`${s.name} retiré de la file`);
+  };
+
+  const submitRequest = (r: SlamRequest) => {
+    const slot: Slot = {
+      id: 90 + seq.current,
+      name: "Deena",
+      title: r.title,
+      mood: r.mood,
+      sound: r.sound?.name ?? null,
+      duration: r.duration,
+      me: true,
+    };
+    seq.current += 1;
+    setRequests((q) => [slot, ...q]);
+    setFlow(null);
+    showToast("Demande envoyée à l'hôte…");
+    // l'hôte accepte (mock) après un court délai
+    setTimeout(() => {
+      setRequests((q) => q.filter((x) => x.id !== slot.id));
+      setQueue((q) => [...q, slot]);
+      setMine(slot);
+      setFlow("confirm");
+    }, 1800);
+  };
+
+  const myPos = mine ? queue.findIndex((q) => q.id === mine.id) + 1 : 0;
+  const etaMin = mine
+    ? Math.max(1, Math.round(left / 60) + queue.slice(0, Math.max(0, myPos - 1)).reduce((a, q) => a + q.duration, 0))
+    : 0;
 
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
   const ss = String(left % 60).padStart(2, "0");
-  const ratio = left / TOTAL;
+  const ratio = left / total;
   const urgent = left <= 10;
+  const imOnStage = perf.me === true;
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
@@ -261,7 +424,7 @@ function SlamTherapieLive() {
               className="flex items-center gap-1 rounded-full bg-black/55 px-2.5 py-1 text-[10.5px] font-bold text-white/90 ring-1 ring-gold/40 backdrop-blur"
               aria-label="Ouvrir la file d'attente"
             >
-              <ListOrdered size={12} className="text-gold" /> File d'attente (3)
+              <ListOrdered size={12} className="text-gold" /> File d'attente ({queue.length})
             </Pressable>
           </div>
         </div>
@@ -270,20 +433,25 @@ function SlamTherapieLive() {
         <div className="mt-1.5 flex items-start gap-2">
           <div className="min-w-0 flex-1">
             <span className="inline-block rounded-md bg-gold px-2 py-[2px] text-[8.5px] font-extrabold tracking-wide text-black">
-              SUR SCÈNE
+              🎤 SUR SCÈNE
             </span>
-            <p className="mt-1 text-[20px] leading-none font-extrabold text-white drop-shadow">
-              Moussa
+            <p className="mt-1 truncate text-[20px] leading-none font-extrabold text-white drop-shadow">
+              {perf.name}
             </p>
-            <p className="mt-[3px] text-[11px] italic text-white/85">Les blessures invisibles</p>
+            <p className="mt-[3px] truncate text-[11px] italic text-white/85">{perf.title}</p>
             <Pressable
               onClick={() => {
                 tap();
-                showToast("Musique : Renaissance (Piano)");
+                showToast(
+                  perf.sound
+                    ? `Musique : ${perf.sound} (${moodOf(perf.mood).label})`
+                    : "Sans musique — a cappella",
+                );
               }}
               className="mt-1.5 flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold text-white/90 backdrop-blur"
             >
-              <Music2 size={11} className="text-gold" /> Renaissance (Piano)
+              <Music2 size={11} className="text-gold" />{" "}
+              {perf.sound ? `${perf.sound} (${moodOf(perf.mood).label})` : "Sans musique"}
               <ChevronRight size={12} className="text-white/60" />
             </Pressable>
           </div>
@@ -306,10 +474,14 @@ function SlamTherapieLive() {
               />
             </svg>
             <div className={urgent ? "text-center animate-pulse" : "text-center"}>
-              <p className="text-[16px] leading-none font-extrabold text-white">
+              <p
+                className={`leading-none font-extrabold ${
+                  urgent ? "text-[20px] text-[oklch(0.72_0.2_25)]" : "text-[16px] text-white"
+                }`}
+              >
                 {mm}:{ss}
               </p>
-              <p className="text-[8.5px] text-white/60">/ 03:00</p>
+              <p className="text-[8.5px] text-white/60">/ {fmtDur(perf.duration)}</p>
             </div>
           </div>
 
@@ -471,18 +643,254 @@ function SlamTherapieLive() {
         </Pressable>
       </div>
 
+      {/* BOUTON PARTICIPANT : J'AI TERMINÉ */}
+      {imOnStage && running && (
+        <Pressable
+          onClick={() => {
+            tap();
+            setRunning(false);
+            finish();
+          }}
+          className="absolute bottom-[52px] left-1/2 z-30 -translate-x-1/2 rounded-full bg-gold px-4 py-2 text-[12.5px] font-extrabold text-black"
+        >
+          🎤 J'ai terminé
+        </Pressable>
+      )}
+
       {/* FIN DE PERFORMANCE */}
       <AnimatePresence>
-        {ended && (
+        {thanks && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-x-6 top-[42%] rounded-2xl bg-black/80 px-4 py-3 text-center ring-1 ring-gold/50 backdrop-blur"
+            className="absolute inset-x-6 top-[42%] z-[62] rounded-2xl bg-black/85 px-4 py-3 text-center ring-1 ring-gold/50 backdrop-blur"
           >
-            <p className="text-[15px] font-extrabold text-gold">👏 MERCI MOUSSA</p>
-            <p className="mt-1 text-[12px] text-white/80">Ta performance est terminée</p>
+            <p className="text-[15px] font-extrabold text-gold">
+              👏 MERCI {thanks.name.toUpperCase()}
+            </p>
+            <p className="mt-1 text-[12px] text-white/80">Ta performance est terminée.</p>
+            <p className="mt-1 text-[11px] text-white/55">
+              La musique s'estompe · retour en spectateur
+            </p>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* PROCHAIN SUR SCÈNE + DÉCOMPTE 3·2·1 */}
+      <AnimatePresence>
+        {nextUp && count !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[63] grid place-items-center bg-black/85 backdrop-blur-sm"
+          >
+            <div className="px-6 text-center">
+              <p className="text-[10px] font-bold tracking-[0.24em] text-gold">
+                PROCHAIN SUR SCÈNE
+              </p>
+              <p className="mt-2 text-[30px] leading-none font-extrabold text-white">
+                {nextUp.name.toUpperCase()}
+              </p>
+              <p className="mt-1.5 text-[13px] italic text-white/80">{nextUp.title}</p>
+              <p className="mt-1 text-[11.5px] text-white/60">
+                {moodOf(nextUp.mood).emoji}{" "}
+                {nextUp.sound ? `${nextUp.sound} · ` : ""}
+                {nextUp.duration} min
+              </p>
+              <motion.p
+                key={count}
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="mt-4 text-[64px] leading-none font-extrabold text-gold"
+              >
+                {count === 0 ? "🎤" : count}
+              </motion.p>
+              {count === 0 && (
+                <p className="mt-2 text-[11.5px] text-white/70">Chrono et musique lancés ✓</p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* NOTIFICATION : TU PASSES BIENTÔT */}
+      <AnimatePresence>
+        {flow === "notice" && (
+          <motion.div
+            initial={{ opacity: 0, y: -14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -14 }}
+            className="absolute inset-x-3 top-[46%] z-[61] rounded-2xl bg-[oklch(0.11_0.02_60)]/95 p-3 ring-1 ring-gold/45 backdrop-blur"
+          >
+            <p className="text-[13.5px] font-extrabold text-gold">🎤 Tu passes bientôt</p>
+            <p className="mt-1 text-[11.5px] text-white/80">
+              Ta performance commence dans ~1 minute.
+            </p>
+            <div className="mt-2.5 flex gap-2">
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow("backstage");
+                }}
+                className="flex-1 rounded-xl bg-gold py-2.5 text-[12.5px] font-extrabold text-black"
+              >
+                Préparer ma performance
+              </Pressable>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow(null);
+                }}
+                className="rounded-xl bg-white/[0.07] px-3 py-2.5 text-[12.5px] font-bold text-white/80"
+              >
+                Plus tard
+              </Pressable>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* BACKSTAGE PRIVÉ */}
+      <AnimatePresence>
+        {flow === "backstage" && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-[64] bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 24, opacity: 0 }}
+              className="absolute inset-x-3 top-1/2 z-[65] -translate-y-1/2 rounded-3xl bg-[oklch(0.09_0.01_60)] p-4 ring-1 ring-gold/40"
+            >
+              <p className="text-[10px] font-bold tracking-[0.2em] text-gold">BACKSTAGE PRIVÉ</p>
+              <p className="mt-1 text-[17px] font-extrabold text-foreground">Tu es le prochain !</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                Passage dans <span className="font-bold text-gold">00:30</span> — personne ne te
+                voit ni ne t'entend pour l'instant.
+              </p>
+
+              <div className="mt-3 flex flex-col gap-1.5">
+                {[
+                  { icon: <Mic size={15} className="text-gold" />, label: "Micro prêt" },
+                  { icon: <Camera size={15} className="text-gold" />, label: "Caméra prête" },
+                  {
+                    icon: <Music2 size={15} className="text-gold" />,
+                    label: mine?.sound
+                      ? `${mine.sound} — ${moodOf(mine.mood).label}`
+                      : "Sans musique",
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.label}
+                    className="flex items-center gap-2 rounded-2xl bg-white/[0.05] px-3 py-2.5"
+                  >
+                    {c.icon}
+                    <p className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-foreground">
+                      {c.label}
+                    </p>
+                    <Check size={15} className="text-[oklch(0.72_0.16_150)]" />
+                  </div>
+                ))}
+              </div>
+
+              <p className="mt-2.5 text-[10.5px] text-muted-foreground">
+                Ta caméra ne s'allumera qu'après ta confirmation. Sans confirmation, l'hôte passe au
+                suivant.
+              </p>
+
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setReady(true);
+                  setFlow(null);
+                  showToast("Tu es prêt ✓ — l'hôte va te faire monter");
+                  if (mine) startNow(mine);
+                }}
+                className="mt-3 w-full rounded-2xl bg-gold py-3 text-[14px] font-extrabold text-black"
+              >
+                JE SUIS PRÊT
+              </Pressable>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow(null);
+                }}
+                className="mt-1.5 w-full rounded-2xl bg-white/[0.06] py-2.5 text-[12.5px] font-bold text-white/70"
+              >
+                Fermer
+              </Pressable>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* CONFIRMATION : DEMANDE ACCEPTÉE */}
+      <AnimatePresence>
+        {flow === "confirm" && mine && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setFlow(null)}
+              className="absolute inset-0 z-[64] bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="absolute inset-x-4 top-1/2 z-[65] -translate-y-1/2 rounded-3xl bg-[oklch(0.09_0.01_60)] p-4 text-center ring-1 ring-gold/45"
+            >
+              <p className="text-[15px] font-extrabold text-gold">
+                Ta demande a été acceptée 🎉
+              </p>
+              <p className="mt-2 text-[13px] text-foreground">
+                Tu es <span className="font-extrabold text-gold">#{myPos || 1}</span> dans la file
+                d'attente.
+              </p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
+                Passage estimé dans ~{etaMin} min.
+              </p>
+              <div className="mt-3 rounded-2xl bg-white/[0.05] p-3 text-left">
+                <p className="truncate text-[13px] font-bold text-foreground">{mine.title}</p>
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  ⏱ {mine.duration} min • {moodOf(mine.mood).emoji}{" "}
+                  {mine.sound ?? moodOf(mine.mood).label}
+                </p>
+              </div>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow(null);
+                }}
+                className="mt-3 w-full rounded-2xl bg-gold py-2.5 text-[13px] font-extrabold text-black"
+              >
+                Super, je patiente
+              </Pressable>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setFlow("backstage");
+                }}
+                className="mt-1.5 w-full rounded-2xl bg-white/[0.06] py-2.5 text-[12.5px] font-bold text-white/80"
+              >
+                Préparer ma performance
+              </Pressable>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* FENÊTRE : DEMANDER À SLAMER */}
+      <AnimatePresence>
+        {flow === "request" && (
+          <SlamRequestSheet onClose={() => setFlow(null)} onSubmit={submitRequest} />
         )}
       </AnimatePresence>
 
@@ -527,57 +935,175 @@ function SlamTherapieLive() {
               </div>
 
               <div className="app-scroll no-scrollbar min-h-0 flex-1 px-3 pt-3 pb-[24px]">
-                <p className="text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
+                {/* MODE HÔTE */}
+                <Pressable
+                  onClick={() => {
+                    tap();
+                    setHostMode((h) => !h);
+                  }}
+                  className="mb-3 flex w-full items-center gap-2 rounded-xl bg-white/[0.05] px-2.5 py-2 text-[11.5px] font-bold text-foreground"
+                >
+                  <Crown size={13} className="text-gold" />
+                  <span className="flex-1 text-left">
+                    {hostMode ? "Vue Hôte (modération active)" : "Vue Spectateur"}
+                  </span>
+                  <span className="text-[10.5px] text-muted-foreground">changer</span>
+                </Pressable>
+
+                {/* DEMANDES DE PASSAGE — HÔTE */}
+                {hostMode && requests.length > 0 && (
+                  <>
+                    <p className="text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
+                      DEMANDES DE PASSAGE ({requests.length})
+                    </p>
+                    <div className="mt-1.5 flex flex-col gap-1.5">
+                      {requests.map((r) => (
+                        <div
+                          key={r.id}
+                          className="rounded-2xl bg-white/[0.05] p-2.5 ring-1 ring-gold/20"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <Avatar name={r.name} size={32} />
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-[12.5px] font-bold text-foreground">
+                                {r.name}
+                              </p>
+                              <p className="truncate text-[11px] italic text-muted-foreground">
+                                {r.title}
+                              </p>
+                              <p className="mt-0.5 text-[10.5px] text-muted-foreground">
+                                ⏱ {r.duration} min • {moodOf(r.mood).emoji}{" "}
+                                {moodOf(r.mood).label}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="mt-2 flex gap-1.5">
+                            <Pressable
+                              onClick={() => refuse(r)}
+                              className="flex-1 rounded-xl bg-white/[0.07] py-2 text-[11.5px] font-bold text-white/75"
+                            >
+                              Refuser
+                            </Pressable>
+                            <Pressable
+                              onClick={() => accept(r)}
+                              className="flex-1 rounded-xl bg-gold py-2 text-[11.5px] font-extrabold text-black"
+                            >
+                              Accepter
+                            </Pressable>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="mt-1.5 text-[10px] text-muted-foreground">
+                      On n'entre dans la file officielle qu'après acceptation.
+                    </p>
+                  </>
+                )}
+
+                <p className="mt-4 text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
                   SUR SCÈNE
                 </p>
                 <div className="mt-1.5 flex items-center gap-2.5 rounded-2xl bg-white/[0.05] p-2.5 ring-1 ring-gold/30">
-                  <Avatar name="Moussa" size={38} ring />
+                  <Avatar name={perf.name} size={38} ring />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-bold text-foreground">Moussa</p>
+                    <p className="truncate text-[13px] font-bold text-foreground">{perf.name}</p>
                     <p className="truncate text-[11.5px] italic text-muted-foreground">
-                      Les blessures invisibles
+                      {perf.title}
                     </p>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className="text-[11px] text-muted-foreground">🎹 Piano</p>
-                    <p className="text-[11px] font-bold text-gold">03:00</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {moodOf(perf.mood).emoji} {moodOf(perf.mood).label}
+                    </p>
+                    <p className="text-[11px] font-bold text-gold">{fmtDur(perf.duration)}</p>
                   </div>
                 </div>
 
                 <p className="mt-4 text-[10px] font-bold tracking-[0.14em] text-muted-foreground">
-                  À SUIVRE (3)
+                  À SUIVRE ({queue.length})
                 </p>
                 <div className="mt-1.5 flex flex-col gap-1.5">
-                  {QUEUE.map((q) => (
+                  {queue.map((q, i) => (
                     <div
-                      key={q.n}
-                      className="flex items-center gap-2.5 rounded-2xl bg-white/[0.035] p-2.5"
+                      key={q.id}
+                      className={`rounded-2xl p-2.5 ${
+                        q.me ? "bg-gold/12 ring-1 ring-gold/40" : "bg-white/[0.035]"
+                      }`}
                     >
-                      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gold/15 text-[11px] font-extrabold text-gold">
-                        {q.n}
-                      </span>
-                      <Avatar name={q.name} size={30} />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[12.5px] font-bold text-foreground">{q.name}</p>
-                        <p className="truncate text-[11px] italic text-muted-foreground">
-                          {q.title}
-                        </p>
+                      <div className="flex items-center gap-2.5">
+                        {hostMode && <GripVertical size={14} className="shrink-0 text-white/30" />}
+                        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gold/15 text-[11px] font-extrabold text-gold">
+                          {i + 1}
+                        </span>
+                        <Avatar name={q.name} size={30} />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[12.5px] font-bold text-foreground">
+                            {q.name}
+                            {q.me ? " (toi)" : ""}
+                          </p>
+                          <p className="truncate text-[11px] italic text-muted-foreground">
+                            {q.title}
+                          </p>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <p className="text-[10.5px] text-muted-foreground">
+                            {moodOf(q.mood).emoji} {moodOf(q.mood).label}
+                          </p>
+                          <p className="text-[10.5px] font-bold text-gold/80">
+                            {fmtDur(q.duration)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="shrink-0 text-right">
-                        <p className="text-[10.5px] text-muted-foreground">{q.music}</p>
-                        {q.time && <p className="text-[10.5px] font-bold text-gold/80">{q.time}</p>}
-                      </div>
+                      {hostMode && (
+                        <div className="mt-2 flex items-center gap-1.5">
+                          <Pressable
+                            onClick={() => move(i, -1)}
+                            className="grid h-7 w-7 place-items-center rounded-lg bg-white/[0.07] text-white/70"
+                            aria-label={`Monter ${q.name}`}
+                          >
+                            <ChevronUp size={14} />
+                          </Pressable>
+                          <Pressable
+                            onClick={() => move(i, 1)}
+                            className="grid h-7 w-7 place-items-center rounded-lg bg-white/[0.07] text-white/70"
+                            aria-label={`Descendre ${q.name}`}
+                          >
+                            <ChevronDown size={14} />
+                          </Pressable>
+                          <Pressable
+                            onClick={() => removeFromQueue(q)}
+                            className="grid h-7 w-7 place-items-center rounded-lg bg-white/[0.07] text-[oklch(0.68_0.2_25)]"
+                            aria-label={`Retirer ${q.name}`}
+                          >
+                            <Trash2 size={13} />
+                          </Pressable>
+                          <Pressable
+                            onClick={() => {
+                              setDrawer(false);
+                              startNow(q);
+                            }}
+                            className="ml-auto flex items-center gap-1 rounded-lg bg-gold/90 px-2.5 py-1.5 text-[11px] font-extrabold text-black"
+                          >
+                            <SkipForward size={12} /> Passer maintenant
+                          </Pressable>
+                        </div>
+                      )}
                     </div>
                   ))}
+                  {queue.length === 0 && (
+                    <p className="rounded-2xl bg-white/[0.035] p-3 text-[11.5px] text-muted-foreground">
+                      La file est vide — la scène est à toi.
+                    </p>
+                  )}
                 </div>
                 <Pressable
                   onClick={() => {
                     tap();
-                    showToast("Bientôt : toute la file d'attente");
+                    showToast(`File complète : ${queue.length + requests.length} personnes`);
                   }}
                   className="mt-2 flex w-full items-center justify-center gap-1 rounded-xl bg-white/[0.05] py-2 text-[12px] font-bold text-foreground"
                 >
-                  Voir toute la file (5) <ChevronRight size={14} />
+                  Voir toute la file ({queue.length + requests.length}) <ChevronRight size={14} />
                 </Pressable>
 
                 <div className="mt-4 rounded-2xl bg-gradient-to-br from-gold/15 to-transparent p-3 ring-1 ring-gold/25">
@@ -585,15 +1111,34 @@ function SlamTherapieLive() {
                   <p className="mt-1 text-[11.5px] text-muted-foreground">
                     Partage ton texte avec la communauté.
                   </p>
-                  <Pressable
-                    onClick={() => {
-                      tap();
-                      showToast("Bientôt : configure ton passage");
-                    }}
-                    className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-xl bg-gold py-2.5 text-[13px] font-extrabold text-black"
-                  >
-                    <Mic size={15} /> Demander à slamer
-                  </Pressable>
+                  {mine ? (
+                    <>
+                      <p className="mt-2 text-[11.5px] font-bold text-gold">
+                        Tu es déjà dans la file (#{myPos || 1}) — ~{etaMin} min
+                      </p>
+                      <Pressable
+                        onClick={() => {
+                          tap();
+                          setDrawer(false);
+                          setFlow("backstage");
+                        }}
+                        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl bg-gold py-2.5 text-[13px] font-extrabold text-black"
+                      >
+                        <Mic size={15} /> Préparer ma performance
+                      </Pressable>
+                    </>
+                  ) : (
+                    <Pressable
+                      onClick={() => {
+                        tap();
+                        setDrawer(false);
+                        setFlow("request");
+                      }}
+                      className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-xl bg-gold py-2.5 text-[13px] font-extrabold text-black"
+                    >
+                      <Mic size={15} /> Demander à slamer
+                    </Pressable>
+                  )}
                 </div>
 
                 <div className="mt-3 rounded-2xl bg-white/[0.035] p-3">
