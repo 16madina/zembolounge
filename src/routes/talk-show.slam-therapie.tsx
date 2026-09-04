@@ -212,24 +212,24 @@ function SlamTherapieLive() {
         </div>
 
         {/* BLOC SUR SCÈNE */}
-        <div className="mt-2 flex items-start gap-2">
+        <div className="mt-1.5 flex items-start gap-2">
           <div className="min-w-0 flex-1">
-            <span className="inline-block rounded-md bg-gold px-2 py-[2px] text-[9px] font-extrabold tracking-wide text-black">
+            <span className="inline-block rounded-md bg-gold px-2 py-[2px] text-[8.5px] font-extrabold tracking-wide text-black">
               SUR SCÈNE
             </span>
-            <p className="mt-1 text-[26px] leading-none font-extrabold text-white drop-shadow">
+            <p className="mt-1 text-[20px] leading-none font-extrabold text-white drop-shadow">
               Moussa
             </p>
-            <p className="mt-[3px] text-[13px] italic text-white/85">Les blessures invisibles</p>
+            <p className="mt-[3px] text-[11px] italic text-white/85">Les blessures invisibles</p>
             <Pressable
               onClick={() => {
                 tap();
                 showToast("Musique : Renaissance (Piano)");
               }}
-              className="mt-2 flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur"
+              className="mt-1.5 flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[10px] font-semibold text-white/90 backdrop-blur"
             >
-              <Music2 size={12} className="text-gold" /> Renaissance (Piano)
-              <ChevronRight size={13} className="text-white/60" />
+              <Music2 size={11} className="text-gold" /> Renaissance (Piano)
+              <ChevronRight size={12} className="text-white/60" />
             </Pressable>
           </div>
 
