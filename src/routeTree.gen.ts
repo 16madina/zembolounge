@@ -41,6 +41,7 @@ import { Route as WorldOnboarding1RouteImport } from './routes/world.onboarding.
 import { Route as WorldOnboarding2RouteImport } from './routes/world.onboarding.2'
 import { Route as WorldOnboarding3RouteImport } from './routes/world.onboarding.3'
 import { Route as WorldOnboarding4RouteImport } from './routes/world.onboarding.4'
+import { Route as WorldOnboarding5RouteImport } from './routes/world.onboarding.5'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -202,6 +203,11 @@ const WorldOnboarding4Route = WorldOnboarding4RouteImport.update({
   path: '/world/onboarding/4',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorldOnboarding5Route = WorldOnboarding5RouteImport.update({
+  id: '/world/onboarding/5',
+  path: '/world/onboarding/5',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/world/onboarding/2': typeof WorldOnboarding2Route
   '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
+  '/world/onboarding/5': typeof WorldOnboarding5Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -269,6 +276,7 @@ export interface FileRoutesByTo {
   '/world/onboarding/2': typeof WorldOnboarding2Route
   '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
+  '/world/onboarding/5': typeof WorldOnboarding5Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -304,6 +312,7 @@ export interface FileRoutesById {
   '/world/onboarding/2': typeof WorldOnboarding2Route
   '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
+  '/world/onboarding/5': typeof WorldOnboarding5Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -340,6 +349,7 @@ export interface FileRouteTypes {
     | '/world/onboarding/2'
     | '/world/onboarding/3'
     | '/world/onboarding/4'
+    | '/world/onboarding/5'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -373,6 +383,7 @@ export interface FileRouteTypes {
     | '/world/onboarding/2'
     | '/world/onboarding/3'
     | '/world/onboarding/4'
+    | '/world/onboarding/5'
   id:
     | '__root__'
     | '/'
@@ -407,6 +418,7 @@ export interface FileRouteTypes {
     | '/world/onboarding/2'
     | '/world/onboarding/3'
     | '/world/onboarding/4'
+    | '/world/onboarding/5'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -432,6 +444,7 @@ export interface RootRouteChildren {
   WorldOnboarding2Route: typeof WorldOnboarding2Route
   WorldOnboarding3Route: typeof WorldOnboarding3Route
   WorldOnboarding4Route: typeof WorldOnboarding4Route
+  WorldOnboarding5Route: typeof WorldOnboarding5Route
 }
 
 declare module '@tanstack/react-router' {
@@ -660,6 +673,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorldOnboarding4RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/world/onboarding/5': {
+      id: '/world/onboarding/5'
+      path: '/world/onboarding/5'
+      fullPath: '/world/onboarding/5'
+      preLoaderRoute: typeof WorldOnboarding5RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -716,6 +736,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorldOnboarding2Route: WorldOnboarding2Route,
   WorldOnboarding3Route: WorldOnboarding3Route,
   WorldOnboarding4Route: WorldOnboarding4Route,
+  WorldOnboarding5Route: WorldOnboarding5Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
