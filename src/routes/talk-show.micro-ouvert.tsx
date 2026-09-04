@@ -287,11 +287,11 @@ function MicroOuvertLive() {
             <Pressable
               onClick={() => {
                 tap();
-                setRole((r) => (r === "host" ? "guest" : "host"));
+                setRole((r) => NEXT_ROLE[r]);
               }}
               className="rounded-full border border-white/20 bg-black/60 px-2 py-[3px] text-[10px] font-bold whitespace-nowrap text-white/85 backdrop-blur-md"
             >
-              {role === "host" ? "👑 Vue" : "🙋 Vue"}
+              {ROLE_LABEL[role]}
             </Pressable>
             <Pressable
               aria-label="Plus d'options"
