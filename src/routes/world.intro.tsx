@@ -1,8 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Globe, Heart, Users } from "lucide-react";
-import globeImg from "@/assets/world-globe.png";
+import worldRoomImg from "@/assets/world-room-official.png.asset.json";
 import { Pressable } from "@/components/zembo/ui";
-import { photoUrl, PhotoAvatar } from "@/components/zembo/PhotoAvatar";
 
 export const Route = createFileRoute("/world/intro")({
   head: () => ({
@@ -102,54 +101,22 @@ function WorldIntro() {
           </p>
         </div>
 
-        {/* Visuel central : globe + avatars */}
-        <div className="relative mx-auto mt-5" style={{ width: 248, height: 248 }}>
+        {/* Visuel central : globe + avatars (image officielle) */}
+        <div className="relative mx-auto mt-4 flex justify-center" style={{ width: 260, height: 340 }}>
           {/* glow */}
           <div
             className="pointer-events-none absolute inset-0 rounded-full blur-2xl"
             style={{
               background:
-                "radial-gradient(circle, oklch(0.78 0.13 82 / 45%), transparent 68%)",
+                "radial-gradient(circle, oklch(0.78 0.13 82 / 40%), transparent 68%)",
             }}
           />
-          {/* globe */}
           <img
-            src={globeImg}
-            alt="Globe terrestre vu de l'espace"
-            width={248}
-            height={248}
-            className="absolute inset-0 mx-auto h-full w-full rounded-full object-cover"
-            style={{ filter: "drop-shadow(0 8px 30px oklch(0.82 0.13 85 / 30%))" }}
+            src={worldRoomImg.url}
+            alt="Globe terrestre avec avatars — World Room"
+            className="relative z-10 h-full w-full rounded-[24px] object-cover"
+            style={{ filter: "drop-shadow(0 8px 30px oklch(0.82 0.13 85 / 28%))" }}
           />
-          {/* anneaux dorés */}
-          <div className="pointer-events-none absolute inset-0 rounded-full ring-gold" />
-          {/* avatars autour */}
-          {RING.map((a) => {
-            const r = 128;
-            const rad = (a.angle * Math.PI) / 180;
-            const x = Math.cos(rad) * r;
-            const y = Math.sin(rad) * r;
-            return (
-              <span
-                key={a.seed}
-                className="absolute"
-                style={{
-                  left: "50%",
-                  top: "50%",
-                  transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
-                }}
-              >
-                <span className="block rounded-full bg-background p-[2px]">
-                  <img
-                    src={photoUrl(a.seed, 80)}
-                    alt={a.seed}
-                    loading="lazy"
-                    className="h-[44px] w-[44px] rounded-full object-cover ring-2 ring-gold/80"
-                  />
-                </span>
-              </span>
-            );
-          })}
         </div>
 
         {/* 3 arguments */}
