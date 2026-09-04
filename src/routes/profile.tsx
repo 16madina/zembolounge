@@ -1,10 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
-import { LogIn, LogOut } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useZemboAuth } from "@/lib/use-zembo-auth";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import {
   BadgeCheck,
   BarChart3,
@@ -14,6 +11,8 @@ import {
   Gem,
   Globe,
   Heart,
+  LogIn,
+  LogOut,
   Mail,
   MapPin,
   Menu,
@@ -28,6 +27,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 import { Pressable } from "@/components/zembo/ui";
 import { ZemboWordmark } from "@/components/zembo/ZemboMark";
 import { SegmentedTabs, type SegmentedTab } from "@/components/zembo/SegmentedTabs";
@@ -48,6 +48,8 @@ export const Route = createFileRoute("/profile")({
         property: "og:description",
         content: "Découvre les créations, badges et communautés de Deena sur Zembo.",
       },
+      { property: "og:type", content: "profile" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Profile,
@@ -62,18 +64,9 @@ const QUICK = [
 
 const TABS: SegmentedTab[] = [
   { id: "creations", label: "Créations", icon: PlaySquare },
-  { id: "tables", label: "Tables", icon: Users },
-  { id: "moments", label: "Moments", icon: Star },
+  { id: "tables", label: "Tables animées", icon: Users },
+  { id: "moments", label: "Moments forts", icon: Star },
   { id: "communautes", label: "Communautés", icon: Globe },
-];
-
-const ABOUT = [
-  { icon: User, text: "Passionnée de discussions et de connexions" },
-  { icon: CalendarDays, text: "Sur Zembo depuis Avril 2024" },
-  { icon: MapPin, text: "Montréal, Canada" },
-  { icon: ShieldCheck, text: "Hôte vérifiée" },
-  { icon: Globe, text: "Français | English" },
-  { icon: Mail, text: "Collabs : deena@zembo.app" },
 ];
 
 const BOTTOM_STATS = [
@@ -83,39 +76,110 @@ const BOTTOM_STATS = [
   { l: "Appréciations reçues", v: "3.2K", heart: true },
 ];
 
+const CARD = "rounded-2xl border border-border/70 bg-[oklch(0.115_0.008_60)]";
+
 function Profile() {
   const { user, signOut } = useZemboAuth();
+  const navigate = useNavigate();
   const [tab, setTab] = useState("creations");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const loading = useMockLoad();
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e: PointerEvent) => {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [menuOpen]);
+
+  const meta = (user?.user_metadata ?? {}) as Record<string, string | undefined>;
+  const firstName = meta.first_name ?? meta.prenom ?? "";
+  const lastName = meta.last_name ?? meta.nom ?? "";
+  const displayName =
+    (meta.display_name ?? meta.full_name ?? `${firstName} ${lastName}`.trim()) || "Deena";
+  const handle = meta.username ?? meta.pseudo ?? (user ? user.email?.split("@")[0] : null) ?? "deena_zembo";
+  const contact = user?.email ?? "deena@zembo.app";
+
+  const about = [
+    { icon: User, text: "Passionnée de discussions et de connexions" },
+    { icon: CalendarDays, text: "Sur Zembo depuis Avril 2024" },
+    { icon: MapPin, text: "Montréal, Canada" },
+    { icon: ShieldCheck, text: "Hôte vérifiée" },
+    { icon: Globe, text: "Français | English" },
+    { icon: Mail, text: `Collabs : ${contact}` },
+  ];
+
+  const onSignOut = async () => {
+    setMenuOpen(false);
+    await signOut();
+    toast("Déconnecté", { description: "À bientôt sur Zembo." });
+    navigate({ to: "/" });
+  };
 
   return (
     <div style={{ paddingBottom: 110 }}>
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border/50 bg-background/85 px-4 pt-[max(env(safe-area-inset-top),12px)] pb-3 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border/50 bg-background/85 px-4 pt-[max(env(safe-area-inset-top),12px)] pb-3 backdrop-blur-xl">
         <ZemboWordmark className="text-[16px]" />
         <div className="flex items-center gap-4 text-gold">
-          <Pressable aria-label="Code QR">
+          <Pressable aria-label="Code QR" onClick={() => toast("Ton QR code Zembo arrive bientôt.")}>
             <QrCode size={19} />
           </Pressable>
-          <Pressable aria-label="Partager">
+          <Pressable aria-label="Partager" onClick={() => toast("Lien du profil copié ✅")}>
             <Share2 size={19} />
           </Pressable>
-          <Pressable aria-label="Menu">
-            <Menu size={19} />
-          </Pressable>
+          <div className="relative" ref={menuRef}>
+            <Pressable aria-label="Menu" onClick={() => setMenuOpen((v) => !v)}>
+              <Menu size={19} />
+            </Pressable>
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                  transition={{ duration: 0.16 }}
+                  className={`absolute top-8 right-0 z-40 w-[190px] overflow-hidden ${CARD} p-1 shadow-2xl`}
+                >
+                  {user ? (
+                    <Pressable
+                      onClick={onSignOut}
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-[13.5px] font-semibold text-white"
+                    >
+                      <LogOut size={15} className="text-gold" /> Se déconnecter
+                    </Pressable>
+                  ) : (
+                    <Pressable
+                      onClick={() => {
+                        setMenuOpen(false);
+                        navigate({ to: "/login" });
+                      }}
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-[13.5px] font-semibold text-white"
+                    >
+                      <LogIn size={15} className="text-gold" /> Se connecter
+                    </Pressable>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </header>
 
       {/* Identité */}
       <section className="flex gap-4 px-4 pt-5">
         <span className="shrink-0 rounded-full border-[3px] border-gold p-[2px]">
-          <PhotoAvatar name="Deena" size={104} ring={false} status="online" />
+          <PhotoAvatar name={displayName} size={104} ring={false} status="online" />
         </span>
         <div className="min-w-0 flex-1">
           <h1 className="flex items-center gap-1.5 text-[28px] leading-tight font-bold text-white">
-            Deena <BadgeCheck size={20} className="shrink-0 text-gold" />
+            <span className="truncate">{displayName}</span>
+            <BadgeCheck size={20} className="shrink-0 text-gold" />
           </h1>
           <p className="mt-0.5 flex flex-wrap items-center gap-2 text-[13px] text-muted-foreground">
-            @deena_zembo
+            <span className="truncate">@{handle}</span>
             <span className="rounded-md border border-gold/50 px-1.5 py-[1px] text-[10px] font-bold text-gold">
               HÔTE
             </span>
@@ -128,6 +192,15 @@ function Profile() {
         des connexions qui comptent.
       </p>
 
+      <div className="px-4">
+        <Pressable
+          onClick={() => toast("Édition du profil bientôt disponible.")}
+          className="mt-3 w-full rounded-full border border-gold/60 py-2.5 text-[13.5px] font-semibold text-gold"
+        >
+          Éditer le profil
+        </Pressable>
+      </div>
+
       <div className="snap-row mt-3 gap-2 px-4">
         {["🔥 Talk Show Host", "🏆 Top Hôte", "👑 Level 7"].map((b) => (
           <span
@@ -137,30 +210,6 @@ function Profile() {
             {b}
           </span>
         ))}
-      </div>
-
-      <div className="px-4">
-        <Pressable className="mt-4 w-full rounded-full border border-gold/60 py-2.5 text-[13.5px] font-semibold text-gold">
-          Éditer le profil
-        </Pressable>
-        {user ? (
-          <Pressable
-            onClick={async () => {
-              await signOut();
-              toast("Déconnecté", { description: "À bientôt sur Zembo." });
-            }}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-border py-2.5 text-[13.5px] font-semibold text-muted-foreground"
-          >
-            <LogOut size={15} /> Se déconnecter
-          </Pressable>
-        ) : (
-          <Link
-            to="/login"
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border border-border py-2.5 text-[13.5px] font-semibold text-muted-foreground"
-          >
-            <LogIn size={15} /> Se connecter
-          </Link>
-        )}
       </div>
 
       {/* Stats */}
@@ -198,10 +247,26 @@ function Profile() {
       </div>
 
       {/* Accès rapide */}
-      <div className="mx-4 mt-3 grid grid-cols-4 divide-x divide-border/60 rounded-2xl border border-border/70 bg-[oklch(0.115_0.008_60)] py-3">
+      <div
+        className={`mx-4 mt-3 grid grid-cols-4 divide-x divide-border/60 ${CARD} py-3`}
+      >
         {QUICK.map((q) => (
-          <Pressable key={q.label} className="flex flex-col items-center gap-1 px-1">
-            <q.icon size={24} className="text-gold" />
+          <Pressable
+            key={q.label}
+            onClick={() => toast(`${q.label} — bientôt disponible.`)}
+            className="flex flex-col items-center gap-1 px-1"
+          >
+            <span className="relative">
+              <q.icon size={24} className="text-gold" />
+              {q.label === "Portefeuille" && (
+                <span className="absolute -right-1.5 -bottom-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gold text-[8px] font-black text-[oklch(0.16_0.02_60)]">
+                  Z
+                </span>
+              )}
+              {q.label === "Badges" && (
+                <Star size={9} className="absolute -top-0.5 -right-1 fill-gold text-gold" />
+              )}
+            </span>
             <span className="text-[12px] font-bold text-gold">{q.label}</span>
             <span className="text-center text-[10.5px] leading-tight text-muted-foreground">
               {q.sub}
@@ -217,7 +282,10 @@ function Profile() {
 
       <div className="mt-5 flex items-center justify-between px-4">
         <h2 className="text-[15px] font-bold text-white">Mes créations récentes</h2>
-        <Pressable className="flex items-center gap-0.5 text-[12.5px] font-semibold text-gold">
+        <Pressable
+          onClick={() => toast("Toutes tes créations arrivent bientôt.")}
+          className="flex items-center gap-0.5 text-[12.5px] font-semibold text-gold"
+        >
           Voir tout <ChevronRight size={14} />
         </Pressable>
       </div>
@@ -231,10 +299,7 @@ function Profile() {
       ) : (
         <div className="snap-row mt-3 gap-3 px-4">
           {creations.map((c) => (
-            <div
-              key={c.id}
-              className="w-[170px] shrink-0 overflow-hidden rounded-2xl border border-border/70 bg-[oklch(0.115_0.008_60)]"
-            >
+            <div key={c.id} className={`w-[170px] shrink-0 overflow-hidden ${CARD}`}>
               <div className="relative">
                 <img
                   src={c.image}
@@ -268,20 +333,23 @@ function Profile() {
       )}
 
       {/* À propos */}
-      <div className="mx-4 mt-4 rounded-2xl border border-border/70 bg-[oklch(0.115_0.008_60)] p-3.5">
+      <div className={`mx-4 mt-4 ${CARD} p-3.5`}>
         <h3 className="text-[15px] font-bold text-white">À propos de moi</h3>
         <ul className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-2.5">
-          {ABOUT.map((a) => (
-            <li key={a.text} className="flex items-start gap-1.5 text-[13px] text-white">
+          {about.map((a) => (
+            <li key={a.text} className="flex min-w-0 items-start gap-1.5 text-[13px] text-white">
               <a.icon size={14} className="mt-[3px] shrink-0 text-gold" />
-              <span className="leading-snug">{a.text}</span>
+              <span className="min-w-0 break-words leading-snug">{a.text}</span>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Communautés */}
-      <Pressable className="mx-4 mt-3 block w-[calc(100%-2rem)] rounded-2xl border border-border/70 bg-[oklch(0.115_0.008_60)] p-3.5 text-left">
+      <Pressable
+        onClick={() => toast("Gestion des communautés bientôt disponible.")}
+        className={`mx-4 mt-3 block w-[calc(100%-2rem)] ${CARD} p-3.5 text-left`}
+      >
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-[15px] font-bold text-white">Communautés</h3>
@@ -290,7 +358,7 @@ function Profile() {
           <ChevronRight size={18} className="text-gold" />
         </div>
         <div className="mt-3 flex items-center gap-2.5">
-          <PhotoAvatar name="Deena" size={44} />
+          <PhotoAvatar name={displayName} size={44} />
           <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-gold/60 bg-[oklch(0.16_0.006_60)]">
             <Mic size={18} className="text-gold" />
           </span>
@@ -304,7 +372,9 @@ function Profile() {
       </Pressable>
 
       {/* Stats bas */}
-      <div className="mx-4 mt-3 grid grid-cols-4 divide-x divide-border/60 rounded-2xl border border-border/70 bg-[oklch(0.115_0.008_60)] py-3.5 text-center">
+      <div
+        className={`mx-4 mt-3 grid grid-cols-4 divide-x divide-border/60 ${CARD} py-3.5 text-center`}
+      >
         {BOTTOM_STATS.map((s) => (
           <div key={s.l} className="px-1">
             <p className="text-[11px] leading-tight text-muted-foreground">{s.l}</p>
