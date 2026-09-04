@@ -302,13 +302,7 @@ function TableRoom() {
     });
     setQueue((q) => q.filter((x) => x !== name));
     setTimeout(() => {
-      setRoller((r) => {
-        for (let k = 1; k <= seats.length; k++) {
-          const i = (r + k) % seats.length;
-          if (seats[i]!.name || seats[i]!.name === null) return i;
-        }
-        return r;
-      });
+      setRoller((r) => (r + 1) % SEAT_SPOTS.length);
       setPhase("roll");
       setLeaving(null);
     }, 700);
