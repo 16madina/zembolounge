@@ -64,13 +64,14 @@ export function TalkShowPreviewScreen({ format }: { format: FormatId }) {
   };
 
   return (
-    <div className="app-scroll no-scrollbar pb-[130px]">
+    <div className="relative flex h-full flex-col overflow-hidden">
       <SetupHeader
         onBack={toConfig}
         right={<span className="text-[12px] font-bold text-gold">2/2</span>}
       />
 
-      <section className="px-4 pt-5 text-center">
+      <div className="app-scroll no-scrollbar min-h-0 flex-1 pb-[188px]">
+      <section className="px-4 pt-4 text-center">
         <h1 className="text-[26px] leading-none font-extrabold tracking-tight">Tout est prêt !</h1>
         <p className="mt-2 text-[12.5px] text-muted-foreground">
           Vérifie les informations avant de lancer ton {meta.name}.
@@ -149,10 +150,12 @@ export function TalkShowPreviewScreen({ format }: { format: FormatId }) {
         </div>
       </div>
 
-      <div className="mt-5 space-y-2.5 px-4">
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 space-y-2.5 bg-gradient-to-t from-background via-background/95 to-transparent px-4 pt-8 pb-[calc(env(safe-area-inset-bottom)+92px)]">
         <Pressable
           onClick={launch}
-          className="flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[14px] font-extrabold text-[oklch(0.16_0.02_60)]"
+          className="pointer-events-auto flex w-full items-center justify-center gap-2 rounded-full bg-gold-gradient py-3.5 text-[14px] font-extrabold text-[oklch(0.16_0.02_60)]"
         >
           <Radio size={17} /> Lancer mon {meta.name}
         </Pressable>
@@ -161,7 +164,7 @@ export function TalkShowPreviewScreen({ format }: { format: FormatId }) {
             tap();
             toConfig();
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface/70 py-3.5 text-[13px] font-bold text-foreground/85"
+          className="pointer-events-auto flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface/70 py-3.5 text-[13px] font-bold text-foreground/85"
         >
           <Pencil size={15} /> Modifier les informations
         </Pressable>
