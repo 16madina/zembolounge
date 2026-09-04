@@ -39,10 +39,10 @@ import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.con
 import { Route as TalkShowPreviewFormatRouteImport } from './routes/talk-show.preview.$format'
 import { Route as WorldOnboarding1RouteImport } from './routes/world.onboarding.1'
 import { Route as WorldOnboarding2RouteImport } from './routes/world.onboarding.2'
-import { Route as WorldOnboarding3RouteImport } from './routes/world.onboarding.3'
 import { Route as WorldOnboarding4RouteImport } from './routes/world.onboarding.4'
 import { Route as WorldOnboarding5RouteImport } from './routes/world.onboarding.5'
 import { Route as WorldOnboarding6RouteImport } from './routes/world.onboarding.6'
+import { Route as WorldOnboarding7RouteImport } from './routes/world.onboarding.7'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -194,11 +194,6 @@ const WorldOnboarding2Route = WorldOnboarding2RouteImport.update({
   path: '/world/onboarding/2',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorldOnboarding3Route = WorldOnboarding3RouteImport.update({
-  id: '/world/onboarding/3',
-  path: '/world/onboarding/3',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const WorldOnboarding4Route = WorldOnboarding4RouteImport.update({
   id: '/world/onboarding/4',
   path: '/world/onboarding/4',
@@ -212,6 +207,11 @@ const WorldOnboarding5Route = WorldOnboarding5RouteImport.update({
 const WorldOnboarding6Route = WorldOnboarding6RouteImport.update({
   id: '/world/onboarding/6',
   path: '/world/onboarding/6',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorldOnboarding7Route = WorldOnboarding7RouteImport.update({
+  id: '/world/onboarding/7',
+  path: '/world/onboarding/7',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -246,10 +246,10 @@ export interface FileRoutesByFullPath {
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
-  '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
   '/world/onboarding/5': typeof WorldOnboarding5Route
   '/world/onboarding/6': typeof WorldOnboarding6Route
+  '/world/onboarding/7': typeof WorldOnboarding7Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -281,10 +281,10 @@ export interface FileRoutesByTo {
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
-  '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
   '/world/onboarding/5': typeof WorldOnboarding5Route
   '/world/onboarding/6': typeof WorldOnboarding6Route
+  '/world/onboarding/7': typeof WorldOnboarding7Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -318,10 +318,10 @@ export interface FileRoutesById {
   '/talk-show/preview/$format': typeof TalkShowPreviewFormatRoute
   '/world/onboarding/1': typeof WorldOnboarding1Route
   '/world/onboarding/2': typeof WorldOnboarding2Route
-  '/world/onboarding/3': typeof WorldOnboarding3Route
   '/world/onboarding/4': typeof WorldOnboarding4Route
   '/world/onboarding/5': typeof WorldOnboarding5Route
   '/world/onboarding/6': typeof WorldOnboarding6Route
+  '/world/onboarding/7': typeof WorldOnboarding7Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -356,10 +356,10 @@ export interface FileRouteTypes {
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
-    | '/world/onboarding/3'
     | '/world/onboarding/4'
     | '/world/onboarding/5'
     | '/world/onboarding/6'
+    | '/world/onboarding/7'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -391,10 +391,10 @@ export interface FileRouteTypes {
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
-    | '/world/onboarding/3'
     | '/world/onboarding/4'
     | '/world/onboarding/5'
     | '/world/onboarding/6'
+    | '/world/onboarding/7'
   id:
     | '__root__'
     | '/'
@@ -427,10 +427,10 @@ export interface FileRouteTypes {
     | '/talk-show/preview/$format'
     | '/world/onboarding/1'
     | '/world/onboarding/2'
-    | '/world/onboarding/3'
     | '/world/onboarding/4'
     | '/world/onboarding/5'
     | '/world/onboarding/6'
+    | '/world/onboarding/7'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -454,10 +454,10 @@ export interface RootRouteChildren {
   WorldIntroRoute: typeof WorldIntroRoute
   WorldOnboarding1Route: typeof WorldOnboarding1Route
   WorldOnboarding2Route: typeof WorldOnboarding2Route
-  WorldOnboarding3Route: typeof WorldOnboarding3Route
   WorldOnboarding4Route: typeof WorldOnboarding4Route
   WorldOnboarding5Route: typeof WorldOnboarding5Route
   WorldOnboarding6Route: typeof WorldOnboarding6Route
+  WorldOnboarding7Route: typeof WorldOnboarding7Route
 }
 
 declare module '@tanstack/react-router' {
@@ -672,13 +672,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorldOnboarding2RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/world/onboarding/3': {
-      id: '/world/onboarding/3'
-      path: '/world/onboarding/3'
-      fullPath: '/world/onboarding/3'
-      preLoaderRoute: typeof WorldOnboarding3RouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/world/onboarding/4': {
       id: '/world/onboarding/4'
       path: '/world/onboarding/4'
@@ -698,6 +691,13 @@ declare module '@tanstack/react-router' {
       path: '/world/onboarding/6'
       fullPath: '/world/onboarding/6'
       preLoaderRoute: typeof WorldOnboarding6RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/world/onboarding/7': {
+      id: '/world/onboarding/7'
+      path: '/world/onboarding/7'
+      fullPath: '/world/onboarding/7'
+      preLoaderRoute: typeof WorldOnboarding7RouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -754,10 +754,10 @@ const rootRouteChildren: RootRouteChildren = {
   WorldIntroRoute: WorldIntroRoute,
   WorldOnboarding1Route: WorldOnboarding1Route,
   WorldOnboarding2Route: WorldOnboarding2Route,
-  WorldOnboarding3Route: WorldOnboarding3Route,
   WorldOnboarding4Route: WorldOnboarding4Route,
   WorldOnboarding5Route: WorldOnboarding5Route,
   WorldOnboarding6Route: WorldOnboarding6Route,
+  WorldOnboarding7Route: WorldOnboarding7Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
