@@ -76,7 +76,22 @@ const QUEUE = [
   { n: 3, name: "Aïssatou", title: "Ma renaissance", music: "🥁 Afro douce", time: "01:00" },
 ];
 
+const GIFTS = [
+  { emoji: "🌹", name: "Rose", cost: 5 },
+  { emoji: "👏", name: "Applaudissements", cost: 10 },
+  { emoji: "🔥", name: "Flamme", cost: 20 },
+  { emoji: "💎", name: "Diamant", cost: 50 },
+  { emoji: "👑", name: "Couronne", cost: 100 },
+  { emoji: "🎤", name: "Micro d'or", cost: 250 },
+  { emoji: "🦋", name: "Papillon", cost: 30 },
+  { emoji: "🤍", name: "Cœur pur", cost: 15 },
+  { emoji: "🚀", name: "Fusée", cost: 500 },
+];
+
+const ZEM_AMOUNTS = [50, 100, 250, 500, 1000, 2500];
+
 const TOTAL = 180;
+
 const tap = () => navigator.vibrate?.(15);
 
 function SlamTherapieLive() {
