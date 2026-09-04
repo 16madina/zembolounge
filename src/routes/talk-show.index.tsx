@@ -49,18 +49,18 @@ type Format = {
   accroche: string;
   desc: string;
   pill?: string;
-  to: "/talk-show/storytelling" | "/talk-show/open-mic" | "/talk-show/stand" | "/talk-show/slam";
+  to: "/talk-show/storytime" | "/talk-show/open-mic" | "/talk-show/stand" | "/talk-show/slam";
   icon: ReactNode;
 };
 
 const FORMATS: Format[] = [
   {
-    id: "storytelling",
+    id: "storytime",
     title: "Storytime",
     accent: VIOLET,
     accroche: "Raconte ton histoire.",
     desc: "Partage une expérience, un moment marquant ou une histoire qui t'a construit.",
-    to: "/talk-show/storytelling",
+    to: "/talk-show/storytime",
     icon: (
       <span className="relative">
         <BookOpen size={46} className="text-gold" strokeWidth={1.7} />

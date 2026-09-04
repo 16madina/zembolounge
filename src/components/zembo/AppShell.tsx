@@ -14,7 +14,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isThread = pathname.startsWith("/messages/");
   const isTable = pathname.startsWith("/table/");
   const isGame = pathname.startsWith("/play/") || pathname.startsWith("/face-a-face");
-  const noDock = isThread || isGame;
+  const isLiveShow = pathname.startsWith("/talk-show/storytime");
+  const noDock = isThread || isGame || isLiveShow;
 
   return (
     <div className="flex min-h-[100dvh] justify-center bg-[oklch(0.05_0_0)]">
@@ -29,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               transition={{ duration: 0.24, ease: [0.32, 0.72, 0, 1] }}
               className={cn(
                 "h-full",
-                isThread || isTable
+                isThread || isTable || isLiveShow
                   ? "overflow-hidden"
                   : isGame
                     ? "app-scroll"
