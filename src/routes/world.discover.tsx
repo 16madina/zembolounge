@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { BottomSheet } from "@/components/zembo/Sheet";
+import { WorldTabs } from "@/components/zembo/WorldTabs";
 import { Pressable } from "@/components/zembo/ui";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { cn } from "@/lib/utils";
