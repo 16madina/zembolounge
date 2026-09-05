@@ -137,6 +137,8 @@ type HelloState = {
   /** Hellos reçus encore en attente de réponse. */
   pending: string[];
   ignored: string[];
+  /** Hellos que j'ai envoyés, en attente de réponse. */
+  sent: string[];
   /** Hello mutuel confirmé (rencontre 60s dispo). */
   mutual: string[];
   /** Connexions mutuelles → messagerie débloquée. */
@@ -148,8 +150,9 @@ const KEY = "zembo-world-hello";
 const DEFAULT_STATE: HelloState = {
   pending: ["moussa", "awa"],
   ignored: [],
+  sent: ["chloe", "kenji"],
   mutual: [],
-  connections: [],
+  connections: ["elena"],
 };
 
 export function loadHelloState(): HelloState {
