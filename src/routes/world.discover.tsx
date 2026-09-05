@@ -483,31 +483,153 @@ function WorldDiscover() {
         )}
       </AnimatePresence>
 
-      <BottomSheet open={videoOpen} onClose={() => setVideoOpen(false)}>
-        <div className="space-y-3 px-4 pb-3 text-center">
-          <h2 className="text-[16px] font-black text-white">
-            Vidéo de profil — {card.name}
-          </h2>
-          <div className="relative mx-auto aspect-[9/13] w-[62%] overflow-hidden rounded-3xl border border-gold/30">
-            <img
-              src={card.photo ?? photoUrl(card.id, 640)}
-              alt=""
-              className="h-full w-full object-cover opacity-70"
-            />
-            <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/45">
-              <span className="bg-gold-gradient flex h-12 w-12 items-center justify-center rounded-full">
-                <Play size={20} className="fill-[oklch(0.16_0.02_60)] text-[oklch(0.16_0.02_60)]" />
-              </span>
-              <span className="text-[11.5px] font-semibold text-white/85">
-                Vidéo de profil — bientôt
-              </span>
-            </span>
-          </div>
-          <p className="text-[12px] text-white/60">
-            Les vidéos de 15 secondes arrivent très bientôt dans World Room.
-          </p>
-        </div>
-      </BottomSheet>
+      {/* Page profil complète */}
+      <AnimatePresence>
+        {profileOpen && (
+          <motion.div
+            key="full-profile"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
+            className="absolute inset-0 z-40 bg-background"
+          >
+            <div className="flex items-center gap-2 border-b border-white/10 px-3 pt-3 pb-2">
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setProfileOpen(false);
+                }}
+                aria-label="Retour à la découverte"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/35 text-gold"
+              >
+                <ChevronLeft size={18} />
+              </Pressable>
+              <p className="min-w-0 flex-1 truncate text-[15px] font-black text-white">
+                {card.name} · World Card
+              </p>
+            </div>
+
+            <div className="app-scroll h-[calc(100%-52px)] space-y-4 px-4 pt-3 pb-[190px]">
+              {/* Galerie photos */}
+              <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {[card.photo ?? photoUrl(card.id, 720), photoUrl(`${card.id}-2`, 720), photoUrl(`${card.id}-3`, 720)].map(
+                  (src, i) => (
+                    <img
+                      key={i}
+                      src={src}
+                      alt={`Photo ${i + 1} de ${card.name}`}
+                      className="h-[300px] w-[68%] shrink-0 snap-center rounded-3xl border border-gold/25 object-cover"
+                      draggable={false}
+                    />
+                  ),
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <h2 className="truncate text-[24px] leading-none font-black text-white">
+                    {card.name}, {card.age}
+                  </h2>
+                  <BadgeCheck size={17} className="shrink-0 text-[oklch(0.72_0.14_240)]" />
+                </div>
+                <p className="flex items-center gap-1 text-[12px] text-white/75">
+                  <MapPin size={12} className="shrink-0 text-gold" />
+                  <span className="truncate">
+                    {card.flag} {card.city}, {card.country} · à {card.distanceKm} km
+                  </span>
+                </p>
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="rounded-full border border-gold/35 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-white/90">
+                    {card.intent}
+                  </span>
+                  <span className="rounded-full border border-emerald/40 bg-emerald/15 px-2 py-1 text-[10.5px] font-semibold text-emerald">
+                    🟢 En ligne
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-[13px] leading-snug text-white/80 italic">« {card.quote} »</p>
+
+              <div>
+                <h3 className="text-[12px] font-black tracking-wide text-gold/90">
+                  Centres d'intérêt
+                </h3>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {card.interests.map((it) => (
+                    <span
+                      key={it}
+                      className="rounded-full border border-gold/30 bg-white/5 px-2.5 py-1 text-[11px] text-white/85"
+                    >
+                      {it}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-[12px] font-black tracking-wide text-gold/90">
+                  Ses réponses World Card
+                </h3>
+                <AnswerCard icon="✈️" label="Mon dimanche parfait ?" value={card.sunday} />
+                <AnswerCard icon="🧡" label="Mon plus gros red flag ?" value={card.redFlag} />
+                <AnswerCard icon="🌐" label="Si je pouvais partir demain ?" value={card.travel} />
+              </div>
+            </div>
+
+            {/* Actions depuis le profil complet */}
+            <div className="absolute inset-x-0 bottom-0 z-10 flex items-start justify-between gap-2 border-t border-white/10 bg-background/95 px-5 pt-3 pb-[108px] backdrop-blur-xl">
+              <ActionButton
+                onClick={() => {
+                  tap();
+                  setProfileOpen(false);
+                  next();
+                }}
+                label="Passer"
+                hint="Au prochain profil"
+                className="border border-white/15 bg-black/60 text-gold"
+              >
+                <ArrowRight size={22} />
+              </ActionButton>
+              <ActionButton
+                emphasis
+                onClick={() => {
+                  tap();
+                  setProfileOpen(false);
+                  if (MUTUAL_IDS.includes(card.id)) {
+                    setMatch(card);
+                  } else {
+                    toast.success(`👋 Hello envoyé à ${card.name}`);
+                    next();
+                  }
+                }}
+                label="Dire Hello"
+                hint="Lance la conversation"
+                className="bg-gold-gradient text-[oklch(0.16_0.02_60)]"
+              >
+                <MessageCircle size={24} />
+              </ActionButton>
+              <ActionButton
+                onClick={() => {
+                  tap();
+                  setProfileOpen(false);
+                  toast.success("✨ Demande de connexion envoyée");
+                  next();
+                }}
+                label="Connecter"
+                hint="Si le feeling est là"
+                className="bg-gradient-to-br from-[oklch(0.55_0.18_300)] to-[oklch(0.82_0.13_85)] text-white"
+              >
+                <span className="flex items-center gap-0.5">
+                  <span className="text-[13px] font-black">Z</span>
+                  <Heart size={13} className="fill-white" />
+                </span>
+              </ActionButton>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
 
       {/* En-tête */}
