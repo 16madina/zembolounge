@@ -4,6 +4,8 @@ import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { TabBar } from "./TabBar";
 import { CreateSheet } from "./CreateSheet";
+import { WorldDock } from "./WorldDock";
+
 
 const TABS = ["/", "/live", "/messages", "/profile"];
 
