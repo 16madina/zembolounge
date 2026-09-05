@@ -296,20 +296,15 @@ function WorldDiscover() {
           <div className="pointer-events-none absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-black/85 to-transparent" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black via-black/70 to-transparent" />
 
-          {/* Bandeau pays */}
-          <div className="absolute top-[13%] left-[4%] w-[60%]">
-            <CountryPill card={card} />
-          </div>
-
-          {/* Vignette vidéo */}
-          <div className="absolute top-[14.5%] right-[4%] flex w-[26%] flex-col items-center gap-1">
+          {/* Vignette vidéo de profil */}
+          <div className="absolute top-[15%] right-[4%] z-10 flex w-[27%] flex-col items-center gap-1">
             <Pressable
               onClick={() => {
                 tap();
-                toast("Bientôt : vidéo de profil");
+                setVideoOpen(true);
               }}
               aria-label="Voir sa vidéo de profil"
-              className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-gold/80"
+              className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-gold shadow-[0_8px_24px_-6px_oklch(0.82_0.13_85/70%)]"
             >
               <img
                 src={photoUrl(card.id, 160)}
@@ -317,17 +312,17 @@ function WorldDiscover() {
                 className="h-full w-full object-cover"
                 draggable={false}
               />
-              <span className="absolute inset-0 flex items-center justify-center bg-black/35">
-                <Play size={16} className="text-gold" />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/40">
+                <Play size={18} className="fill-gold text-gold" />
               </span>
             </Pressable>
-            <span className="text-center text-[9px] leading-tight text-white/70">
-              Voir sa vidéo de profil
+            <span className="rounded-full border border-gold/35 bg-black/60 px-2 py-0.5 text-center text-[9px] leading-tight font-semibold text-white/85 backdrop-blur-md">
+              Vidéo de profil
             </span>
           </div>
 
           {/* Points de progression */}
-          <div className="absolute top-[31%] right-[3%] flex flex-col items-center gap-1.5">
+          <div className="absolute top-[38%] right-[3%] flex flex-col items-center gap-1.5">
             {POOL.map((p, i) => (
               <span
                 key={p.id}
@@ -341,60 +336,59 @@ function WorldDiscover() {
             ))}
           </div>
 
-          {/* Mini-carte du monde */}
-          <div className="absolute top-[44%] right-[4%] w-[31%] rounded-2xl border border-gold/25 bg-black/45 p-2 backdrop-blur-md">
-            <div className="relative h-9 overflow-hidden rounded-lg bg-[oklch(0.14_0.02_60)]">
+          {/* Mini-carte du monde (déco) */}
+          <div className="pointer-events-none absolute bottom-[35%] right-[4%] w-[27%] rounded-xl border border-gold/25 bg-black/40 p-1.5 backdrop-blur-md">
+            <div className="relative h-8 overflow-hidden rounded-lg bg-[oklch(0.13_0.02_60)]">
               <div
-                className="absolute inset-0 opacity-70"
+                className="absolute inset-0 opacity-60"
                 style={{
                   backgroundImage:
                     "radial-gradient(oklch(0.82 0.13 85 / 60%) 1px, transparent 1.3px)",
-                  backgroundSize: "7px 7px",
+                  backgroundSize: "6px 6px",
                 }}
               />
-              <Plane size={13} className="absolute top-2 left-1/2 -translate-x-1/2 text-gold" />
+              <Plane size={12} className="absolute top-1.5 left-1/2 -translate-x-1/2 text-gold" />
+              <span className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-gold shadow-[0_0_8px_2px_oklch(0.82_0.13_85/60%)]" />
             </div>
-            <p className="mt-1 text-[8px] leading-tight text-white/60">
-              « Des gens incroyables aux quatre coins du monde. »
+            <p className="mt-1 text-center text-[8px] leading-tight text-white/60">
+              {card.flag} À {card.distanceKm} km
             </p>
           </div>
 
-          {/* Infos profil */}
-          <div className="absolute bottom-[31.5%] left-[4%] w-[92%] space-y-1.5">
+          {/* Essentiel : le visage reste dégagé */}
+          <div className="absolute bottom-[27%] left-[4%] w-[68%] space-y-1.5">
             <div className="flex items-center gap-1.5">
-              <h2 className="text-[27px] leading-none font-black text-white">
+              <h2 className="truncate text-[27px] leading-none font-black text-white">
                 {card.name}, {card.age}
               </h2>
-              <BadgeCheck size={18} className="text-[oklch(0.72_0.14_240)]" />
+              <BadgeCheck size={18} className="shrink-0 text-[oklch(0.72_0.14_240)]" />
             </div>
-            <p className="flex items-center gap-1 text-[12px] text-white/70">
-              <MapPin size={12} className="text-gold" />
-              {card.city}, {card.country}
+            <p className="flex items-center gap-1 text-[12px] text-white/75">
+              <MapPin size={12} className="shrink-0 text-gold" />
+              <span className="truncate">
+                {card.flag} {card.city}, {card.country}
+              </span>
             </p>
-            <span className="inline-flex items-center rounded-full border border-gold/30 bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-md">
-              {card.intent}
-            </span>
-            <p className="text-[12px] leading-snug text-white/75 italic">
-              « {card.quote} »
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {card.interests.map((it) => (
-                <span
-                  key={it}
-                  className="rounded-full border border-gold/35 bg-black/40 px-2 py-0.5 text-[10px] text-white/85"
-                >
-                  {it}
-                </span>
-              ))}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex items-center rounded-full border border-gold/30 bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-md">
+                {card.intent}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald/40 bg-emerald/15 px-2 py-1 text-[10.5px] font-semibold text-emerald">
+                🟢 En ligne
+              </span>
             </div>
+            <Pressable
+              onClick={() => {
+                tap();
+                setDetails(true);
+              }}
+              className="flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white/85 backdrop-blur-md"
+            >
+              Voir plus
+              <ChevronDown size={13} className="text-gold" />
+            </Pressable>
           </div>
 
-          {/* 3 réponses World Card */}
-          <div className="absolute bottom-[23%] left-[4%] flex w-[92%] items-stretch gap-1.5">
-            <AnswerCard icon="✈️" label="Mon dimanche parfait ?" value={card.sunday} />
-            <AnswerCard icon="🧡" label="Mon plus gros red flag ?" value={card.redFlag} />
-            <AnswerCard icon="🌐" label="Si je pouvais partir demain ?" value={card.travel} />
-          </div>
 
           {/* Actions */}
           <div className="absolute bottom-[10.5%] left-[6%] flex w-[88%] items-start justify-between gap-2">
