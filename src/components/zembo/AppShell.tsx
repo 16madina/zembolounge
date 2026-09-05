@@ -30,7 +30,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     pathname.startsWith("/talk-show/micro-ouvert") ||
     pathname.startsWith("/talk-show/stand");
   const noDock =
-    isThread || isGame || isLiveShow || isSlam || isAdmin || isAuth || (isWorld && !isWorldTab);
+    isThread || isGame || isLiveShow || isSlam || isAdmin || isAuth || isWorld;
+
 
 
 
