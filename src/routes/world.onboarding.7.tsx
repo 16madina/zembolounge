@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { MapPin, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { WorldStep, worldHead } from "@/components/zembo/WorldStep";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 import {
   EMPTY_WORLD_PROFILE,
   ageNumber,
@@ -10,6 +12,7 @@ import {
   saveWorldProfile,
   type WorldProfileDraft,
 } from "@/lib/world-profile";
+import { upsertWorldProfile } from "@/lib/world-profile-db";
 
 export const Route = createFileRoute("/world/onboarding/7")({
   head: worldHead(7, "Ton profil est prêt", "Récapitulatif de ton profil World Room avant d'entrer dans la découverte."),
