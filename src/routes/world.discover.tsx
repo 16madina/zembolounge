@@ -4,6 +4,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
+  ChevronDown,
+  X,
   Globe2,
   Heart,
   MapPin,
@@ -145,28 +147,6 @@ const POOL: WorldCard[] = [
 /** Mock : ces profils répondent Hello en retour (Hello mutuel). */
 const MUTUAL_IDS = ["elena", "moussa", "awa"];
 
-function CountryPill({ card }: { card: WorldCard }) {
-  return (
-    <div className="space-y-1.5">
-      <span className="inline-flex max-w-full flex-col rounded-2xl border border-gold/25 bg-black/60 px-3 py-1.5 backdrop-blur-md">
-        <span className="flex items-center gap-1.5 text-[12px] font-semibold text-white/90">
-          <span>{card.flag}</span>
-          <span className="truncate">
-            {card.city}, {card.country}
-          </span>
-        </span>
-        <span className="text-[10px] font-medium text-white/60">
-          📍 À {card.distanceKm} km de toi
-        </span>
-      </span>
-      <span className="flex w-fit items-center gap-1.5 rounded-full border border-emerald/40 bg-emerald/15 px-2.5 py-1 text-[11px] font-semibold text-emerald">
-        🟢 En ligne maintenant
-      </span>
-    </div>
-
-  );
-}
-
 function AnswerCard({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
     <div className="min-w-0 flex-1 rounded-2xl border border-white/12 bg-black/55 px-2 py-2 backdrop-blur-md">
@@ -225,6 +205,8 @@ function WorldDiscover() {
   const lockRef = useRef(0);
   const [match, setMatch] = useState<WorldCard | null>(null);
   const [hellosCount] = useState(() => pendingHellos().length);
+  const [details, setDetails] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   const me: HelloMatchPerson = useMemo(() => {
     const p = loadWorldProfile();
@@ -245,18 +227,24 @@ function WorldDiscover() {
   };
 
   const next = useCallback(() => {
+    setDetails(false);
     setIndex((i) => i + 1);
   }, []);
 
   const prev = useCallback(() => {
+    setDetails(false);
     setIndex((i) => (i > 0 ? i - 1 : i));
   }, []);
 
+  /** Petit défilement = détails du profil courant ; grand geste = profil suivant. */
   const onWheel = (e: React.WheelEvent) => {
     const now = Date.now();
     if (now - lockRef.current < 550 || Math.abs(e.deltaY) < 12) return;
     lockRef.current = now;
-    if (e.deltaY > 0) next();
+    if (e.deltaY > 0) {
+      if (!details && Math.abs(e.deltaY) < 90) setDetails(true);
+      else next();
+    } else if (details) setDetails(false);
     else prev();
   };
 
@@ -276,9 +264,15 @@ function WorldDiscover() {
           dragElastic={0.18}
           dragConstraints={{ top: 0, bottom: 0 }}
           onDragEnd={(_, info) => {
-            if (info.offset.y < -90 || info.velocity.y < -600) {
+            if (info.offset.y < -170 || info.velocity.y < -900) {
               tap();
               next();
+            } else if (info.offset.y < -45) {
+              tap();
+              setDetails(true);
+            } else if (details && info.offset.y > 45) {
+              tap();
+              setDetails(false);
             } else if (info.offset.y > 110 || info.velocity.y > 700) {
               tap();
               prev();
@@ -296,20 +290,15 @@ function WorldDiscover() {
           <div className="pointer-events-none absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-black/85 to-transparent" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black via-black/70 to-transparent" />
 
-          {/* Bandeau pays */}
-          <div className="absolute top-[13%] left-[4%] w-[60%]">
-            <CountryPill card={card} />
-          </div>
-
-          {/* Vignette vidéo */}
-          <div className="absolute top-[14.5%] right-[4%] flex w-[26%] flex-col items-center gap-1">
+          {/* Vignette vidéo de profil */}
+          <div className="absolute top-[15%] right-[4%] z-10 flex w-[27%] flex-col items-center gap-1">
             <Pressable
               onClick={() => {
                 tap();
-                toast("Bientôt : vidéo de profil");
+                setVideoOpen(true);
               }}
               aria-label="Voir sa vidéo de profil"
-              className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-gold/80"
+              className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-gold shadow-[0_8px_24px_-6px_oklch(0.82_0.13_85/70%)]"
             >
               <img
                 src={photoUrl(card.id, 160)}
@@ -317,17 +306,17 @@ function WorldDiscover() {
                 className="h-full w-full object-cover"
                 draggable={false}
               />
-              <span className="absolute inset-0 flex items-center justify-center bg-black/35">
-                <Play size={16} className="text-gold" />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/40">
+                <Play size={18} className="fill-gold text-gold" />
               </span>
             </Pressable>
-            <span className="text-center text-[9px] leading-tight text-white/70">
-              Voir sa vidéo de profil
+            <span className="rounded-full border border-gold/35 bg-black/60 px-2 py-0.5 text-center text-[9px] leading-tight font-semibold text-white/85 backdrop-blur-md">
+              Vidéo de profil
             </span>
           </div>
 
           {/* Points de progression */}
-          <div className="absolute top-[31%] right-[3%] flex flex-col items-center gap-1.5">
+          <div className="absolute top-[38%] right-[3%] flex flex-col items-center gap-1.5">
             {POOL.map((p, i) => (
               <span
                 key={p.id}
@@ -341,60 +330,59 @@ function WorldDiscover() {
             ))}
           </div>
 
-          {/* Mini-carte du monde */}
-          <div className="absolute top-[44%] right-[4%] w-[31%] rounded-2xl border border-gold/25 bg-black/45 p-2 backdrop-blur-md">
-            <div className="relative h-9 overflow-hidden rounded-lg bg-[oklch(0.14_0.02_60)]">
+          {/* Mini-carte du monde (déco) */}
+          <div className="pointer-events-none absolute bottom-[35%] right-[4%] w-[27%] rounded-xl border border-gold/25 bg-black/40 p-1.5 backdrop-blur-md">
+            <div className="relative h-8 overflow-hidden rounded-lg bg-[oklch(0.13_0.02_60)]">
               <div
-                className="absolute inset-0 opacity-70"
+                className="absolute inset-0 opacity-60"
                 style={{
                   backgroundImage:
                     "radial-gradient(oklch(0.82 0.13 85 / 60%) 1px, transparent 1.3px)",
-                  backgroundSize: "7px 7px",
+                  backgroundSize: "6px 6px",
                 }}
               />
-              <Plane size={13} className="absolute top-2 left-1/2 -translate-x-1/2 text-gold" />
+              <Plane size={12} className="absolute top-1.5 left-1/2 -translate-x-1/2 text-gold" />
+              <span className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-gold shadow-[0_0_8px_2px_oklch(0.82_0.13_85/60%)]" />
             </div>
-            <p className="mt-1 text-[8px] leading-tight text-white/60">
-              « Des gens incroyables aux quatre coins du monde. »
+            <p className="mt-1 text-center text-[8px] leading-tight text-white/60">
+              {card.flag} À {card.distanceKm} km
             </p>
           </div>
 
-          {/* Infos profil */}
-          <div className="absolute bottom-[31.5%] left-[4%] w-[92%] space-y-1.5">
+          {/* Essentiel : le visage reste dégagé */}
+          <div className="absolute bottom-[27%] left-[4%] w-[68%] space-y-1.5">
             <div className="flex items-center gap-1.5">
-              <h2 className="text-[27px] leading-none font-black text-white">
+              <h2 className="truncate text-[27px] leading-none font-black text-white">
                 {card.name}, {card.age}
               </h2>
-              <BadgeCheck size={18} className="text-[oklch(0.72_0.14_240)]" />
+              <BadgeCheck size={18} className="shrink-0 text-[oklch(0.72_0.14_240)]" />
             </div>
-            <p className="flex items-center gap-1 text-[12px] text-white/70">
-              <MapPin size={12} className="text-gold" />
-              {card.city}, {card.country}
+            <p className="flex items-center gap-1 text-[12px] text-white/75">
+              <MapPin size={12} className="shrink-0 text-gold" />
+              <span className="truncate">
+                {card.flag} {card.city}, {card.country}
+              </span>
             </p>
-            <span className="inline-flex items-center rounded-full border border-gold/30 bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-md">
-              {card.intent}
-            </span>
-            <p className="text-[12px] leading-snug text-white/75 italic">
-              « {card.quote} »
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {card.interests.map((it) => (
-                <span
-                  key={it}
-                  className="rounded-full border border-gold/35 bg-black/40 px-2 py-0.5 text-[10px] text-white/85"
-                >
-                  {it}
-                </span>
-              ))}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex items-center rounded-full border border-gold/30 bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-md">
+                {card.intent}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald/40 bg-emerald/15 px-2 py-1 text-[10.5px] font-semibold text-emerald">
+                🟢 En ligne
+              </span>
             </div>
+            <Pressable
+              onClick={() => {
+                tap();
+                setDetails(true);
+              }}
+              className="flex items-center gap-1 rounded-full border border-white/15 bg-black/50 px-2.5 py-1 text-[11px] font-semibold text-white/85 backdrop-blur-md"
+            >
+              Voir plus
+              <ChevronDown size={13} className="text-gold" />
+            </Pressable>
           </div>
 
-          {/* 3 réponses World Card */}
-          <div className="absolute bottom-[23%] left-[4%] flex w-[92%] items-stretch gap-1.5">
-            <AnswerCard icon="✈️" label="Mon dimanche parfait ?" value={card.sunday} />
-            <AnswerCard icon="🧡" label="Mon plus gros red flag ?" value={card.redFlag} />
-            <AnswerCard icon="🌐" label="Si je pouvais partir demain ?" value={card.travel} />
-          </div>
 
           {/* Actions */}
           <div className="absolute bottom-[10.5%] left-[6%] flex w-[88%] items-start justify-between gap-2">
@@ -444,6 +432,84 @@ function WorldDiscover() {
           </div>
         </motion.div>
       </AnimatePresence>
+
+      {/* Zone détaillée du profil courant */}
+      <AnimatePresence>
+        {details && (
+          <motion.div
+            key="details"
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 40, opacity: 0 }}
+            transition={{ duration: 0.26, ease: [0.32, 0.72, 0, 1] }}
+            className="absolute inset-x-0 bottom-0 z-30 max-h-[64%] rounded-t-[26px] border-t border-gold/25 bg-black/92 pb-[max(env(safe-area-inset-bottom),14px)] backdrop-blur-xl"
+          >
+            <div className="flex items-center justify-between px-4 pt-3">
+              <p className="min-w-0 truncate text-[14px] font-black text-white">
+                {card.name} · sa World Card
+              </p>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setDetails(false);
+                }}
+                aria-label="Fermer les détails"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-white/80"
+              >
+                <X size={15} />
+              </Pressable>
+            </div>
+            <div className="app-scroll max-h-[calc(62vh-52px)] space-y-3 px-4 pt-2.5 pb-[104px]">
+              <p className="text-[13px] leading-snug text-white/80 italic">« {card.quote} »</p>
+              <div className="flex flex-wrap gap-1.5">
+                {card.interests.map((it) => (
+                  <span
+                    key={it}
+                    className="rounded-full border border-gold/35 bg-white/5 px-2.5 py-1 text-[11px] text-white/85"
+                  >
+                    {it}
+                  </span>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <AnswerCard icon="✈️" label="Mon dimanche parfait ?" value={card.sunday} />
+                <AnswerCard icon="🧡" label="Mon plus gros red flag ?" value={card.redFlag} />
+                <AnswerCard icon="🌐" label="Si je pouvais partir demain ?" value={card.travel} />
+              </div>
+              <p className="pb-2 text-center text-[10.5px] text-white/40">
+                Glisse fort vers le haut pour passer au profil suivant.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <BottomSheet open={videoOpen} onClose={() => setVideoOpen(false)}>
+        <div className="space-y-3 px-4 pb-3 text-center">
+          <h2 className="text-[16px] font-black text-white">
+            Vidéo de profil — {card.name}
+          </h2>
+          <div className="relative mx-auto aspect-[9/13] w-[62%] overflow-hidden rounded-3xl border border-gold/30">
+            <img
+              src={card.photo ?? photoUrl(card.id, 640)}
+              alt=""
+              className="h-full w-full object-cover opacity-70"
+            />
+            <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/45">
+              <span className="bg-gold-gradient flex h-12 w-12 items-center justify-center rounded-full">
+                <Play size={20} className="fill-[oklch(0.16_0.02_60)] text-[oklch(0.16_0.02_60)]" />
+              </span>
+              <span className="text-[11.5px] font-semibold text-white/85">
+                Vidéo de profil — bientôt
+              </span>
+            </span>
+          </div>
+          <p className="text-[12px] text-white/60">
+            Les vidéos de 15 secondes arrivent très bientôt dans World Room.
+          </p>
+        </div>
+      </BottomSheet>
+
 
       {/* En-tête */}
       <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between px-4 pt-4">
