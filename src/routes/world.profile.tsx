@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Pressable } from "@/components/zembo/ui";
-import { WorldTabs } from "@/components/zembo/WorldTabs";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { connections, pendingHellos } from "@/lib/world-hello";
 import { deleteWorldProfile, fetchWorldProfile } from "@/lib/world-profile-db";
@@ -99,9 +98,6 @@ function WorldProfile() {
         <p className="mt-1 text-[11px] text-white/55">Voici ce que les autres voient de toi.</p>
       </div>
 
-      <div className="mt-3">
-        <WorldTabs badge={{ "/world/hellos": pending }} />
-      </div>
 
       {/* Aperçu World Card */}
       <motion.section

@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { Clock, Hand, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Pressable } from "@/components/zembo/ui";
-import { WorldTabs } from "@/components/zembo/WorldTabs";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import {
   cancelSentHello,
@@ -55,9 +54,6 @@ function WorldHellos() {
         </p>
       </div>
 
-      <div className="mt-3">
-        <WorldTabs badge={{ "/world/hellos": received.length }} />
-      </div>
 
       <div className="mt-3 flex items-stretch gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-1">
         {(

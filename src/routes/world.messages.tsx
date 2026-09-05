@@ -3,7 +3,6 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Globe2, Hand, MessageCircle } from "lucide-react";
 import { Pressable } from "@/components/zembo/ui";
-import { WorldTabs } from "@/components/zembo/WorldTabs";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { connections, conversationPreview, pendingHellos } from "@/lib/world-hello";
 
@@ -47,9 +46,6 @@ function WorldMessages() {
         </p>
       </div>
 
-      <div className="mt-3">
-        <WorldTabs badge={{ "/world/hellos": pending.length }} />
-      </div>
 
       <div className="mt-4 space-y-2">
         {conns.length === 0 && (
