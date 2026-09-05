@@ -4,6 +4,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
+  ChevronDown,
+  X,
   Globe2,
   Heart,
   MapPin,
@@ -145,28 +147,6 @@ const POOL: WorldCard[] = [
 /** Mock : ces profils répondent Hello en retour (Hello mutuel). */
 const MUTUAL_IDS = ["elena", "moussa", "awa"];
 
-function CountryPill({ card }: { card: WorldCard }) {
-  return (
-    <div className="space-y-1.5">
-      <span className="inline-flex max-w-full flex-col rounded-2xl border border-gold/25 bg-black/60 px-3 py-1.5 backdrop-blur-md">
-        <span className="flex items-center gap-1.5 text-[12px] font-semibold text-white/90">
-          <span>{card.flag}</span>
-          <span className="truncate">
-            {card.city}, {card.country}
-          </span>
-        </span>
-        <span className="text-[10px] font-medium text-white/60">
-          📍 À {card.distanceKm} km de toi
-        </span>
-      </span>
-      <span className="flex w-fit items-center gap-1.5 rounded-full border border-emerald/40 bg-emerald/15 px-2.5 py-1 text-[11px] font-semibold text-emerald">
-        🟢 En ligne maintenant
-      </span>
-    </div>
-
-  );
-}
-
 function AnswerCard({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
     <div className="min-w-0 flex-1 rounded-2xl border border-white/12 bg-black/55 px-2 py-2 backdrop-blur-md">
@@ -225,6 +205,8 @@ function WorldDiscover() {
   const lockRef = useRef(0);
   const [match, setMatch] = useState<WorldCard | null>(null);
   const [hellosCount] = useState(() => pendingHellos().length);
+  const [details, setDetails] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   const me: HelloMatchPerson = useMemo(() => {
     const p = loadWorldProfile();
@@ -245,18 +227,24 @@ function WorldDiscover() {
   };
 
   const next = useCallback(() => {
+    setDetails(false);
     setIndex((i) => i + 1);
   }, []);
 
   const prev = useCallback(() => {
+    setDetails(false);
     setIndex((i) => (i > 0 ? i - 1 : i));
   }, []);
 
+  /** Petit défilement = détails du profil courant ; grand geste = profil suivant. */
   const onWheel = (e: React.WheelEvent) => {
     const now = Date.now();
     if (now - lockRef.current < 550 || Math.abs(e.deltaY) < 12) return;
     lockRef.current = now;
-    if (e.deltaY > 0) next();
+    if (e.deltaY > 0) {
+      if (!details && Math.abs(e.deltaY) < 90) setDetails(true);
+      else next();
+    } else if (details) setDetails(false);
     else prev();
   };
 
@@ -276,9 +264,15 @@ function WorldDiscover() {
           dragElastic={0.18}
           dragConstraints={{ top: 0, bottom: 0 }}
           onDragEnd={(_, info) => {
-            if (info.offset.y < -90 || info.velocity.y < -600) {
+            if (info.offset.y < -170 || info.velocity.y < -900) {
               tap();
               next();
+            } else if (info.offset.y < -45) {
+              tap();
+              setDetails(true);
+            } else if (details && info.offset.y > 45) {
+              tap();
+              setDetails(false);
             } else if (info.offset.y > 110 || info.velocity.y > 700) {
               tap();
               prev();
