@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { BottomSheet } from "@/components/zembo/Sheet";
-import { WorldTabs } from "@/components/zembo/WorldTabs";
 import { Pressable } from "@/components/zembo/ui";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { cn } from "@/lib/utils";
@@ -206,7 +205,7 @@ function WorldDiscover() {
   const [match, setMatch] = useState<WorldCard | null>(null);
   const [hellosCount] = useState(() => pendingHellos().length);
   const [details, setDetails] = useState(false);
-  const [videoOpen, setVideoOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const me: HelloMatchPerson = useMemo(() => {
     const p = loadWorldProfile();
@@ -295,9 +294,9 @@ function WorldDiscover() {
             <Pressable
               onClick={() => {
                 tap();
-                setVideoOpen(true);
+                setProfileOpen(true);
               }}
-              aria-label="Voir sa vidéo de profil"
+              aria-label="Voir le profil complet"
               className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-gold shadow-[0_8px_24px_-6px_oklch(0.82_0.13_85/70%)]"
             >
               <img
@@ -311,7 +310,7 @@ function WorldDiscover() {
               </span>
             </Pressable>
             <span className="rounded-full border border-gold/35 bg-black/60 px-2 py-0.5 text-center text-[9px] leading-tight font-semibold text-white/85 backdrop-blur-md">
-              Vidéo de profil
+              Voir le profil
             </span>
           </div>
 
@@ -331,7 +330,7 @@ function WorldDiscover() {
           </div>
 
           {/* Mini-carte du monde (déco) */}
-          <div className="pointer-events-none absolute bottom-[35%] right-[4%] w-[27%] rounded-xl border border-gold/25 bg-black/40 p-1.5 backdrop-blur-md">
+          <div className="pointer-events-none absolute bottom-[41%] right-[4%] w-[27%] rounded-xl border border-gold/25 bg-black/40 p-1.5 backdrop-blur-md">
             <div className="relative h-8 overflow-hidden rounded-lg bg-[oklch(0.13_0.02_60)]">
               <div
                 className="absolute inset-0 opacity-60"
@@ -350,7 +349,7 @@ function WorldDiscover() {
           </div>
 
           {/* Essentiel : le visage reste dégagé */}
-          <div className="absolute bottom-[27%] left-[4%] w-[68%] space-y-1.5">
+          <div className="absolute bottom-[32%] left-[4%] w-[68%] space-y-1.5">
             <div className="flex items-center gap-1.5">
               <h2 className="truncate text-[27px] leading-none font-black text-white">
                 {card.name}, {card.age}
@@ -385,7 +384,7 @@ function WorldDiscover() {
 
 
           {/* Actions */}
-          <div className="absolute bottom-[10.5%] left-[6%] flex w-[88%] items-start justify-between gap-2">
+          <div className="absolute bottom-[16%] left-[6%] flex w-[88%] items-start justify-between gap-2">
             <ActionButton
               onClick={() => {
                 tap();
@@ -548,10 +547,6 @@ function WorldDiscover() {
           <span className="text-[9px] text-white/70">Carte</span>
         </Pressable>
       </header>
-
-      <div className="absolute top-[8%] left-1/2 z-30 w-[92%] -translate-x-1/2">
-        <WorldTabs floating badge={{ "/world/hellos": hellosCount }} />
-      </div>
 
       <WorldHelloMatch
         open={!!match}
