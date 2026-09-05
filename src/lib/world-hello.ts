@@ -222,6 +222,25 @@ export function isConnected(id: string) {
   return loadHelloState().connections.includes(id);
 }
 
+/** Hellos envoyés, en attente de la réponse de l'autre. */
+export function sentHellos() {
+  const s = loadHelloState();
+  return s.sent
+    .filter((id) => !s.connections.includes(id))
+    .map((id) => findPerson(id))
+    .filter((p): p is WorldPerson => !!p);
+}
+
+export function sendHello(id: string) {
+  const s = loadHelloState();
+  save({ ...s, sent: s.sent.includes(id) ? s.sent : [...s.sent, id] });
+}
+
+export function cancelSentHello(id: string) {
+  const s = loadHelloState();
+  save({ ...s, sent: s.sent.filter((x) => x !== id) });
+}
+
 export function resetHelloDemo() {
   save(DEFAULT_STATE);
 }
