@@ -62,6 +62,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </AnimatePresence>
 
           {!noDock && <TabBar onCreate={() => setCreateOpen(true)} />}
+          {isWorldTab && <WorldDock />}
+
 
           <CreateSheet open={createOpen} onClose={() => setCreateOpen(false)} />
         </div>
