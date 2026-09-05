@@ -433,6 +433,84 @@ function WorldDiscover() {
         </motion.div>
       </AnimatePresence>
 
+      {/* Zone détaillée du profil courant */}
+      <AnimatePresence>
+        {details && (
+          <motion.div
+            key="details"
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 40, opacity: 0 }}
+            transition={{ duration: 0.26, ease: [0.32, 0.72, 0, 1] }}
+            className="absolute inset-x-0 bottom-0 z-30 max-h-[62%] rounded-t-[26px] border-t border-gold/25 bg-black/92 pb-[max(env(safe-area-inset-bottom),14px)] backdrop-blur-xl"
+          >
+            <div className="flex items-center justify-between px-4 pt-3">
+              <p className="min-w-0 truncate text-[14px] font-black text-white">
+                {card.name} · sa World Card
+              </p>
+              <Pressable
+                onClick={() => {
+                  tap();
+                  setDetails(false);
+                }}
+                aria-label="Fermer les détails"
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 text-white/80"
+              >
+                <X size={15} />
+              </Pressable>
+            </div>
+            <div className="app-scroll max-h-[calc(62vh-52px)] space-y-3 px-4 pt-2.5">
+              <p className="text-[13px] leading-snug text-white/80 italic">« {card.quote} »</p>
+              <div className="flex flex-wrap gap-1.5">
+                {card.interests.map((it) => (
+                  <span
+                    key={it}
+                    className="rounded-full border border-gold/35 bg-white/5 px-2.5 py-1 text-[11px] text-white/85"
+                  >
+                    {it}
+                  </span>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <AnswerCard icon="✈️" label="Mon dimanche parfait ?" value={card.sunday} />
+                <AnswerCard icon="🧡" label="Mon plus gros red flag ?" value={card.redFlag} />
+                <AnswerCard icon="🌐" label="Si je pouvais partir demain ?" value={card.travel} />
+              </div>
+              <p className="pb-2 text-center text-[10.5px] text-white/40">
+                Glisse fort vers le haut pour passer au profil suivant.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <BottomSheet open={videoOpen} onClose={() => setVideoOpen(false)}>
+        <div className="space-y-3 px-4 pb-3 text-center">
+          <h2 className="text-[16px] font-black text-white">
+            Vidéo de profil — {card.name}
+          </h2>
+          <div className="relative mx-auto aspect-[9/13] w-[62%] overflow-hidden rounded-3xl border border-gold/30">
+            <img
+              src={card.photo ?? photoUrl(card.id, 640)}
+              alt=""
+              className="h-full w-full object-cover opacity-70"
+            />
+            <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/45">
+              <span className="bg-gold-gradient flex h-12 w-12 items-center justify-center rounded-full">
+                <Play size={20} className="fill-[oklch(0.16_0.02_60)] text-[oklch(0.16_0.02_60)]" />
+              </span>
+              <span className="text-[11.5px] font-semibold text-white/85">
+                Vidéo de profil — bientôt
+              </span>
+            </span>
+          </div>
+          <p className="text-[12px] text-white/60">
+            Les vidéos de 15 secondes arrivent très bientôt dans World Room.
+          </p>
+        </div>
+      </BottomSheet>
+
+
       {/* En-tête */}
       <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between px-4 pt-4">
         <Pressable
