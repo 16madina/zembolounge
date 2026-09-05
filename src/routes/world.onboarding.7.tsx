@@ -21,7 +21,9 @@ export const Route = createFileRoute("/world/onboarding/7")({
 
 function Step6() {
   const navigate = useNavigate();
+  const { user } = useZemboAuth();
   const [draft, setDraft] = useState<WorldProfileDraft>(EMPTY_WORLD_PROFILE);
+  const [saving, setSaving] = useState(false);
   useEffect(() => setDraft(loadWorldProfile()), []);
 
   const age = ageNumber(draft.age);
