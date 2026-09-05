@@ -37,8 +37,16 @@ function WorldEntry() {
       return;
     }
 
-    // Vérification 2 — profil World Room existant ?
-    navigate({ to: hasWorldProfile() ? "/world/discover" : "/world/intro", replace: true });
+    // Vérification 2 — profil World Room enregistré en base pour ce compte ?
+    let active = true;
+    fetchWorldProfile(session.user.id).then((profile) => {
+      if (!active) return;
+      const ready = profile ? profile.completed && profile.username.trim().length > 0 : hasWorldProfile();
+      navigate({ to: ready ? "/world/discover" : "/world/intro", replace: true });
+    });
+    return () => {
+      active = false;
+    };
   }, [loading, session, navigate]);
 
   return (
