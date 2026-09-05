@@ -12,7 +12,7 @@ import {
   MapPin,
   MessageCircle,
   Plane,
-  Play,
+  Eye,
   Settings2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -305,7 +305,7 @@ function WorldDiscover() {
                 draggable={false}
               />
               <span className="absolute inset-0 flex items-center justify-center bg-black/40">
-                <Play size={18} className="fill-gold text-gold" />
+                <Eye size={18} className="text-gold" />
               </span>
             </Pressable>
             <span className="rounded-full border border-gold/35 bg-black/60 px-2 py-0.5 text-center text-[9px] leading-tight font-semibold text-white/85 backdrop-blur-md">
