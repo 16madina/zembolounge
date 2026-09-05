@@ -38,6 +38,7 @@ import { Route as WorldDiscoverRouteImport } from './routes/world.discover'
 import { Route as WorldHellosRouteImport } from './routes/world.hellos'
 import { Route as WorldIntroRouteImport } from './routes/world.intro'
 import { Route as WorldMessagesRouteImport } from './routes/world.messages'
+import { Route as WorldProfileRouteImport } from './routes/world.profile'
 import { Route as TalkShowConfigFormatRouteImport } from './routes/talk-show.config.$format'
 import { Route as TalkShowPreviewFormatRouteImport } from './routes/talk-show.preview.$format'
 import { Route as WorldHelloIdRouteImport } from './routes/world.hello.$id'
@@ -195,6 +196,11 @@ const WorldMessagesRoute = WorldMessagesRouteImport.update({
   path: '/world/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorldProfileRoute = WorldProfileRouteImport.update({
+  id: '/world/profile',
+  path: '/world/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TalkShowConfigFormatRoute = TalkShowConfigFormatRouteImport.update({
   id: '/config/$format',
   path: '/config/$format',
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/world/hellos': typeof WorldHellosRoute
   '/world/intro': typeof WorldIntroRoute
   '/world/messages': typeof WorldMessagesRoute
+  '/world/profile': typeof WorldProfileRoute
   '/talk-show/': typeof TalkShowIndexRoute
   '/world/': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByTo {
   '/world/hellos': typeof WorldHellosRoute
   '/world/intro': typeof WorldIntroRoute
   '/world/messages': typeof WorldMessagesRoute
+  '/world/profile': typeof WorldProfileRoute
   '/talk-show': typeof TalkShowIndexRoute
   '/world': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
@@ -363,6 +371,7 @@ export interface FileRoutesById {
   '/world/hellos': typeof WorldHellosRoute
   '/world/intro': typeof WorldIntroRoute
   '/world/messages': typeof WorldMessagesRoute
+  '/world/profile': typeof WorldProfileRoute
   '/talk-show/': typeof TalkShowIndexRoute
   '/world/': typeof WorldIndexRoute
   '/talk-show/config/$format': typeof TalkShowConfigFormatRoute
@@ -407,6 +416,7 @@ export interface FileRouteTypes {
     | '/world/hellos'
     | '/world/intro'
     | '/world/messages'
+    | '/world/profile'
     | '/talk-show/'
     | '/world/'
     | '/talk-show/config/$format'
@@ -448,6 +458,7 @@ export interface FileRouteTypes {
     | '/world/hellos'
     | '/world/intro'
     | '/world/messages'
+    | '/world/profile'
     | '/talk-show'
     | '/world'
     | '/talk-show/config/$format'
@@ -490,6 +501,7 @@ export interface FileRouteTypes {
     | '/world/hellos'
     | '/world/intro'
     | '/world/messages'
+    | '/world/profile'
     | '/talk-show/'
     | '/world/'
     | '/talk-show/config/$format'
@@ -526,6 +538,7 @@ export interface RootRouteChildren {
   WorldHellosRoute: typeof WorldHellosRoute
   WorldIntroRoute: typeof WorldIntroRoute
   WorldMessagesRoute: typeof WorldMessagesRoute
+  WorldProfileRoute: typeof WorldProfileRoute
   WorldIndexRoute: typeof WorldIndexRoute
   WorldHelloIdRoute: typeof WorldHelloIdRoute
   WorldMessagesIdRoute: typeof WorldMessagesIdRoute
@@ -743,6 +756,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorldMessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/world/profile': {
+      id: '/world/profile'
+      path: '/world/profile'
+      fullPath: '/world/profile'
+      preLoaderRoute: typeof WorldProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/talk-show/config/$format': {
       id: '/talk-show/config/$format'
       path: '/config/$format'
@@ -874,6 +894,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorldHellosRoute: WorldHellosRoute,
   WorldIntroRoute: WorldIntroRoute,
   WorldMessagesRoute: WorldMessagesRoute,
+  WorldProfileRoute: WorldProfileRoute,
   WorldIndexRoute: WorldIndexRoute,
   WorldHelloIdRoute: WorldHelloIdRoute,
   WorldMessagesIdRoute: WorldMessagesIdRoute,
