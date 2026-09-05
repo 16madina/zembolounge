@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { MapPin, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { WorldStep, worldHead } from "@/components/zembo/WorldStep";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 import {
   EMPTY_WORLD_PROFILE,
   ageNumber,
@@ -10,6 +12,7 @@ import {
   saveWorldProfile,
   type WorldProfileDraft,
 } from "@/lib/world-profile";
+import { upsertWorldProfile } from "@/lib/world-profile-db";
 
 export const Route = createFileRoute("/world/onboarding/7")({
   head: worldHead(7, "Ton profil est prêt", "Récapitulatif de ton profil World Room avant d'entrer dans la découverte."),
@@ -18,7 +21,9 @@ export const Route = createFileRoute("/world/onboarding/7")({
 
 function Step6() {
   const navigate = useNavigate();
+  const { user } = useZemboAuth();
   const [draft, setDraft] = useState<WorldProfileDraft>(EMPTY_WORLD_PROFILE);
+  const [saving, setSaving] = useState(false);
   useEffect(() => setDraft(loadWorldProfile()), []);
 
   const age = ageNumber(draft.age);
@@ -31,9 +36,23 @@ function Step6() {
       title="Ton profil est prêt !"
       subtitle="Voici un aperçu de ce que les autres verront."
       back="/world/onboarding/6"
-      cta="Entrer dans World Room"
-      onCta={() => {
-        saveWorldProfile({ ...draft, completed: true });
+      cta={saving ? "Enregistrement…" : "Entrer dans World Room"}
+      ctaDisabled={saving}
+      onCta={async () => {
+        const final = { ...draft, completed: true };
+        saveWorldProfile(final);
+        if (!user) {
+          navigate({ to: "/world/discover" });
+          return;
+        }
+        setSaving(true);
+        const res = await upsertWorldProfile(user.id, final);
+        setSaving(false);
+        if (!res.ok) {
+          toast.error(res.error ?? "Enregistrement impossible");
+          return;
+        }
+        toast.success("Profil World Room enregistré");
         navigate({ to: "/world/discover" });
       }}
       secondary="Modifier"

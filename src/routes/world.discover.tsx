@@ -20,6 +20,8 @@ import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { cn } from "@/lib/utils";
 import decor from "@/assets/world-room-elena.png";
 import { resetWorldProfile, loadWorldProfile } from "@/lib/world-profile";
+import { deleteWorldProfile } from "@/lib/world-profile-db";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 import { WorldHelloMatch, type HelloMatchPerson } from "@/components/zembo/WorldHelloMatch";
 import { pendingHellos } from "@/lib/world-hello";
 
@@ -213,6 +215,7 @@ function ActionButton({
 function WorldDiscover() {
   const [index, setIndex] = useState(0);
   const navigate = useNavigate();
+  const auth = useZemboAuth();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [gender, setGender] = useState("Tous");
   const [zone, setZone] = useState("Monde entier");
@@ -565,6 +568,7 @@ function WorldDiscover() {
             onClick={() => {
               tap();
               resetWorldProfile();
+              if (auth.user) void deleteWorldProfile(auth.user.id);
               toast.success("Profil World Room réinitialisé");
               navigate({ to: "/world" });
             }}

@@ -17,6 +17,8 @@ import { Pressable } from "@/components/zembo/ui";
 import { WorldTabs } from "@/components/zembo/WorldTabs";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { connections, pendingHellos } from "@/lib/world-hello";
+import { deleteWorldProfile, fetchWorldProfile } from "@/lib/world-profile-db";
+import { useZemboAuth } from "@/lib/use-zembo-auth";
 import {
   EMPTY_WORLD_PROFILE,
   ageNumber,
@@ -52,6 +54,7 @@ const VISIBILITY = ["Visible", "En pause"] as const;
 
 function WorldProfile() {
   const navigate = useNavigate();
+  const { user } = useZemboAuth();
   const [draft, setDraft] = useState<WorldProfileDraft>(EMPTY_WORLD_PROFILE);
   const [conns, setConns] = useState<ReturnType<typeof connections>>([]);
   const [pending, setPending] = useState(0);
@@ -63,6 +66,18 @@ function WorldProfile() {
     setConns(connections());
     setPending(pendingHellos().length);
   }, []);
+
+  // Source de vérité : la base (le profil survit à un rechargement).
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    fetchWorldProfile(user.id).then((p) => {
+      if (active && p) setDraft(p);
+    });
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   const tap = () => {
     if (typeof navigator !== "undefined") navigator.vibrate?.(8);
@@ -311,6 +326,7 @@ function WorldProfile() {
           onClick={() => {
             tap();
             resetWorldProfile();
+            if (user) void deleteWorldProfile(user.id);
             toast("Profil World Room désactivé");
             navigate({ to: "/world/intro" });
           }}
