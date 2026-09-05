@@ -21,7 +21,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isWorld = pathname.startsWith("/world");
   const isWorldDiscover = pathname === "/world/discover";
   const isWorldTab =
-    isWorldDiscover || pathname === "/world/hellos" || pathname === "/world/messages";
+    isWorldDiscover ||
+    pathname === "/world/hellos" ||
+    pathname === "/world/messages" ||
+    pathname === "/world/profile";
   const isLiveShow =
     pathname.startsWith("/talk-show/storytime") ||
     pathname.startsWith("/talk-show/micro-ouvert") ||

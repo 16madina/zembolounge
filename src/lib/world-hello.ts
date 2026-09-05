@@ -58,7 +58,64 @@ export const WORLD_PEOPLE: WorldPerson[] = [
     redFlag: "Le manque de communication",
     travel: "Le Japon",
   },
+  {
+    id: "chloe",
+    name: "Chloé",
+    age: 25,
+    flag: "🇫🇷",
+    city: "Lyon",
+    country: "France",
+    intent: "💬 Discussion",
+    quote: "J'aime les gens qui racontent bien les choses.",
+    interests: ["📚 Lecture", "🎬 Cinéma", "🍷 Gastronomie"],
+    sunday: "Marché le matin, ciné le soir",
+    redFlag: "L'arrogance",
+    travel: "Le Pérou",
+  },
+  {
+    id: "kenji",
+    name: "Kenji",
+    age: 31,
+    flag: "🇯🇵",
+    city: "Osaka",
+    country: "Japon",
+    intent: "👥 Amitié",
+    quote: "Le monde est petit quand on ose dire bonjour.",
+    interests: ["🍜 Cuisine", "🎮 Jeux", "🚲 Vélo"],
+    sunday: "Ramen puis balade en vélo",
+    redFlag: "Le manque de ponctualité",
+    travel: "L'Islande",
+  },
 ];
+
+/** Aperçus mock de conversations World (dernier message + heure + non-lus). */
+export const CONVERSATION_PREVIEWS: Record<
+  string,
+  { last: string; time: string; unread: number }
+> = {
+  moussa: { last: "Trop cool cette rencontre !", time: "09:42", unread: 2 },
+  elena: { last: "Hâte de te reparler 😊", time: "Hier", unread: 1 },
+  awa: { last: "Tu fais quoi ce week-end ?", time: "Lun", unread: 0 },
+  chloe: { last: "Ravie d'avoir discuté !", time: "Mar", unread: 0 },
+  kenji: { last: "こんにちは 👋", time: "Mer", unread: 0 },
+};
+
+export function conversationPreview(id: string) {
+  return CONVERSATION_PREVIEWS[id] ?? { last: "Conversation ouverte, à toi de jouer.", time: "Maintenant", unread: 0 };
+}
+
+/** Depuis quand le Hello a été reçu (mock). */
+export const HELLO_AGES: Record<string, string> = {
+  moussa: "il y a 12 min",
+  awa: "il y a 2 h",
+  elena: "il y a 1 j",
+  chloe: "il y a 5 h",
+  kenji: "il y a 1 j",
+};
+
+export function helloAge(id: string) {
+  return HELLO_AGES[id] ?? "à l'instant";
+}
 
 export function findPerson(id: string) {
   return WORLD_PEOPLE.find((p) => p.id === id);
@@ -80,6 +137,8 @@ type HelloState = {
   /** Hellos reçus encore en attente de réponse. */
   pending: string[];
   ignored: string[];
+  /** Hellos que j'ai envoyés, en attente de réponse. */
+  sent: string[];
   /** Hello mutuel confirmé (rencontre 60s dispo). */
   mutual: string[];
   /** Connexions mutuelles → messagerie débloquée. */
@@ -91,8 +150,9 @@ const KEY = "zembo-world-hello";
 const DEFAULT_STATE: HelloState = {
   pending: ["moussa", "awa"],
   ignored: [],
+  sent: ["chloe", "kenji"],
   mutual: [],
-  connections: [],
+  connections: ["elena"],
 };
 
 export function loadHelloState(): HelloState {
@@ -160,6 +220,25 @@ export function connections() {
 
 export function isConnected(id: string) {
   return loadHelloState().connections.includes(id);
+}
+
+/** Hellos envoyés, en attente de la réponse de l'autre. */
+export function sentHellos() {
+  const s = loadHelloState();
+  return s.sent
+    .filter((id) => !s.connections.includes(id))
+    .map((id) => findPerson(id))
+    .filter((p): p is WorldPerson => !!p);
+}
+
+export function sendHello(id: string) {
+  const s = loadHelloState();
+  save({ ...s, sent: s.sent.includes(id) ? s.sent : [...s.sent, id] });
+}
+
+export function cancelSentHello(id: string) {
+  const s = loadHelloState();
+  save({ ...s, sent: s.sent.filter((x) => x !== id) });
 }
 
 export function resetHelloDemo() {

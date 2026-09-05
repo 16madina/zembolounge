@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronLeft, Send } from "lucide-react";
+import { ChevronLeft, Send, Smile } from "lucide-react";
 import { Pressable } from "@/components/zembo/ui";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
-import { findPerson, isConnected } from "@/lib/world-hello";
+import { conversationPreview, findPerson, isConnected } from "@/lib/world-hello";
 
 export const Route = createFileRoute("/world/messages_/$id")({
   head: () => ({
@@ -33,7 +33,15 @@ function WorldThread() {
   const navigate = useNavigate();
   const person = findPerson(id);
   const [unlocked] = useState(() => isConnected(id));
-  const [msgs, setMsgs] = useState<Msg[]>([]);
+  const [msgs, setMsgs] = useState<Msg[]>(() => {
+    const p = findPerson(id);
+    if (!p) return [];
+    return [
+      { id: 1, me: false, text: `Hello ! Ravi${p.id === "moussa" || p.id === "kenji" ? "" : "e"} de te retrouver ici 👋` },
+      { id: 2, me: true, text: "Hello ! Nos 60 secondes sont passées trop vite 😄" },
+      { id: 3, me: false, text: conversationPreview(p.id).last },
+    ];
+  });
   const [draft, setDraft] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -130,6 +138,16 @@ function WorldThread() {
           placeholder="Écris un message…"
           className="min-w-0 flex-1 rounded-full border border-white/12 bg-white/[0.05] px-4 py-2.5 text-[13px] text-white placeholder:text-white/35 focus:border-gold/50 focus:outline-none"
         />
+        <Pressable
+          onClick={() => {
+            if (typeof navigator !== "undefined") navigator.vibrate?.(6);
+            setDraft((d) => d + "😊");
+          }}
+          aria-label="Emoji"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12 text-gold"
+        >
+          <Smile size={16} />
+        </Pressable>
         <Pressable
           onClick={send}
           aria-label="Envoyer"

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { BottomSheet } from "@/components/zembo/Sheet";
+import { WorldTabs } from "@/components/zembo/WorldTabs";
 import { Pressable } from "@/components/zembo/ui";
 import { photoUrl } from "@/components/zembo/PhotoAvatar";
 import { cn } from "@/lib/utils";
@@ -479,17 +480,9 @@ function WorldDiscover() {
         </Pressable>
       </header>
 
-      {hellosCount > 0 && (
-        <Pressable
-          onClick={() => {
-            tap();
-            navigate({ to: "/world/hellos" });
-          }}
-          className="absolute top-[7.5%] left-1/2 z-30 -translate-x-1/2 rounded-full border border-gold/45 bg-black/65 px-3 py-1.5 text-[11px] font-bold text-gold backdrop-blur-md"
-        >
-          👋 Hellos ({hellosCount})
-        </Pressable>
-      )}
+      <div className="absolute top-[8%] left-1/2 z-30 w-[92%] -translate-x-1/2">
+        <WorldTabs floating badge={{ "/world/hellos": hellosCount }} />
+      </div>
 
       <WorldHelloMatch
         open={!!match}
