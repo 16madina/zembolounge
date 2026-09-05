@@ -25,7 +25,6 @@ import { resetWorldProfile, loadWorldProfile } from "@/lib/world-profile";
 import { deleteWorldProfile } from "@/lib/world-profile-db";
 import { useZemboAuth } from "@/lib/use-zembo-auth";
 import { WorldHelloMatch, type HelloMatchPerson } from "@/components/zembo/WorldHelloMatch";
-import { pendingHellos } from "@/lib/world-hello";
 
 export const Route = createFileRoute("/world/discover")({
   head: () => ({
@@ -204,7 +203,6 @@ function WorldDiscover() {
   const [ageRange, setAgeRange] = useState("25–35");
   const lockRef = useRef(0);
   const [match, setMatch] = useState<WorldCard | null>(null);
-  const [hellosCount] = useState(() => pendingHellos().length);
   const [details, setDetails] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
