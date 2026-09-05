@@ -5,6 +5,7 @@ import {
   ArrowRight,
   BadgeCheck,
   ChevronDown,
+  ChevronLeft,
   X,
   Globe2,
   Heart,
