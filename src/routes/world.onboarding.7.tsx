@@ -36,9 +36,23 @@ function Step6() {
       title="Ton profil est prêt !"
       subtitle="Voici un aperçu de ce que les autres verront."
       back="/world/onboarding/6"
-      cta="Entrer dans World Room"
-      onCta={() => {
-        saveWorldProfile({ ...draft, completed: true });
+      cta={saving ? "Enregistrement…" : "Entrer dans World Room"}
+      ctaDisabled={saving}
+      onCta={async () => {
+        const final = { ...draft, completed: true };
+        saveWorldProfile(final);
+        if (!user) {
+          navigate({ to: "/world/discover" });
+          return;
+        }
+        setSaving(true);
+        const res = await upsertWorldProfile(user.id, final);
+        setSaving(false);
+        if (!res.ok) {
+          toast.error(res.error ?? "Enregistrement impossible");
+          return;
+        }
+        toast.success("Profil World Room enregistré");
         navigate({ to: "/world/discover" });
       }}
       secondary="Modifier"
