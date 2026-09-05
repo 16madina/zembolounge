@@ -3,6 +3,7 @@ import { Globe } from "lucide-react";
 import { useEffect } from "react";
 import { useZemboAuth } from "@/lib/use-zembo-auth";
 import { hasWorldProfile } from "@/lib/world-profile";
+import { fetchWorldProfile } from "@/lib/world-profile-db";
 
 export const Route = createFileRoute("/world/")({
   ssr: false,
