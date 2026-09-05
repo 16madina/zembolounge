@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, MoreVertical, Phone, Send, Smile, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Pressable } from "@/components/zembo/ui";
@@ -68,7 +69,7 @@ function Thread() {
       </header>
 
       <div className="app-scroll min-h-0 flex-1 space-y-3 px-4 py-4">
-        {threadMessages.map((m) => (
+        {msgs.map((m) => (
           <div key={m.id} className={cn("flex flex-col", m.mine ? "items-end" : "items-start")}>
             <div
               className={cn(
@@ -83,12 +84,18 @@ function Thread() {
             <span className="mt-1 px-1 text-[10.5px] text-muted-foreground">{m.time}</span>
           </div>
         ))}
+        <div ref={endRef} />
       </div>
 
       <div className="shrink-0 border-t border-border/50 bg-background/95 px-3 pt-2.5 pb-[max(env(safe-area-inset-bottom),12px)] backdrop-blur-xl">
         <div className="flex items-center gap-2">
           <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full border border-border bg-[oklch(0.145_0.006_60)] px-4 py-2.5">
             <input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") send();
+              }}
               placeholder="Écris ton message…"
               className="min-w-0 flex-1 bg-transparent text-[14px] text-white outline-none placeholder:text-muted-foreground"
             />
@@ -96,6 +103,7 @@ function Thread() {
           </div>
           <Pressable
             aria-label="Envoyer"
+            onClick={send}
             className="bg-gold-gradient flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
           >
             <Send size={18} className="text-[oklch(0.16_0.02_60)]" />
