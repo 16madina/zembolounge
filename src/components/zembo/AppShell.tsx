@@ -4,6 +4,8 @@ import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { TabBar } from "./TabBar";
 import { CreateSheet } from "./CreateSheet";
+import { WorldDock } from "./WorldDock";
+
 
 const TABS = ["/", "/live", "/messages", "/profile"];
 
@@ -30,7 +32,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     pathname.startsWith("/talk-show/micro-ouvert") ||
     pathname.startsWith("/talk-show/stand");
   const noDock =
-    isThread || isGame || isLiveShow || isSlam || isAdmin || isAuth || (isWorld && !isWorldTab);
+    isThread || isGame || isLiveShow || isSlam || isAdmin || isAuth || isWorld;
+
 
 
 
@@ -61,6 +64,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </AnimatePresence>
 
           {!noDock && <TabBar onCreate={() => setCreateOpen(true)} />}
+          {isWorldTab && <WorldDock />}
+
 
           <CreateSheet open={createOpen} onClose={() => setCreateOpen(false)} />
         </div>
