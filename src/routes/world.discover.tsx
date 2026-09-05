@@ -442,7 +442,7 @@ function WorldDiscover() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}
             transition={{ duration: 0.26, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute inset-x-0 bottom-0 z-30 max-h-[62%] rounded-t-[26px] border-t border-gold/25 bg-black/92 pb-[max(env(safe-area-inset-bottom),14px)] backdrop-blur-xl"
+            className="absolute inset-x-0 bottom-0 z-30 max-h-[64%] rounded-t-[26px] border-t border-gold/25 bg-black/92 pb-[max(env(safe-area-inset-bottom),14px)] backdrop-blur-xl"
           >
             <div className="flex items-center justify-between px-4 pt-3">
               <p className="min-w-0 truncate text-[14px] font-black text-white">
@@ -459,7 +459,7 @@ function WorldDiscover() {
                 <X size={15} />
               </Pressable>
             </div>
-            <div className="app-scroll max-h-[calc(62vh-52px)] space-y-3 px-4 pt-2.5">
+            <div className="app-scroll max-h-[calc(62vh-52px)] space-y-3 px-4 pt-2.5 pb-[104px]">
               <p className="text-[13px] leading-snug text-white/80 italic">« {card.quote} »</p>
               <div className="flex flex-wrap gap-1.5">
                 {card.interests.map((it) => (
