@@ -27,6 +27,21 @@ function Thread() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const convo = conversations.find((c) => c.id === id) ?? conversations[0]!;
+  const [msgs, setMsgs] = useState(threadMessages);
+  const [draft, setDraft] = useState("");
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+  }, [msgs.length]);
+
+  function send() {
+    const text = draft.trim();
+    if (!text) return;
+    const time = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    setMsgs((m) => [...m, { id: `me-${m.length + 1}`, mine: true, text, time }]);
+    setDraft("");
+  }
 
   return (
     <div className="flex h-full flex-col">
