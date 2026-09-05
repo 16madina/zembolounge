@@ -215,6 +215,7 @@ function ActionButton({
 function WorldDiscover() {
   const [index, setIndex] = useState(0);
   const navigate = useNavigate();
+  const auth = useZemboAuth();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [gender, setGender] = useState("Tous");
   const [zone, setZone] = useState("Monde entier");
